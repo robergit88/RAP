@@ -1,0 +1,74 @@
+class zcl_load_temp_table definition
+  public final
+  create public.
+
+  public section.
+    interfaces if_oo_adt_classrun.
+endclass.
+
+
+class zcl_load_temp_table implementation.
+  method if_oo_adt_classrun~main.
+    " delete existing entries in the database table
+    delete from zrap_atrav_1234.
+    delete from zrap_abook_1234.
+
+    " Se insertan viajes
+    insert zrap_atrav_1234 from (
+        select from /dmo/travel
+          fields uuid( )             as travel_uuid,
+                 travel_id           as travel_id,
+                 agency_id           as agency_id,
+                 customer_id         as customer_id,
+                 begin_date          as begin_date,
+                 end_date            as end_date,
+                 booking_fee         as booking_fee,
+                 total_price         as total_price,
+                 currency_code       as currency_code,
+                 description         as description,
+                 case status
+                   when 'B' then 'A' " accepted
+                   when 'X' then 'X' " cancelled
+                   else 'O'          " open
+                 end                 as overall_status,
+                 createdby           as created_by,
+                 createdat           as created_at,
+                 lastchangedby       as last_changed_by,
+                 lastchangedat       as last_changed_at,
+                 lastchangedat       as local_last_changed_at
+          order by travel_id
+*         UP TO 200 ROWS
+      ).
+
+    if sy-subrc = 0.
+      commit work.
+      out->write( | Se ha cagado la tabla ZRAP_ATRAV_1234 con { sy-dbcnt } registros | ).
+    endif.
+
+    " Se inserta reservas de clientes para los viajes
+    insert zrap_abook_1234 from (
+        select
+          from /dmo/booking as booking join
+               zrap_atrav_1234 as z on booking~travel_id = z~travel_id
+          fields
+                 uuid( )               as booking_uuid,
+                 z~travel_uuid         as travel_uuid,
+                 booking~booking_id    as booking_id,
+                 booking~booking_date  as booking_date,
+                 booking~customer_id   as customer_id,
+                 booking~carrier_id    as carrier_id,
+                 booking~connection_id as connection_id,
+                 booking~flight_date   as flight_date,
+                 booking~flight_price  as flight_price,
+                 booking~currency_code as currency_code,
+                 z~created_by          as created_by,
+*                 z~last_changed_by     AS last_changed_by       ,
+                 z~last_changed_at     AS local_last_changed_by
+      ).
+
+    if sy-subrc = 0.
+      commit work.
+      out->write( | Se ha cagado la tabla ZRAP_ABOOK_1234 con { sy-dbcnt } registros | ).
+    endif.
+  endmethod.
+endclass.

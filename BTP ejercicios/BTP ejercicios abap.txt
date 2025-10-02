@@ -1,0 +1,76 @@
+Paquetes:
+/DMO/FLIGHT_DRAFT
+/DMO/FLIGHT
+/DMO/FLIGHT_SWC
+
+Tablas:
+/DMO/A_TRAVEL_D
+/DMO/A_BOOKING_D
+
+CDS:
+/DMO/I_TRAVEL
+/DMO/I_AGENCY
+/DMO/I_CUSTOMER
+/DMO/I_CARRIER
+/DMO/I_CONNECTION
+/DMO/I_FLIGHT
+/DMO/I_AGENCY
+/DMO/I_CURRENCY
+
+*------------------------------------------------------------------------------------------------*
+@EndUserText.label : 'Tabla de viajes'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zrap_atrav_1234 {
+
+  key client            : abap.clnt not null;
+  key travel_uuid       : sysuuid_x16 not null;
+  travel_id             : /dmo/travel_id;
+  agency_id             : /dmo/agency_id;
+  customer_id           : /dmo/customer_id;
+  begin_date            : /dmo/begin_date;
+  end_date              : /dmo/end_date;
+  @Semantics.amount.currencyCode : 'zrap_atrav_1234.currency_code'
+  booking_fee           : /dmo/booking_fee;
+  @Semantics.amount.currencyCode : 'zrap_atrav_1234.currency_code'
+  total_price           : /dmo/total_price;
+  currency_code         : /dmo/currency_code;
+  description           : /dmo/description;
+  overall_status        : /dmo/overall_status;
+  created_by            : syuname;
+  created_at            : timestampl;
+  last_changed_by       : syuname;
+  last_changed_at       : timestampl;
+  local_last_changed_at : timestampl;
+
+}
+
+*------------------------------------------------------------------------------------------------*
+
+@EndUserText.label : 'Tabla de reservas'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zrap_abook_1234 {
+
+  key client            : abap.clnt not null;
+  key booking_uuid      : sysuuid_x16 not null;
+  travel_uuid           : sysuuid_x16 not null;
+  booking_id            : /dmo/booking_id;
+  booking_date          : /dmo/booking_date;
+  customer_id           : /dmo/customer_id;
+  carrier_id            : /dmo/carrier_id;
+  connection_id         : /dmo/connection_id;
+  flight_date           : /dmo/flight_date;
+  @Semantics.amount.currencyCode : 'zrap_abook_1234.currency_code'
+  flight_price          : /dmo/flight_price;
+  currency_code         : /dmo/currency_code;
+  created_by            : syuname;
+  created_at            : timestampl;
+  last_changed_by       : syuname;
+  local_last_changed_at : timestampl;
+
+}
