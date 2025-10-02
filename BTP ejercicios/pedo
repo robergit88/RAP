@@ -4,22 +4,22 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="hjjCHUARZce-9MlFxjtE-1" value="Crear Tabla BB.DD" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="hjjCHUARZce-9MlFxjtE-1" value="Tabla BB.DD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="220" y="500" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="gySpGIx73drwrpaPTWEk-1" value="Crear CDS Interfaz" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="gySpGIx73drwrpaPTWEk-1" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;CDS Interfaz&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="340" y="430" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="gySpGIx73drwrpaPTWEk-2" value="Crear CDS Consumo" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="gySpGIx73drwrpaPTWEk-2" value="CDS Consumo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="470" y="370" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="gySpGIx73drwrpaPTWEk-3" value="Crear UI Servicio" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="gySpGIx73drwrpaPTWEk-3" value="UI Service Definition" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="600" y="230" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="gySpGIx73drwrpaPTWEk-4" value="Crear Metadata extension" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="gySpGIx73drwrpaPTWEk-4" value="Metadata extension" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="600" y="310" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="gySpGIx73drwrpaPTWEk-5" value="Crear Servicio Binding" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="gySpGIx73drwrpaPTWEk-5" value="Service Binding" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="740" y="170" width="130" height="60" as="geometry" />
         </mxCell>
         <mxCell id="gySpGIx73drwrpaPTWEk-6" value="" style="curved=1;endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="gySpGIx73drwrpaPTWEk-1" target="hjjCHUARZce-9MlFxjtE-1">
@@ -63,6 +63,17 @@
               <mxPoint x="600" y="190" />
               <mxPoint x="560" y="280" />
               <mxPoint x="550" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gySpGIx73drwrpaPTWEk-10" value="" style="curved=1;endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="gySpGIx73drwrpaPTWEk-5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="800" y="90" as="sourcePoint" />
+            <mxPoint x="670" y="230" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="750" y="120" />
+              <mxPoint x="700" y="140" />
+              <mxPoint x="690" y="180" />
             </Array>
           </mxGeometry>
         </mxCell>
