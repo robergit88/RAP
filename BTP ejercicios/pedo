@@ -5,10 +5,19 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="hjjCHUARZce-9MlFxjtE-1" value="Crear Tabla BB.DD" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="340" y="270" width="120" height="60" as="geometry" />
+          <mxGeometry x="100" y="340" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="gySpGIx73drwrpaPTWEk-1" value="Crear CDS Interfaz" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="460" y="200" width="120" height="60" as="geometry" />
+          <mxGeometry x="220" y="270" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gySpGIx73drwrpaPTWEk-2" value="Crear CDS Consumo" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="350" y="210" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gySpGIx73drwrpaPTWEk-3" value="Crear UI Servicio" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="gySpGIx73drwrpaPTWEk-4" value="Crear Metadata extension" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="60" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
