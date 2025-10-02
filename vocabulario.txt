@@ -1,0 +1,123 @@
+Aquí tienes un listado de palabras clave importantes del documento para crear tu vocabulario:
+
+semana 1
+---------
+ABAP
+RAP (ABAP RESTful Application Programming Model)
+SAP Fiori
+SAPUI5
+SAP HANA
+Core Data Services (CDS)
+OData
+Eclipse
+ADT (ABAP Development Tools)
+Cloud
+SAP S/4HANA
+Extensibilidad
+APIs
+CRUD (Create, Read, Update, Delete)
+Behavior Definition
+Service Binding
+Service Definition
+Business Object
+Transactional Buffer
+Code Pushdown
+Declarativo
+EML (Entity Manipulation Language)
+JSON
+SAP Cloud Platform
+IoT
+Machine Learning
+Analytics
+Git
+Testabilidad
+Documentabilidad
+Escalabilidad
+Elasticidad
+Seguridad
+Proyección
+Modelo de datos
+Implementación
+Freestyle
+Metadata Extension
+Table Function
+Hierarchy
+Role-based
+ABAP SQL
+ATC (ABAP Test Cockpit)
+CVA (Code Vulnerability Analyzer)
+Swagger UI
+SAP Gateway
+SAP Fiori Tools
+Trial Account
+Hello World
+Console App
+
+semana 2
+---------
+ABAP
+RAP
+SFLIGHT
+CUSTOMER
+TRAVEL
+BOOKING
+AGENCY
+FLIGHT
+CDS
+Core Data Services
+Data Model
+Projection
+Metadata
+UI
+OData
+Service Definition
+Service Binding
+Authorization
+PFCG
+DCL
+Declarative Access Control
+SAP Fiori
+Database Tables
+Business Object
+Facets
+Full-text Search
+Value Help
+Inheritance Conditions
+Activation Chain
+Transactional Behavior
+
+Este vocabulario te ayudará a comprender los conceptos clave del desarrollo de aplicaciones en el modelo ABAP RESTful Application Programming (RAP).
+
+Semana 3
+--------
+
+SAP Fiori
+ABAP
+RAP (ABAP RESTful Application Programming Model)
+Business Object (BO)
+Transactional Behavior
+Draft Handling
+Entity Manipulation Language (EML)
+CDS (Core Data Services)
+Validation
+Determination
+Projection
+Persistency
+CRUD Operations
+Dynamic Feature Control
+Troubleshooting
+Gateway Error Log
+ABAP Debugger
+Data Preview
+Annotation Propagation
+Activation Graph
+Stateless Communication
+Draft Table
+ETag
+Lock Object
+SAP HANA
+OData
+Multi-Device Support
+Continuous Delivery
+Error Log
+Debug Console
