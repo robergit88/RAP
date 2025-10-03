@@ -55,6 +55,10 @@ Console App
 
 semana 2
 ---------
+Defining the CDS Data Model Projection - Son las vistas de consumo
+CREATING CDS DATA MODEL PROJECTION
+Con las vistas de proyección, se exponen solo aquellos elementos que son relevantes para el servicio específico.
+
 ABAP
 RAP
 SFLIGHT
@@ -86,7 +90,8 @@ Inheritance Conditions
 Activation Chain
 Transactional Behavior
 
-Este vocabulario te ayudará a comprender los conceptos clave del desarrollo de aplicaciones en el modelo ABAP RESTful Application Programming (RAP).
+
+
 
 Semana 3
 --------

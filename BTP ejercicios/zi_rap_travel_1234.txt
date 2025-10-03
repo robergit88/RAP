@@ -3,7 +3,7 @@
 //*&                                                                     *
 //*& TIPO DE PROGRAMA: INTERFAZ CDS                                      *
 //*&                                                                     *
-//*& DESCRIPCION: Borrado y Visualizacion de ficheros                    *
+//*& DESCRIPCION: Vista base sobre ella se construyen proyecciones       *
 //*&                                                                     *
 //*& AUTOR: CB9980000068 - Roberto Puma                                  *
 //*&                                                                     *
