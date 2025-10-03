@@ -1,6 +1,6 @@
 # 09.01.2025 - Building Apps with the ABAP RESTful Application Programming Model
 
-## semana 1
+## Semana 1
 
 1. ABAP
 2. RAP (ABAP RESTful Application Programming Model)
@@ -114,29 +114,54 @@
 29. Error Log
 30. Debug Console
 
-### Aquí tienes otras cláusulas recientes y relevantes en CDS para ABAP BTP, además de "redirected to composition child":
+### Cláusulas CDS para ABAP BTP
 
-    1. association to [entity]
-    Define asociaciones entre entidades, permitiendo navegación y joins automáticos.
-    2. composition of [entity]
-    Define una relación de composición, donde la entidad hija depende de la entidad padre.
-    3. redirected to [association]
-    Permite redirigir una asociación a otra entidad o composición, facilitando la navegación en estructuras complejas.
-    4. redirected to composition child
-    Específicamente para composiciones, permite navegar directamente al hijo de una composición.
-    5. on [condition]
-    Define la condición de join para asociaciones.
-    6. with parameters
-    Permite definir vistas CDS parametrizadas.
-    7. define view entity
-    Nueva sintaxis para definir entidades de vista, recomendada en ABAP BTP.
-    8. define table function
-    Permite definir funciones de tabla CDS, útiles para lógica compleja y cálculos.
-    9. define abstract entity
-    Permite definir entidades abstractas, útiles para modelado avanzado.
-    10. define projection view
-    Permite crear vistas de proyección, enfocadas en exponer solo ciertos campos o relaciones.
-    11. define custom entity
-    Para exponer entidades personalizadas vía OData, especialmente en RAP (RESTful ABAP Programming Model).
-    12. define root view
-    Marca la vista raíz en una jerarquía de entidades, útil en RAP.
+> Listado de cláusulas recientes y relevantes, incluyendo "redirected to composition child"
+
+#### 1. `association to [entity]`
+
+📌 Define asociaciones entre entidades, permitiendo navegación y joins automáticos.
+
+#### 2. `composition of [entity]`
+
+📌 Define una relación de composición, donde la entidad hija depende de la entidad padre.
+
+#### 3. `redirected to [association]`
+
+📌 Permite redirigir una asociación a otra entidad o composición, facilitando la navegación en estructuras complejas.
+
+#### 4. `redirected to composition child`
+
+📌 Específicamente para composiciones, permite navegar directamente al hijo de una composición.
+
+#### 5. `on [condition]`
+
+📌 Define la condición de join para asociaciones.
+
+#### 6. `with parameters`
+
+📌 Permite definir vistas CDS parametrizadas.
+
+#### 7. `define view entity`
+
+📌 Nueva sintaxis para definir entidades de vista, recomendada en ABAP BTP.
+
+#### 8. `define table function`
+
+📌 Permite definir funciones de tabla CDS, útiles para lógica compleja y cálculos.
+
+#### 9. `define abstract entity`
+
+📌 Permite definir entidades abstractas, útiles para modelado avanzado.
+
+#### 10. `define projection view`
+
+📌 Permite crear vistas de proyección, enfocadas en exponer solo ciertos campos o relaciones.
+
+#### 11. `define custom entity`
+
+📌 Para exponer entidades personalizadas vía OData, especialmente en RAP (RESTful ABAP Programming Model).
+
+#### 12. `define root view`
+
+📌 Marca la vista raíz en una jerarquía de entidades, útil en RAP.
