@@ -1,0 +1,71 @@
+//*&---------------------------------------------------------------------*
+//*& ID_PROGRAMA: ZC_RAP_BOOKING_1234                                    *
+//*&                                                                     *
+//*& TIPO DE PROGRAMA: UI ANOTACION                                      *
+//*&                                                                     *
+//*& DESCRIPCION: Vista anotaciones de interfaz usuario                  *
+//*&                                                                     *
+//*& AUTOR: CB9980000068 - Roberto Puma                                  *
+//*&                                                                     *
+//*& FECHA DE CREACIÓN: 01.10.2025                                       *
+//*&                                                                     *
+//*&---------------------------------------------------------------------*
+//*&                                                                     *
+//*& HISTORIAL DE CAMBIOS                                                *
+//*&                                                                     *
+//*&  FECHA      AUTOR        MARCA                                      *
+//*&  ------     ----------   -------------                              *
+//*& DD.MM.AAAA  XXXXXXX      001                                        *
+//*&                                                                     *
+//*&---------------------------------------------------------------------*
+@Metadata.layer: #CORE
+
+@UI.headerInfo: { typeName: 'Booking',
+                  typeNamePlural: 'Bookings',
+                  title: { type: #STANDARD, value: 'BookingID' } }
+
+annotate entity ZC_RAP_BOOKING_1234 with
+
+{
+  @UI.facet: [ { id: 'Booking',
+                 purpose: #STANDARD,
+                 type: #IDENTIFICATION_REFERENCE,
+                 label: 'Booking',
+                 position: 10 } ]
+  @UI.identification: [ { position: 10, label: 'Booking UUID' } ]
+  BookingUUID;
+
+  @UI.hidden: true
+  TravelUUID;
+
+  @UI.identification: [ { position: 20 } ]
+  @UI.lineItem: [ { position: 20 } ]
+  BookingID;
+
+  @UI.identification: [ { position: 30 } ]
+  @UI.lineItem: [ { position: 30 } ]
+  BookingDate;
+
+  @UI.identification: [ { position: 40 } ]
+  @UI.lineItem: [ { position: 40 } ]
+  CustomerID;
+
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  CarrierID;
+
+  @UI.identification: [ { position: 60 } ]
+  @UI.lineItem: [ { position: 60 } ]
+  ConnectionID;
+
+  @UI.identification: [ { position: 70 } ]
+  @UI.lineItem: [ { position: 70 } ]
+  FlightDate;
+
+  @UI.identification: [ { position: 80 } ]
+  @UI.lineItem: [ { position: 80 } ]
+  FlightPrice;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

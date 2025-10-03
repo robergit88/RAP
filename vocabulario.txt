@@ -156,3 +156,4 @@ Aquí tienes otras cláusulas recientes y relevantes en CDS para ABAP BTP, adem�
 	12. define root view
 	Marca la vista raíz en una jerarquía de entidades, útil en RAP.
 	
+	

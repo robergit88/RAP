@@ -1,0 +1,90 @@
+//*&---------------------------------------------------------------------*
+//*& ID_PROGRAMA: ZC_RAP_TRAVEL_1234                                     *
+//*&                                                                     *
+//*& TIPO DE PROGRAMA: UI ANOTACION                                      *
+//*&                                                                     *
+//*& DESCRIPCION: Vista anotaciones de interfaz usuario                  *
+//*&                                                                     *
+//*& AUTOR: CB9980000068 - Roberto Puma                                  *
+//*&                                                                     *
+//*& FECHA DE CREACIÓN: 01.10.2025                                       *
+//*&                                                                     *
+//*&---------------------------------------------------------------------*
+//*&                                                                     *
+//*& HISTORIAL DE CAMBIOS                                                *
+//*&                                                                     *
+//*&  FECHA      AUTOR        MARCA                                      *
+//*&  ------     ----------   -------------                              *
+//*& DD.MM.AAAA  XXXXXXX      001                                        *
+//*&                                                                     *
+//*&---------------------------------------------------------------------*
+@Metadata.layer: #CORE
+
+@UI.headerInfo: { typeName: 'Travel',
+                  typeNamePlural: 'Viajes',
+                  title: { type: #STANDARD, label: 'Travel', value: 'TravelID' } }
+
+@UI.presentationVariant: [ { sortOrder: [ { by: 'TravelID', direction: #DESC } ] } ]
+
+annotate entity ZC_RAP_TRAVEL_1234 with
+
+{
+  @UI.facet: [ { id: 'Travel',
+                 purpose: #STANDARD,
+                 type: #IDENTIFICATION_REFERENCE,
+                 label: 'Travel',
+                 position: 10 },
+               { id: 'Booking',
+                 purpose: #STANDARD,
+                 type: #LINEITEM_REFERENCE,
+                 label: 'Booking',
+                 position: 20,
+                 targetElement: '_Booking' } ]
+  @UI.identification: [ { position: 1, label: 'Travel UUID' } ]
+  TravelUUID;
+
+  @UI.identification: [ { position: 10 } ]
+  @UI.lineItem: [ { position: 10 } ]
+  @UI.selectionField: [ { position: 10 } ]
+  TravelID;
+
+  @UI.identification: [ { position: 20 } ]
+  @UI.lineItem: [ { position: 20 } ]
+  @UI.selectionField: [ { position: 20 } ]
+  AgencyID;
+
+  @UI.identification: [ { position: 30 } ]
+  @UI.lineItem: [ { position: 30 } ]
+  @UI.selectionField: [ { position: 30 } ]
+  CustomerID;
+
+  @UI.identification: [ { position: 40 } ]
+  @UI.lineItem: [ { position: 40 } ]
+  BeginDate;
+
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  EndDate;
+
+  @UI.identification: [ { position: 60 } ]
+  @UI.lineItem: [ { position: 60 } ]
+  BookingFee;
+
+  @UI.identification: [ { position: 70 } ]
+  @UI.lineItem: [ { position: 70 } ]
+  TotalPrice;
+
+  @UI.identification: [ { position: 80 } ]
+  @UI.lineItem: [ { position: 80 } ]
+  Description;
+
+  @UI.identification: [ { position: 90 } ]
+  @UI.lineItem: [ { position: 90 } ]
+  TravelStatus;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}
