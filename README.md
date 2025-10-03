@@ -1,123 +1,118 @@
-# Fiori Elements 09.01.2025
+# 09.01.2025 - Building Apps with the ABAP RESTful Application Programming Model
 
 ## semana 1
 
-ABAP
-RAP (ABAP RESTful Application Programming Model)
-SAP Fiori
-SAPUI5
-SAP HANA
-Core Data Services (CDS)
-OData
-Eclipse
-ADT (ABAP Development Tools)
-Cloud
-SAP S/4HANA
-Extensibilidad
-APIs
-CRUD (Create, Read, Update, Delete)
-Behavior Definition
-Service Binding
-Service Definition
-Business Object
-Transactional Buffer
-Code Pushdown
-Declarativo
-EML (Entity Manipulation Language)
-JSON
-SAP Cloud Platform
-IoT
-Machine Learning
-Analytics
-Git
-Testabilidad
-Documentabilidad
-Escalabilidad
-Elasticidad
-Seguridad
-Proyección
-Modelo de datos
-Implementación
-Freestyle
-Metadata Extension
-Table Function
-Hierarchy
-Role-based
-ABAP SQL
-ATC (ABAP Test Cockpit)
-CVA (Code Vulnerability Analyzer)
-Swagger UI
-SAP Gateway
-SAP Fiori Tools
-Trial Account
-Hello World
-Console App
+1. ABAP
+2. RAP (ABAP RESTful Application Programming Model)
+3. SAP Fiori
+4. SAPUI5
+5. SAP HANA
+6. Core Data Services (CDS)
+7. OData
+8. Eclipse
+9. ADT (ABAP Development Tools)
+10. Cloud
+11. SAP S/4HANA
+12. Extensibilidad
+13. APIs
+14. CRUD (Create, Read, Update, Delete)
+15. Behavior Definition
+16. Service Binding
+17. Service Definition
+18. Business Object
+19. Transactional Buffer
+20. Code Pushdown
+21. Declarativo
+22. EML (Entity Manipulation Language)
+23. JSON
+24. SAP Cloud Platform
+25. IoT
+26. Machine Learning
+27. Analytics
+28. Git
+29. Testabilidad
+30. Documentabilidad
+31. Escalabilidad
+32. Elasticidad
+33. Seguridad
+34. Proyección
+35. Modelo de datos
+36. Implementación
+37. Freestyle
+38. Metadata Extension
+39. Table Function
+40. Hierarchy
+41. Role-based
+42. ABAP SQL
+43. ATC (ABAP Test Cockpit)
+44. CVA (Code Vulnerability Analyzer)
+45. Swagger UI
+46. SAP Gateway
+47. SAP Fiori Tools
+48. Trial Account
+49. Hello World
+50. Console App
 
-## semana 2
+## Semana 2
 
-ABAP
-RAP
-SFLIGHT
-CUSTOMER
-TRAVEL
-BOOKING
-AGENCY
-FLIGHT
-CDS
-Core Data Services
-Data Model
-Projection
-Metadata
-UI
-OData
-Service Definition
-Service Binding
-Authorization
-PFCG
-DCL
-Declarative Access Control
-SAP Fiori
-Database Tables
-Business Object
-Facets
-Full-text Search
-Value Help
-Inheritance Conditions
-Activation Chain
-Transactional Behavior
+1. SFLIGHT
+2. CUSTOMER
+3. TRAVEL
+4. BOOKING
+5. AGENCY
+6. FLIGHT
+7. CDS Core Data Services
+8. Data Model
+9. Projection
+10. Metadata
+11. UI
+12. OData
+13. Service Definition
+14. Service Binding
+15. Authorization
+16. PFCG
+17. DCL Declarative Access Control
+18. Database Tables
+19. Business Object
+20. Facets
+21. Full-text Search
+22. Value Help
+23. Inheritance Conditions
+24. Activation Chain
+25. Transactional Behavior
 
 ## Semana 3
 
-SAP Fiori
-ABAP
-RAP (ABAP RESTful Application Programming Model)
-Business Object (BO)
-Transactional Behavior
-Draft Handling
-Entity Manipulation Language (EML)
-CDS (Core Data Services)
-Validation
-Determination
-Projection
-Persistency
-CRUD Operations
-Dynamic Feature Control
-Troubleshooting
-Gateway Error Log
-ABAP Debugger
-Data Preview
-Annotation Propagation
-Activation Graph
-Stateless Communication
-Draft Table
-ETag
-Lock Object
-SAP HANA
-OData
-Multi-Device Support
-Continuous Delivery
-Error Log
-Debug Console
+1. SAP Fiori
+2. ABAP
+3. RAP (ABAP RESTful Application Programming Model)
+4. Business Object (BO)
+5. Transactional Behavior
+6. Draft Handling
+7. Entity Manipulation Language (EML)
+8. CDS (Core Data Services)
+9. Validation
+10. Determination
+11. Projection
+12. Persistency
+13. CRUD Operations
+14. Dynamic Feature Control
+15. Troubleshooting
+16. Gateway Error Log
+17. ABAP Debugger
+18. Data Preview
+19. Annotation Propagation
+20. Activation Graph
+21. Stateless Communication
+22. Draft Table
+23. ETag
+24. Lock Object
+25. SAP HANA
+26. OData
+27. Multi-Device Support
+28. Continuous Delivery
+29. Error Log
+30. Debug Console
 
 ### Aquí tienes otras cláusulas recientes y relevantes en CDS para ABAP BTP, además de "redirected to composition child":
 
