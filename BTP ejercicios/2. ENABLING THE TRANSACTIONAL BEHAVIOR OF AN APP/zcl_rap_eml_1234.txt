@@ -1,0 +1,211 @@
+*&---------------------------------------------------------------------*
+*& ID_PROGRAMA: zcl_rap_eml_1234                                       *
+*&                                                                     *
+*& TIPO DE PROGRAMA: Clase ejemplo de lenguaje de manipulacion de dato *
+*&                                                                     *
+*& DESCRIPCION: Implementacion de EML                                  *
+*&                                                                     *
+*& AUTOR: CB9980000068 - Roberto Puma                                  *
+*&                                                                     *
+*& FECHA DE CREACIÓN: 06.10.2025                                       *
+*&                                                                     *
+*&---------------------------------------------------------------------*
+*&                                                                     *
+*& HISTORIAL DE CAMBIOS                                                *
+*&                                                                     *
+*&  FECHA      AUTOR        DESC.                                      *
+*&  ------     ----------   -------------                              *
+*& DD.MM.AAAA  XXXXXXX      001                                        *
+*&                                                                     *
+*&---------------------------------------------------------------------*
+class zcl_rap_eml_1234 definition
+  public final
+  create public.
+
+  public section.
+    methods just_read_keys            importing !out type ref to if_oo_adt_classrun_out.
+    methods some_fields               importing !out type ref to if_oo_adt_classrun_out.
+    methods all_fields                importing !out type ref to if_oo_adt_classrun_out.
+    methods read_byassociation        importing !out type ref to if_oo_adt_classrun_out.
+    methods Unsuccessful_READ         importing !out type ref to if_oo_adt_classrun_out.
+    methods Modify_an_existing_Travel importing !out type ref to if_oo_adt_classrun_out.
+    methods Create_a_new_Travel       importing !out type ref to if_oo_adt_classrun_out.
+    methods Delete_an_existing_Travel importing !out type ref to if_oo_adt_classrun_out.
+
+    interfaces if_oo_adt_classrun.
+endclass.
+
+
+class zcl_rap_eml_1234 implementation.
+  method if_oo_adt_classrun~main.
+    " 1. READ KEY
+*    just_read_keys( out = out ).
+    " 2. READ SOME FIELDS
+*    some_fields( out = out ).
+    " 3. READ ALL FIELDS
+*    all_fields( out = out ).
+    " 4. READ BY ASSOCIATION
+*    read_byassociation( out = out ).
+    " 5. UNSUCCESSFUL READ
+*    unsuccessful_read( out = out ).
+    " 6. MODIFY AN EXISTING TRAVEL
+*    modify_an_existing_travel( out = out ).
+    " 7. CREATE A NEW TRAVEL
+*    create_a_new_travel( out ).
+    " 8. DELETE AN EXISTING TRAVEL
+    delete_an_existing_travel( out = out ).
+  endmethod.
+
+  method just_read_keys.
+    " step 1 - READ
+    " El primer ejemplo de EML realiza una operación de lectura.
+    " Solo se completa el campo clave.
+    " Esto se debe a que no se especifican los campos que deben leerse.
+    " Las claves se proporcionan por defecto.
+    "
+    read entities of ZI_RAP_Travel_1234
+         entity travel
+         from value #( ( traveluuid = '01B76631521D6D95190054A2FA8B1542' ) )
+         result data(travels).
+
+    out->write( travels ).
+  endmethod.
+
+  method some_fields.
+    " Ahora se llen los campos AgencyID y el CustomerID
+    read entities of ZI_RAP_Travel_1234
+         entity travel
+         fields ( TravelID AgencyID CustomerID )
+         with value #( ( traveluuid = '01B76631521D6D95190054A2FA8B1542' ) )
+         result data(travels).
+
+    out->write( travels ).
+  endmethod.
+
+  method all_fields.
+    " También es posible leer todos los campos de la entidad utilizando ALL FIELDS.
+
+    read entities of ZI_RAP_Travel_1234
+         entity travel
+         all fields
+         with value #( ( traveluuid = '01B76631521D6D95190054A2FA8B1542' ) )
+         result data(travels).
+
+    out->write( travels ).
+  endmethod.
+
+  method read_byassociation.
+    " Otra opción es realizar una lectura por asociación,
+    " siguiendo la asociación definida en la definición de comportamiento.
+    read entities of ZI_RAP_Travel_1234
+         entity travel by \_Booking
+         all fields with value #( ( TravelUUID = '01B76631521D6D95190054A2FA8B1542' ) )
+         result data(bookings).
+
+    out->write( bookings ).
+  endmethod.
+
+  method unsuccessful_read.
+    " Al realizar operaciones de lectura de EML, no solo debe considerar la tabla de resultados,
+    " sino también las tablas de errores y las tablas de informes.
+    " failed" se utiliza para indicar operaciones fallidas.
+    " reported" se utiliza opcionalmente para proporcionar mensajes T100 relacionados.
+    " Ahora intentará leer un UUID de viaje inexistente.
+
+    read entities of ZI_RAP_Travel_1234
+         entity travel
+         all fields with value #( ( TravelUUID = '11111111111111111111111111111111' ) )
+         result data(travels)
+         failed data(failed)
+         reported data(reported).
+
+    out->write( travels ).
+    out->write( failed ).    " complex structures not supported by the console output
+    out->write( reported ).  " complex structures not supported by the console output
+  endmethod.
+
+  method modify_an_existing_travel.
+    " Finalmente, el último ejemplo muestra cómo modificar una entidad existente.
+    modify entities of ZI_RAP_Travel_1234
+           entity travel
+           update
+           set fields with value
+             #( ( TravelUUID  = '01B76631521D6D95190054A2FA8B1542'
+                  Description = 'I like RAP@openSAP' ) )
+
+          " TODO: variable is assigned but never used (ABAP cleaner)
+           failed data(failed)
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           reported data(reported).
+
+    " step 6b - Commit Entities. Tambien funciona con COMMIT WORK
+    commit entities
+           response of ZI_RAP_Travel_1234
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           failed   data(failed_commit)
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           reported data(reported_commit).
+
+    out->write( 'Update done' ).
+  endmethod.
+
+  method create_a_new_travel.
+    " La creación de nuevas entidades se realiza mediante la instrucción MODIFY con la cláusula CREATE.
+    " Para las operaciones que crean instancias,
+    " se devuelve una tabla mapeada que asigna la instancia creada al ID de contenido proporcionado.
+
+    " step 7 - MODIFY Create
+    modify entities of ZI_RAP_Travel_1234
+           entity travel
+           create
+           set fields with value
+             #( ( %cid        = 'cid1'
+                  AgencyID    = '70012'
+                  CustomerID  = '14'
+                  BeginDate   = cl_abap_context_info=>get_system_date( )
+                  EndDate     = cl_abap_context_info=>get_system_date( ) + 10
+                  Description = 'NEW TRAVEL ADDED BY ROBERTO PUM!!' ) )
+
+           mapped data(mapped)
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           failed data(failed)
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           reported data(reported).
+
+    out->write( mapped-travel ).
+
+    commit entities
+           response of ZI_RAP_Travel_1234
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           failed   data(failed_commit)
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           reported data(reported_commit).
+
+    out->write( 'Create done' ).
+  endmethod.
+
+  method delete_an_existing_travel.
+*Las eliminaciones se realizan utilizando
+*la instrucción MODIFY ENTITIES con la cláusula DELETE.
+
+    modify entities of ZI_RAP_Travel_1234
+           entity travel
+           delete from
+           value
+             #( ( TravelUUID  = '7E76DD340D501FE0A8D585850BB32E55' ) )
+
+         " TODO: variable is assigned but never used (ABAP cleaner)
+           failed data(failed)
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           reported data(reported).
+
+    commit entities
+           response of ZI_RAP_Travel_1234
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           failed   data(failed_commit)
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           reported data(reported_commit).
+
+    out->write( 'Delete done' ).
+  endmethod.
+endclass.
