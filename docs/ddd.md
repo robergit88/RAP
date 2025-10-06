@@ -1,16 +1,8 @@
-# behavior definition
+# Behavior definition
 
-## Escenario GESTIONADO 
+## Escenario GESTIONADO. SAP SE ENCARGA DE TODO EL CICLO DE VIDA DE LOS REGISTROS
 
-### SAP SE ENCARGADA DE TODO EL CICLO DE VIDA DE LOS REGISTROS
-
-Esa es una pregunta excelente que toca el núcleo del desarrollo moderno de aplicaciones SAP, utilizando el modelo de programación RESTful ABAP (RAP).
-
-Aquí tienes una explicación breve y simple del **Behavior Definition (Definición de Comportamiento)** en el contexto de las aplicaciones SAP Fiori Elements:
-
-### **El "Behavior Definition" (BDEF) en Fiori Elements**
-
-Piensa en el Behavior Definition (BDEF) como el **guion de lo que tu aplicación puede hacer con los datos**. Es el documento que le dice al *back-end* (el servidor ABAP) y, por extensión, a la interfaz de Fiori, qué tipo de transacciones están permitidas.
+### Piensa en el Behavior Definition (BDEF) como el **guion de lo que tu aplicación puede hacer con los datos**. Es el documento que le dice al *back-end* (el servidor ABAP) y, por extensión, a la interfaz de Fiori, qué tipo de transacciones están permitidas.
 
 **En resumen, su función es:**
 
