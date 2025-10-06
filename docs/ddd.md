@@ -4,7 +4,7 @@
 
 ### SAP SE ENCARGADA DE TODO EL CICLO DE VIDA DE LOS REGISTROS
 
-``` js
+``` Abap cds
 
 managed;
 
