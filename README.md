@@ -2,7 +2,7 @@
 
 ## Semana 1
 
-1. ABAP
+1. BTP (Business Technology Platform)
 2. RAP (ABAP RESTful Application Programming Model)
 3. SAP Fiori
 4. SAPUI5
