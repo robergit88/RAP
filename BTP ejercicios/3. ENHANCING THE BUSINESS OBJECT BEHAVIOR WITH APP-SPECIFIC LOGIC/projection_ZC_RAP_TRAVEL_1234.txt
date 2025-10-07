@@ -1,0 +1,24 @@
+projection;
+
+define behavior for ZC_RAP_TRAVEL_1234 alias Travel
+use etag
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _Booking { create; }
+
+  use action acceptTravel;
+  use action rejectTravel;
+
+}
+
+define behavior for ZC_RAP_BOOKING_1234 alias Booking
+use etag
+{
+  use update;
+  use delete;
+
+  use association _Travel;
+}

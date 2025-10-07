@@ -1,0 +1,125 @@
+//&---------------------------------------------------------------------*
+//& ID_PROGRAMA: ZI_RAP_TRAVEL_1234                                     *
+//&                                                                     *
+//& TIPO DE PROGRAMA: BEHAVIOR DEFINITION                               *
+//&                                                                     *
+//& DESCRIPCION: DEFINE las operaciones en ROOT BDEF                    *
+//&              Escensario gestionado define todo el ciclo de vida     *
+//&              de los registros.                                      *
+//&                                                                     *
+//& AUTOR: CB9980000068 - Roberto Puma                                  *
+//&                                                                     *
+//& FECHA DE CREACIÓN: 07.10.2025                                       *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+//&                                                                     *
+//& HISTORIAL DE CAMBIOS                                                *
+//&                                                                     *
+//&  FECHA      AUTOR        DESC.                                      *
+//&  ------     ----------   -------------                              *
+//& DD.MM.AAAA  XXXXXXX      001                                        *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+managed;
+
+define behavior for zi_rap_travel_1234 alias Travel
+implementation in class zcl_rap_travel_1234 unique
+persistent table zrap_atrav_1234
+lock master
+//authorization master ( instance ) // Si desmarco hay dump
+etag master LocalLastChangedAt
+{
+  //  create ( authorization : global ); // Si pido chequeo de autorizacion hay dump si no se implementa
+
+  // OPERACIONES CRUD
+  create;
+  update;
+  delete;
+  association _Booking { create; }
+
+  // CAMPOS Y PROPIEDADES
+  field ( numbering : managed, readonly ) TravelUUID;
+  field ( readonly ) TravelID, TotalPrice, TravelStatus;
+  field ( readonly ) LastChangedAt, LastChangedBy, CreatedAt, CreatedBy, LocalLastChangedAt;
+  field ( mandatory ) AgencyID, CustomerID;
+
+  // ACCIONES
+  // Acción (función) para aprobar viajes.
+  action ( features : instance ) acceptTravel result [1] $self;
+  // Acción (función) para rechaza viajes.
+  action ( features : instance ) rejectTravel result [1] $self;
+  // Ambas devuelven $self con cardinalidad 1 como resultado.
+  // $self significa que se devuelve la instancia del mismo tipo en la que se realizó la operación.
+
+  internal action recalcTotalPrice;
+
+  //DETERMINACIONES
+  //Se utiliza para predecir el estado a N cada vez que se crea/modifica una nueva instancia.
+  determination setInitialStatus on modify { create; }
+  //se utiliza para actualizar el precio total cada vez que se cambia el código de reserva o el código de moneda.
+  determination calculateTotalPrice on modify { field BookingFee, CurrencyCode; }
+  //se usa para determinar el TravelID cuando se crea una nueva instancia.
+  determination calculateTravelID on save { create; }
+
+  //VALIDACIONES
+  validation validateAgency on save { field AgencyID; }
+  validation validateCustomer on save { field CustomerID; }
+  validation validateDates on save { field BeginDate, EndDate; }
+
+  mapping for zrap_atrav_1234
+    {
+      TravelUUID         = travel_uuid;
+      TravelID           = travel_id;
+      AgencyID           = agency_id;
+      CustomerID         = customer_id;
+      BeginDate          = begin_date;
+      EndDate            = end_date;
+      BookingFee         = booking_fee;
+      TotalPrice         = total_price;
+      CurrencyCode       = currency_code;
+      Description        = description;
+      TravelStatus       = overall_status;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+
+}
+
+define behavior for zi_rap_booking_1234 alias Booking
+implementation in class zcl_rap_booking_1234 unique
+persistent table zrap_abook_1234
+lock dependent by _Travel
+//authorization dependent by _Travel // Si desmarco hay dump
+etag master LocalLastChangedAt
+{
+  association _Travel;
+  update;
+  delete;
+  field ( numbering : managed, readonly ) BookingUUID;
+  field ( readonly ) TravelUUID, BookingID;
+  field ( readonly ) CreatedBy, LastChangedBy, LocalLastChangedAt;
+
+  determination calculateBookingID on modify { create; }
+  determination calculateTotalPrice on modify { field FlightPrice, CurrencyCode; }
+
+  mapping for zrap_abook_1234
+    {
+      BookingUUID        = booking_uuid;
+      TravelUUID         = travel_uuid;
+      BookingID          = booking_id;
+      BookingDate        = booking_date;
+      CustomerID         = customer_id;
+      CarrierID          = carrier_id;
+      ConnectionID       = connection_id;
+      FlightDate         = flight_date;
+      FlightPrice        = flight_price;
+      CurrencyCode       = currency_code;
+      CreatedBy          = created_by;
+      LastChangedBy      = last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+
+}

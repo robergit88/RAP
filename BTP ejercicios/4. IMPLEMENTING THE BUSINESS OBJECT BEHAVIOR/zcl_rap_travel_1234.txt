@@ -1,0 +1,409 @@
+*&---------------------------------------------------------------------*
+*& ID_PROGRAMA: Clase local                                            *
+*&                                                                     *
+*& TIPO DE PROGRAMA: Clase                                             *
+*&                                                                     *
+*& DESCRIPCION: implementa las operaciones definidas en ROOT BDEF      *
+*&                                                                     *
+*& AUTOR: CB9980000068 - Roberto Puma                                  *
+*&                                                                     *
+*& FECHA DE CREACIÓN: 07.10.2025                                       *
+*&                                                                     *
+*&---------------------------------------------------------------------*
+*&                                                                     *
+*& HISTORIAL DE CAMBIOS                                                *
+*&                                                                     *
+*&  FECHA      AUTOR        DESC.                                      *
+*&  ------     ----------   -------------                              *
+*& DD.MM.AAAA  XXXXXXX      001                                        *
+*&                                                                     *
+*&---------------------------------------------------------------------*
+
+CLASS zcl_rap_travel_1234 DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_rap_travel_1234.
+ENDCLASS.
+
+CLASS zcl_rap_travel_1234 IMPLEMENTATION.
+ENDCLASS.
+
+class lhc_Travel definition inheriting from cl_abap_behavior_handler.
+  private section.
+    constants:
+      begin of travel_status,
+        open     type c length 1 value 'O', " Open
+        accepted type c length 1 value 'A', " Accepted
+        canceled type c length 1 value 'X', " Cancelled
+      end of travel_status.
+
+    " methods get_instance_features for instance features
+    "   importing keys request requested_features for Travel result result.
+
+    methods acceptTravel for modify
+      importing keys for action Travel~acceptTravel result result.
+
+    methods recalcTotalPrice for modify
+      importing keys for action Travel~recalcTotalPrice.
+
+    methods rejectTravel for modify
+      importing keys for action Travel~rejectTravel result result.
+
+    methods calculateTotalPrice for determine on modify
+      importing keys for Travel~calculateTotalPrice.
+
+    methods setInitialStatus for determine on modify
+      importing keys for Travel~setInitialStatus.
+
+    methods calculateTravelID for determine on save
+      importing keys for Travel~calculateTravelID.
+
+    methods validateAgency for validate on save
+      importing keys for Travel~validateAgency.
+
+    methods validateCustomer for validate on save
+      importing keys for Travel~validateCustomer.
+
+    methods validateDates for validate on save
+      importing keys for Travel~validateDates.
+
+    methods get_features for features
+      importing keys request requested_features for Travel result result.
+
+endclass.
+
+
+class lhc_Travel implementation.
+  method acceptTravel.
+    " Set the new overall status
+    modify entities of zi_rap_travel_1234 in local mode
+           entity Travel
+           update
+           fields ( TravelStatus )
+           with value #( for key in keys
+                         ( %tky         = key-%tky
+                           TravelStatus = travel_status-accepted ) )
+           failed failed
+           reported reported.
+
+    " Fill the response table
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         all fields with corresponding #( keys )
+         result data(travels).
+
+    " Después de modificar el estado de viaje,
+    " la acción debe proporcionar el resultado según lo definido en la definición de comportamiento.
+    " En nuestro presente caso, el resultado es $ Self,
+    " lo que significa que debe devolver la instancia de viaje
+    "  con todos los valores para las claves dadas.
+
+    result = value #( for travel in travels
+                      ( %tky   = travel-%tky
+                        %param = travel ) ).
+  endmethod.
+
+  method rejectTravel.
+    " Set the new overall status
+    modify entities of zi_rap_travel_1234 in local mode
+           entity Travel
+           update
+           fields ( TravelStatus )
+           with value #( for key in keys
+                         ( %tky         = key-%tky
+                           TravelStatus = travel_status-canceled ) )
+           failed failed
+           reported reported.
+
+    " Fill the response table
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         all fields with corresponding #( keys )
+         result data(travels).
+
+    result = value #( for travel in travels
+                      ( %tky   = travel-%tky
+                        %param = travel ) ).
+  endmethod.
+
+  method calculateTotalPrice.
+    " La implementación llamará a la acción interna ´recalcTotalPrice´
+    " para todas las claves de viaje proporcionadas.
+
+    modify entities of zi_rap_travel_1234 in local mode
+           entity travel
+           execute recalcTotalPrice
+           from corresponding #( keys )
+           reported data(execute_reported).
+
+    reported = corresponding #( deep execute_reported ).
+  endmethod.
+
+  method recalcTotalPrice.
+    types: begin of ty_amount_per_currencycode,
+             amount        type /dmo/total_price,
+             currency_code type /dmo/currency_code,
+           end of ty_amount_per_currencycode.
+
+    data amount_per_currencycode type standard table of ty_amount_per_currencycode.
+
+    " Read all relevant travel instances.
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( BookingFee CurrencyCode )
+         with corresponding #( keys )
+         result data(travels).
+
+    delete travels where CurrencyCode is initial.
+
+    loop at travels assigning field-symbol(<travel>).
+      " Set the start for the calculation by adding the booking fee.
+      amount_per_currencycode = value #( ( amount        = <travel>-BookingFee
+                                           currency_code = <travel>-CurrencyCode ) ).
+      " Read all associated bookings and add them to the total price.
+      read entities of ZI_RAP_Travel_1234 in local mode
+           entity Travel by \_Booking
+           fields ( FlightPrice CurrencyCode )
+           with value #( ( %tky = <travel>-%tky ) )
+           result data(bookings).
+      loop at bookings into data(booking) where CurrencyCode is not initial.
+        collect value ty_amount_per_currencycode( amount        = booking-FlightPrice
+                                                  currency_code = booking-CurrencyCode ) into amount_per_currencycode.
+      endloop.
+
+      clear <travel>-TotalPrice.
+      loop at amount_per_currencycode into data(single_amount_per_currencycode).
+        " If needed do a Currency Conversion
+        if single_amount_per_currencycode-currency_code = <travel>-CurrencyCode.
+          <travel>-TotalPrice += single_amount_per_currencycode-amount.
+        else.
+          /dmo/cl_flight_amdp=>convert_currency(
+            exporting iv_amount               = single_amount_per_currencycode-amount
+                      iv_currency_code_source = single_amount_per_currencycode-currency_code
+                      iv_currency_code_target = <travel>-CurrencyCode
+                      iv_exchange_rate_date   = cl_abap_context_info=>get_system_date( )
+            importing ev_amount               = data(total_booking_price_per_curr) ).
+          <travel>-TotalPrice += total_booking_price_per_curr.
+        endif.
+      endloop.
+    endloop.
+
+    " write back the modified total_price of travels
+    modify entities of ZI_RAP_Travel_1234 in local mode
+           entity travel
+           update fields ( TotalPrice )
+           with corresponding #( travels ).
+  endmethod.
+
+  method setInitialStatus.
+    " Configura el estado del viaje para que se abra
+    " cuando se crea una nueva instancia de viaje.
+    " La implementación leerá el estado de viaje para todas las claves proporcionadas
+    " y establece el estado ABIERTO para aquellos que aún no tienen un estado.
+    " Read relevant travel instance data
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( TravelStatus ) with corresponding #( keys )
+         result data(travels).
+
+    " Remove all travel instance data with defined status
+    delete travels where TravelStatus is not initial.
+    if travels is initial.
+      return.
+    endif.
+
+    " Set default travel status
+    modify entities of zi_rap_travel_1234 in local mode
+           entity Travel
+           update
+           fields ( TravelStatus )
+           with value #( for travel in travels
+                         ( %tky         = travel-%tky
+                           TravelStatus = travel_status-open ) )
+           reported data(update_reported).
+
+    reported = corresponding #( deep update_reported ).
+  endmethod.
+
+  method calculateTravelID.
+    " Please note that this is just an example for calculating a field during _onSave_.
+    " This approach does NOT ensure for gap free or unique travel IDs! It just helps to provide a readable ID.
+    " The key of this business object is a UUID, calculated by the framework.
+
+    " check if TravelID is already filled
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( TravelID ) with corresponding #( keys )
+         result data(travels).
+
+    " remove lines where TravelID is already filled.
+    delete travels where TravelID is not initial.
+
+    " anything left ?
+    if travels is initial.
+      return.
+    endif.
+
+    " Select max travel ID
+    select single from zrap_atrav_1234
+      fields max( travel_id ) as travelID
+      into @data(max_travelid).
+
+    " Set the travel ID
+    modify entities of zi_rap_travel_1234 in local mode
+           entity Travel
+           update
+           from value #( for travel in travels index into i
+                         ( %tky              = travel-%tky
+                           TravelID          = max_travelid + i
+                           %control-TravelID = if_abap_behv=>mk-on ) )
+           reported data(update_reported).
+
+    reported = corresponding #( deep update_reported ).
+  endmethod.
+
+  method validateAgency.
+    " Read relevant travel instance data
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( AgencyID ) with corresponding #( keys )
+         result data(travels).
+
+    data agencies type sorted table of /dmo/agency with unique key agency_id.
+
+    " Optimization of DB select: extract distinct non-initial agency IDs
+    agencies = corresponding #( travels discarding duplicates mapping agency_id = AgencyID except * ).
+    delete agencies where agency_id is initial.
+
+    if agencies is not initial.
+      " Check if agency ID exist
+      select from /dmo/agency
+        fields agency_id
+        for all entries in @agencies
+        where agency_id = @agencies-agency_id
+        into table @data(agencies_db).
+    endif.
+
+    " Raise msg for non existing and initial agencyID
+    loop at travels into data(travel).
+      " Clear state messages that might exist
+      append value #( %tky        = travel-%tky
+                      %state_area = 'VALIDATE_AGENCY' )
+             to reported-travel.
+
+      if travel-AgencyID is not initial and line_exists( agencies_db[ agency_id = travel-AgencyID ] ).
+        continue.
+      endif.
+
+      append value #( %tky = travel-%tky ) to failed-travel.
+
+      append value #( %tky              = travel-%tky
+                      %state_area       = 'VALIDATE_AGENCY'
+                      %msg              = new zcm_rap_1234( severity = if_abap_behv_message=>severity-error
+                                                            textid   = zcm_rap_1234=>agency_unknown
+                                                            agencyid = travel-AgencyID )
+                      %element-AgencyID = if_abap_behv=>mk-on )
+             to reported-travel.
+    endloop.
+  endmethod.
+
+  method validateCustomer.
+    " Read relevant travel instance data
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( CustomerID ) with corresponding #( keys )
+         result data(travels).
+
+    data customers type sorted table of /dmo/customer with unique key customer_id.
+
+    " Optimization of DB select: extract distinct non-initial customer IDs
+    customers = corresponding #( travels discarding duplicates mapping customer_id = CustomerID except * ).
+    delete customers where customer_id is initial.
+    if customers is not initial.
+      " Check if customer ID exist
+      select from /dmo/customer
+        fields customer_id
+        for all entries in @customers
+        where customer_id = @customers-customer_id
+        into table @data(customers_db).
+    endif.
+
+    " Raise msg for non existing and initial customerID
+    loop at travels into data(travel).
+      " Clear state messages that might exist
+      append value #( %tky        = travel-%tky
+                      %state_area = 'VALIDATE_CUSTOMER' )
+             to reported-travel.
+
+      if travel-CustomerID is not initial and line_exists( customers_db[ customer_id = travel-CustomerID ] ).
+        continue.
+      endif.
+
+      append value #( %tky = travel-%tky ) to failed-travel.
+
+      append value #( %tky                = travel-%tky
+                      %state_area         = 'VALIDATE_CUSTOMER'
+                      %msg                = new zcm_rap_1234( severity   = if_abap_behv_message=>severity-error
+                                                              textid     = zcm_rap_1234=>customer_unknown
+                                                              customerid = travel-CustomerID )
+                      %element-CustomerID = if_abap_behv=>mk-on )
+             to reported-travel.
+    endloop.
+  endmethod.
+
+  method validateDates.
+    " Read relevant travel instance data
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( TravelID BeginDate EndDate ) with corresponding #( keys )
+         result data(travels).
+
+    loop at travels into data(travel).
+      " Clear state messages that might exist
+      append value #( %tky        = travel-%tky
+                      %state_area = 'VALIDATE_DATES' )
+             to reported-travel.
+
+      if travel-EndDate < travel-BeginDate.
+        append value #( %tky = travel-%tky ) to failed-travel.
+        append value #( %tky               = travel-%tky
+                        %state_area        = 'VALIDATE_DATES'
+                        %msg               = new zcm_rap_1234( severity  = if_abap_behv_message=>severity-error
+                                                               textid    = zcm_rap_1234=>date_interval
+                                                               begindate = travel-BeginDate
+                                                               enddate   = travel-EndDate
+                                                               travelid  = travel-TravelID )
+                        %element-BeginDate = if_abap_behv=>mk-on
+                        %element-EndDate   = if_abap_behv=>mk-on ) to reported-travel.
+
+      elseif travel-BeginDate < cl_abap_context_info=>get_system_date( ).
+        append value #( %tky = travel-%tky ) to failed-travel.
+        append value #( %tky               = travel-%tky
+                        %state_area        = 'VALIDATE_DATES'
+                        %msg               = new zcm_rap_1234( severity  = if_abap_behv_message=>severity-error
+                                                               textid    = zcm_rap_1234=>begin_date_before_system_date
+                                                               begindate = travel-BeginDate )
+                        %element-BeginDate = if_abap_behv=>mk-on ) to reported-travel.
+      endif.
+    endloop.
+  endmethod.
+
+  method get_features.
+    " Read the travel status of the existing travels
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( TravelStatus ) with corresponding #( keys )
+         result data(travels)
+         failed failed.
+
+    result =
+      value #( for travel in travels
+               let is_accepted = cond #( when travel-TravelStatus = travel_status-accepted
+                                         then if_abap_behv=>fc-o-disabled
+                                         else if_abap_behv=>fc-o-enabled  )
+                   is_rejected = cond #( when travel-TravelStatus = travel_status-canceled
+                                         then if_abap_behv=>fc-o-disabled
+                                         else if_abap_behv=>fc-o-enabled )
+               in
+                   ( %tky                 = travel-%tky
+                     %action-acceptTravel = is_accepted
+                     %action-rejectTravel = is_rejected ) ).
+  endmethod.
+endclass.
