@@ -215,8 +215,8 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram name="ENTITY MANIPULATION LANGUAGE (EML)" id="MbQ8G2UNAjCPbGvtXKBy">
-    <mxGraphModel dx="1261" dy="568" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+  <diagram name="EML" id="MbQ8G2UNAjCPbGvtXKBy">
+    <mxGraphModel dx="1500" dy="568" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="HK1HaTbIaODRtXszQkwR-0" />
         <mxCell id="HK1HaTbIaODRtXszQkwR-1" parent="HK1HaTbIaODRtXszQkwR-0" />
