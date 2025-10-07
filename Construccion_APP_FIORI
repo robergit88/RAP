@@ -73,8 +73,8 @@
         <mxCell id="ZpV-lErZFWfUwDlF_-Ys-1" value="enfocadas en exponer&amp;nbsp;&lt;div&gt;solo ciertos campos o relaciones.&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#d6b656;fillColor=#fff2cc;rounded=1;" parent="1" vertex="1">
           <mxGeometry x="650" y="253" width="200" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="ZpV-lErZFWfUwDlF_-Ys-2" value="Qué datos y qué campos s&lt;div&gt;e expondrán al frontend&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#d6b656;fillColor=#fff2cc;rounded=1;" parent="1" vertex="1">
-          <mxGeometry x="630" y="324" width="170" height="40" as="geometry" />
+        <mxCell id="ZpV-lErZFWfUwDlF_-Ys-2" value="Qué datos y qué campos&lt;div&gt;se expondrán al frontend&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#d6b656;fillColor=#fff2cc;rounded=1;" parent="1" vertex="1">
+          <mxGeometry x="610" y="315" width="160" height="40" as="geometry" />
         </mxCell>
         <mxCell id="ZpV-lErZFWfUwDlF_-Ys-3" value="&lt;div&gt;definir el protocolo de comunicación para el servicio UI.&amp;nbsp;&lt;/div&gt;&lt;div&gt;Típicamente especifica si el servicio será OData V2 o V4.&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=#d6b656;fillColor=#fff2cc;rounded=1;" parent="1" vertex="1">
           <mxGeometry x="800" y="183" width="330" height="40" as="geometry" />
