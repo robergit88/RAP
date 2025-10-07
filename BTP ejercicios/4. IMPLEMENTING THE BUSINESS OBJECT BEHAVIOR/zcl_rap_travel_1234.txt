@@ -18,13 +18,6 @@
 *& DD.MM.AAAA  XXXXXXX      001                                        *
 *&                                                                     *
 *&---------------------------------------------------------------------*
-
-CLASS zcl_rap_travel_1234 DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_rap_travel_1234.
-ENDCLASS.
-
-CLASS zcl_rap_travel_1234 IMPLEMENTATION.
-ENDCLASS.
-
 class lhc_Travel definition inheriting from cl_abap_behavior_handler.
   private section.
     constants:
@@ -34,26 +27,14 @@ class lhc_Travel definition inheriting from cl_abap_behavior_handler.
         canceled type c length 1 value 'X', " Cancelled
       end of travel_status.
 
-    " methods get_instance_features for instance features
-    "   importing keys request requested_features for Travel result result.
-
-    methods acceptTravel for modify
-      importing keys for action Travel~acceptTravel result result.
-
-    methods recalcTotalPrice for modify
-      importing keys for action Travel~recalcTotalPrice.
-
-    methods rejectTravel for modify
-      importing keys for action Travel~rejectTravel result result.
-
     methods calculateTotalPrice for determine on modify
       importing keys for Travel~calculateTotalPrice.
 
-    methods setInitialStatus for determine on modify
-      importing keys for Travel~setInitialStatus.
-
     methods calculateTravelID for determine on save
       importing keys for Travel~calculateTravelID.
+
+    methods setInitialStatus for determine on modify
+      importing keys for Travel~setInitialStatus.
 
     methods validateAgency for validate on save
       importing keys for Travel~validateAgency.
@@ -64,65 +45,35 @@ class lhc_Travel definition inheriting from cl_abap_behavior_handler.
     methods validateDates for validate on save
       importing keys for Travel~validateDates.
 
+    methods acceptTravel for modify
+      importing keys for action Travel~acceptTravel result result.
+
+    methods rejectTravel for modify
+      importing keys for action Travel~rejectTravel result result.
+
     methods get_features for features
       importing keys request requested_features for Travel result result.
+
+    methods get_authorizations for authorization
+      importing keys request requested_authorizations for Travel result result.
+
+    methods recalcTotalPrice for modify
+      importing keys for action Travel~recalcTotalPrice.
+
+    methods is_update_granted importing has_before_image      type abap_bool
+                                        overall_status        type /dmo/overall_status
+                              returning value(update_granted) type abap_bool.
+
+    methods is_delete_granted importing has_before_image      type abap_bool
+                                        overall_status        type /dmo/overall_status
+                              returning value(delete_granted) type abap_bool.
+
+    methods is_create_granted returning value(create_granted) type abap_bool.
 
 endclass.
 
 
 class lhc_Travel implementation.
-  method acceptTravel.
-    " Set the new overall status
-    modify entities of zi_rap_travel_1234 in local mode
-           entity Travel
-           update
-           fields ( TravelStatus )
-           with value #( for key in keys
-                         ( %tky         = key-%tky
-                           TravelStatus = travel_status-accepted ) )
-           failed failed
-           reported reported.
-
-    " Fill the response table
-    read entities of zi_rap_travel_1234 in local mode
-         entity Travel
-         all fields with corresponding #( keys )
-         result data(travels).
-
-    " Después de modificar el estado de viaje,
-    " la acción debe proporcionar el resultado según lo definido en la definición de comportamiento.
-    " En nuestro presente caso, el resultado es $ Self,
-    " lo que significa que debe devolver la instancia de viaje
-    "  con todos los valores para las claves dadas.
-
-    result = value #( for travel in travels
-                      ( %tky   = travel-%tky
-                        %param = travel ) ).
-  endmethod.
-
-  method rejectTravel.
-    " Set the new overall status
-    modify entities of zi_rap_travel_1234 in local mode
-           entity Travel
-           update
-           fields ( TravelStatus )
-           with value #( for key in keys
-                         ( %tky         = key-%tky
-                           TravelStatus = travel_status-canceled ) )
-           failed failed
-           reported reported.
-
-    " Fill the response table
-    read entities of zi_rap_travel_1234 in local mode
-         entity Travel
-         all fields with corresponding #( keys )
-         result data(travels).
-
-    result = value #( for travel in travels
-                      ( %tky   = travel-%tky
-                        %param = travel ) ).
-  endmethod.
-
   method calculateTotalPrice.
     " La implementación llamará a la acción interna ´recalcTotalPrice´
     " para todas las claves de viaje proporcionadas.
@@ -134,92 +85,6 @@ class lhc_Travel implementation.
            reported data(execute_reported).
 
     reported = corresponding #( deep execute_reported ).
-  endmethod.
-
-  method recalcTotalPrice.
-    types: begin of ty_amount_per_currencycode,
-             amount        type /dmo/total_price,
-             currency_code type /dmo/currency_code,
-           end of ty_amount_per_currencycode.
-
-    data amount_per_currencycode type standard table of ty_amount_per_currencycode.
-
-    " Read all relevant travel instances.
-    read entities of zi_rap_travel_1234 in local mode
-         entity Travel
-         fields ( BookingFee CurrencyCode )
-         with corresponding #( keys )
-         result data(travels).
-
-    delete travels where CurrencyCode is initial.
-
-    loop at travels assigning field-symbol(<travel>).
-      " Set the start for the calculation by adding the booking fee.
-      amount_per_currencycode = value #( ( amount        = <travel>-BookingFee
-                                           currency_code = <travel>-CurrencyCode ) ).
-      " Read all associated bookings and add them to the total price.
-      read entities of ZI_RAP_Travel_1234 in local mode
-           entity Travel by \_Booking
-           fields ( FlightPrice CurrencyCode )
-           with value #( ( %tky = <travel>-%tky ) )
-           result data(bookings).
-      loop at bookings into data(booking) where CurrencyCode is not initial.
-        collect value ty_amount_per_currencycode( amount        = booking-FlightPrice
-                                                  currency_code = booking-CurrencyCode ) into amount_per_currencycode.
-      endloop.
-
-      clear <travel>-TotalPrice.
-      loop at amount_per_currencycode into data(single_amount_per_currencycode).
-        " If needed do a Currency Conversion
-        if single_amount_per_currencycode-currency_code = <travel>-CurrencyCode.
-          <travel>-TotalPrice += single_amount_per_currencycode-amount.
-        else.
-          /dmo/cl_flight_amdp=>convert_currency(
-            exporting iv_amount               = single_amount_per_currencycode-amount
-                      iv_currency_code_source = single_amount_per_currencycode-currency_code
-                      iv_currency_code_target = <travel>-CurrencyCode
-                      iv_exchange_rate_date   = cl_abap_context_info=>get_system_date( )
-            importing ev_amount               = data(total_booking_price_per_curr) ).
-          <travel>-TotalPrice += total_booking_price_per_curr.
-        endif.
-      endloop.
-    endloop.
-
-    " write back the modified total_price of travels
-    modify entities of ZI_RAP_Travel_1234 in local mode
-           entity travel
-           update fields ( TotalPrice )
-           with corresponding #( travels ).
-  endmethod.
-
-  method setInitialStatus.
-    " Configura el estado del viaje para que se abra
-    " cuando se crea una nueva instancia de viaje.
-    " La implementación leerá el estado de viaje para todas las claves proporcionadas
-    " y establece el estado ABIERTO para aquellos que aún no tienen un estado.
-    " Read relevant travel instance data
-    read entities of zi_rap_travel_1234 in local mode
-         entity Travel
-         fields ( TravelStatus ) with corresponding #( keys )
-         result data(travels).
-
-    " Remove all travel instance data with defined status
-    delete travels where TravelStatus is not initial.
-    if travels is initial.
-      return.
-    endif.
-
-    " Set default travel status
-    modify entities of zi_rap_travel_1234 in local mode
-           entity Travel
-           update
-           fields ( TravelStatus )
-           with value #( for travel in travels
-                         ( %tky         = travel-%tky
-                           TravelStatus = travel_status-open ) )
-           reported data(update_reported).
-
-    reported = corresponding #( deep update_reported ).
   endmethod.
 
   method calculateTravelID.
@@ -254,6 +119,36 @@ class lhc_Travel implementation.
                          ( %tky              = travel-%tky
                            TravelID          = max_travelid + i
                            %control-TravelID = if_abap_behv=>mk-on ) )
+           reported data(update_reported).
+
+    reported = corresponding #( deep update_reported ).
+  endmethod.
+
+  method setInitialStatus.
+    " Configura el estado del viaje para que se abra
+    " cuando se crea una nueva instancia de viaje.
+    " La implementación leerá el estado de viaje para todas las claves proporcionadas
+    " y establece el estado ABIERTO para aquellos que aún no tienen un estado.
+    " Read relevant travel instance data
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( TravelStatus ) with corresponding #( keys )
+         result data(travels).
+
+    " Remove all travel instance data with defined status
+    delete travels where TravelStatus is not initial.
+    if travels is initial.
+      return.
+    endif.
+
+    " Set default travel status
+    modify entities of zi_rap_travel_1234 in local mode
+           entity Travel
+           update
+           fields ( TravelStatus )
+           with value #( for travel in travels
+                         ( %tky         = travel-%tky
+                           TravelStatus = travel_status-open ) )
            reported data(update_reported).
 
     reported = corresponding #( deep update_reported ).
@@ -385,6 +280,58 @@ class lhc_Travel implementation.
     endloop.
   endmethod.
 
+  method acceptTravel.
+    " Set the new overall status
+    modify entities of zi_rap_travel_1234 in local mode
+           entity Travel
+           update
+           fields ( TravelStatus )
+           with value #( for key in keys
+                         ( %tky         = key-%tky
+                           TravelStatus = travel_status-accepted ) )
+           failed failed
+           reported reported.
+
+    " Fill the response table
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         all fields with corresponding #( keys )
+         result data(travels).
+
+    " Después de modificar el estado de viaje,
+    " la acción debe proporcionar el resultado según lo definido en la definición de comportamiento.
+    " En nuestro presente caso, el resultado es $ Self,
+    " lo que significa que debe devolver la instancia de viaje
+    "  con todos los valores para las claves dadas.
+
+    result = value #( for travel in travels
+                      ( %tky   = travel-%tky
+                        %param = travel ) ).
+  endmethod.
+
+  method rejectTravel.
+    " Set the new overall status
+    modify entities of zi_rap_travel_1234 in local mode
+           entity Travel
+           update
+           fields ( TravelStatus )
+           with value #( for key in keys
+                         ( %tky         = key-%tky
+                           TravelStatus = travel_status-canceled ) )
+           failed failed
+           reported reported.
+
+    " Fill the response table
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         all fields with corresponding #( keys )
+         result data(travels).
+
+    result = value #( for travel in travels
+                      ( %tky   = travel-%tky
+                        %param = travel ) ).
+  endmethod.
+
   method get_features.
     " Read the travel status of the existing travels
     read entities of zi_rap_travel_1234 in local mode
@@ -405,5 +352,208 @@ class lhc_Travel implementation.
                    ( %tky                 = travel-%tky
                      %action-acceptTravel = is_accepted
                      %action-rejectTravel = is_rejected ) ).
+  endmethod.
+
+  method get_authorizations.
+    data has_before_image    type abap_bool.
+    data is_update_requested type abap_bool.
+    data is_delete_requested type abap_bool.
+    data update_granted      type abap_bool.
+    data delete_granted      type abap_bool.
+
+    " Read the existing travels
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( TravelStatus ) with corresponding #( keys )
+         result data(travels)
+         failed failed.
+
+    if travels is initial.
+      return.
+    endif.
+
+    " In this example the authorization is defined based on the Activity + Travel Status
+    " For the Travel Status we need the before-image from the database. We perform this for active (is_draft=00) as well as for drafts (is_draft=01) as we can't distinguish between edit or new drafts
+    select from zrap_atrav_1234
+      fields travel_uuid,overall_status
+      for all entries in @travels
+      where travel_uuid = @travels-TravelUUID
+      order by primary key
+      into table @data(travels_before_image).
+
+    is_update_requested = cond #( when requested_authorizations-%update              = if_abap_behv=>mk-on
+                                    or requested_authorizations-%action-acceptTravel = if_abap_behv=>mk-on
+                                    or requested_authorizations-%action-rejectTravel = if_abap_behv=>mk-on
+*                                       requested_authorizations-%action-Prepare      = if_abap_behv=>mk-on OR
+*                                       requested_authorizations-%action-Edit         = if_abap_behv=>mk-on OR
+                                    or requested_authorizations-%assoc-_Booking      = if_abap_behv=>mk-on
+                                  then abap_true
+                                  else abap_false ).
+
+    is_delete_requested = cond #( when requested_authorizations-%delete = if_abap_behv=>mk-on
+                                  then abap_true
+                                  else abap_false ).
+
+    loop at travels into data(travel).
+      delete_granted = abap_false.
+      update_granted = delete_granted.
+
+      read table travels_before_image into data(travel_before_image)
+           with key travel_uuid = travel-TravelUUID binary search.
+      has_before_image = cond #( when sy-subrc = 0 then abap_true else abap_false ).
+
+      if is_update_requested = abap_true.
+        " Edit of an existing record -> check update authorization
+        if has_before_image = abap_true.
+          update_granted = is_update_granted( has_before_image = has_before_image
+                                              overall_status   = travel_before_image-overall_status ).
+          if update_granted = abap_false.
+            append value #( %tky = travel-%tky
+                            %msg = new zcm_rap_1234( severity = if_abap_behv_message=>severity-error
+                                                     textid   = zcm_rap_1234=>unauthorized ) )
+                   to reported-travel.
+          endif.
+          " Creation of a new record -> check create authorization
+        else.
+          update_granted = is_create_granted( ).
+          if update_granted = abap_false.
+            append value #( %tky = travel-%tky
+                            %msg = new zcm_rap_1234( severity = if_abap_behv_message=>severity-error
+                                                     textid   = zcm_rap_1234=>unauthorized ) )
+                   to reported-travel.
+          endif.
+        endif.
+      endif.
+
+      if is_delete_requested = abap_true.
+        delete_granted = is_delete_granted( has_before_image = has_before_image
+                                            overall_status   = travel_before_image-overall_status ).
+        if delete_granted = abap_false.
+          append value #( %tky = travel-%tky
+                          %msg = new zcm_rap_1234( severity = if_abap_behv_message=>severity-error
+                                                   textid   = zcm_rap_1234=>unauthorized ) )
+                 to reported-travel.
+        endif.
+      endif.
+
+      append value #( %tky                 = travel-%tky
+
+                      %update              = cond #( when update_granted = abap_true
+                                                     then if_abap_behv=>auth-allowed
+                                                     else if_abap_behv=>auth-unauthorized )
+                      %action-acceptTravel = cond #( when update_granted = abap_true
+                                                     then if_abap_behv=>auth-allowed
+                                                     else if_abap_behv=>auth-unauthorized )
+                      %action-rejectTravel = cond #( when update_granted = abap_true
+                                                     then if_abap_behv=>auth-allowed
+                                                     else if_abap_behv=>auth-unauthorized )
+*                      %action-Prepare      = COND #( WHEN update_granted = abap_true THEN if_abap_behv=>auth-allowed ELSE if_abap_behv=>auth-unauthorized )
+*                      %action-Edit         = COND #( WHEN update_granted = abap_true THEN if_abap_behv=>auth-allowed ELSE if_abap_behv=>auth-unauthorized )
+                      %assoc-_Booking      = cond #( when update_granted = abap_true
+                                                     then if_abap_behv=>auth-allowed
+                                                     else if_abap_behv=>auth-unauthorized )
+
+                      %delete              = cond #( when delete_granted = abap_true
+                                                     then if_abap_behv=>auth-allowed
+                                                     else if_abap_behv=>auth-unauthorized ) )
+             to result.
+    endloop.
+  endmethod.
+
+  method is_update_granted.
+    if has_before_image = abap_true.
+      authority-check object 'ZOSTAT1234'
+                      id 'ZOSTAT1234' field overall_status
+                      id 'ACTVT' field '02'.
+    else.
+      authority-check object 'ZOSTAT1234'
+                      id 'ZOSTAT####' dummy
+                      id 'ACTVT' field '02'.
+    endif.
+    update_granted = cond #( when sy-subrc = 0 then abap_true else abap_false ).
+
+    " Simulate full access - for testing purposes only! Needs to be removed for a productive implementation.
+    update_granted = abap_true.
+  endmethod.
+
+  method is_delete_granted.
+    if has_before_image = abap_true.
+      authority-check object 'ZOSTAT1234'
+                      id 'ZOSTAT1234' field overall_status
+                      id 'ACTVT' field '06'.
+    else.
+      authority-check object 'ZOSTAT1234'
+                      id 'ZOSTAT1234' dummy
+                      id 'ACTVT' field '06'.
+    endif.
+    delete_granted = cond #( when sy-subrc = 0 then abap_true else abap_false ).
+
+    " Simulate full access - for testing purposes only! Needs to be removed for a productive implementation.
+    delete_granted = abap_true.
+  endmethod.
+
+  method is_create_granted.
+    authority-check object 'ZOSTAT1234'
+                    id 'ZOSTAT1234' dummy
+                    id 'ACTVT' field '01'.
+    create_granted = cond #( when sy-subrc = 0 then abap_true else abap_false ).
+    " Simulate full access - for testing purposes only! Needs to be removed for a productive implementation.
+    create_granted = abap_true.
+  endmethod.
+
+  method recalcTotalPrice.
+    types: begin of ty_amount_per_currencycode,
+             amount        type /dmo/total_price,
+             currency_code type /dmo/currency_code,
+           end of ty_amount_per_currencycode.
+
+    data amount_per_currencycode type standard table of ty_amount_per_currencycode.
+
+    " Read all relevant travel instances.
+    read entities of zi_rap_travel_1234 in local mode
+         entity Travel
+         fields ( BookingFee CurrencyCode )
+         with corresponding #( keys )
+         result data(travels).
+
+    delete travels where CurrencyCode is initial.
+
+    loop at travels assigning field-symbol(<travel>).
+      " Set the start for the calculation by adding the booking fee.
+      amount_per_currencycode = value #( ( amount        = <travel>-BookingFee
+                                           currency_code = <travel>-CurrencyCode ) ).
+      " Read all associated bookings and add them to the total price.
+      read entities of ZI_RAP_Travel_1234 in local mode
+           entity Travel by \_Booking
+           fields ( FlightPrice CurrencyCode )
+           with value #( ( %tky = <travel>-%tky ) )
+           result data(bookings).
+      loop at bookings into data(booking) where CurrencyCode is not initial.
+        collect value ty_amount_per_currencycode( amount        = booking-FlightPrice
+                                                  currency_code = booking-CurrencyCode ) into amount_per_currencycode.
+      endloop.
+
+      clear <travel>-TotalPrice.
+      loop at amount_per_currencycode into data(single_amount_per_currencycode).
+        " If needed do a Currency Conversion
+        if single_amount_per_currencycode-currency_code = <travel>-CurrencyCode.
+          <travel>-TotalPrice += single_amount_per_currencycode-amount.
+        else.
+          /dmo/cl_flight_amdp=>convert_currency(
+            exporting iv_amount               = single_amount_per_currencycode-amount
+                      iv_currency_code_source = single_amount_per_currencycode-currency_code
+                      iv_currency_code_target = <travel>-CurrencyCode
+                      iv_exchange_rate_date   = cl_abap_context_info=>get_system_date( )
+            importing ev_amount               = data(total_booking_price_per_curr) ).
+          <travel>-TotalPrice += total_booking_price_per_curr.
+        endif.
+      endloop.
+    endloop.
+
+    " write back the modified total_price of travels
+    modify entities of ZI_RAP_Travel_1234 in local mode
+           entity travel
+           update fields ( TotalPrice )
+           with corresponding #( travels ).
   endmethod.
 endclass.

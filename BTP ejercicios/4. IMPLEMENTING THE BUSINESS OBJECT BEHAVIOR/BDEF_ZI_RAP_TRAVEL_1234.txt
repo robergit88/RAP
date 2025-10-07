@@ -1,7 +1,7 @@
 //&---------------------------------------------------------------------*
 //& ID_PROGRAMA: ZI_RAP_TRAVEL_1234                                     *
 //&                                                                     *
-//& TIPO DE PROGRAMA: BEHAVIOR DEFINITION                               *
+//& TIPO DE PROGRAMA: BEHAVIOR DEFINITION EN ROOT                       *
 //&                                                                     *
 //& DESCRIPCION: DEFINE las operaciones en ROOT BDEF                    *
 //&              Escensario gestionado define todo el ciclo de vida     *
@@ -20,16 +20,16 @@
 //& DD.MM.AAAA  XXXXXXX      001                                        *
 //&                                                                     *
 //&---------------------------------------------------------------------*
+
 managed;
 
 define behavior for zi_rap_travel_1234 alias Travel
 implementation in class zcl_rap_travel_1234 unique
 persistent table zrap_atrav_1234
 lock master
-//authorization master ( instance ) // Si desmarco hay dump
+authorization master ( instance ) // Si desmarco hay dump
 etag master LocalLastChangedAt
 {
-  //  create ( authorization : global ); // Si pido chequeo de autorizacion hay dump si no se implementa
 
   // OPERACIONES CRUD
   create;
@@ -62,9 +62,9 @@ etag master LocalLastChangedAt
   determination calculateTravelID on save { create; }
 
   //VALIDACIONES
-  validation validateAgency on save { field AgencyID; }
-  validation validateCustomer on save { field CustomerID; }
-  validation validateDates on save { field BeginDate, EndDate; }
+  validation validateAgency on save { field AgencyID; create; }
+  validation validateCustomer on save { field CustomerID; create; }
+  validation validateDates on save { field BeginDate, EndDate; create; }
 
   mapping for zrap_atrav_1234
     {
@@ -88,16 +88,39 @@ etag master LocalLastChangedAt
 
 }
 
+//&---------------------------------------------------------------------*
+//& ID_PROGRAMA: ZI_RAP_BOOKING_1234                                    *
+//&                                                                     *
+//& TIPO DE PROGRAMA: BEHAVIOR DEFINITION RESERVAS                      *
+//&                                                                     *
+//& DESCRIPCION: DEFINE las operaciones en CHILD                        *
+//&                                                                     *
+//& AUTOR: CB9980000068 - Roberto Puma                                  *
+//&                                                                     *
+//& FECHA DE CREACIÓN: 07.10.2025                                       *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+//&                                                                     *
+//& HISTORIAL DE CAMBIOS                                                *
+//&                                                                     *
+//&  FECHA      AUTOR        DESC.                                      *
+//&  ------     ----------   -------------                              *
+//& DD.MM.AAAA  XXXXXXX      001                                        *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+
 define behavior for zi_rap_booking_1234 alias Booking
 implementation in class zcl_rap_booking_1234 unique
 persistent table zrap_abook_1234
 lock dependent by _Travel
-//authorization dependent by _Travel // Si desmarco hay dump
+authorization dependent by _Travel // Si desmarco hay dump
 etag master LocalLastChangedAt
 {
-  association _Travel;
   update;
   delete;
+
+  association _Travel;
+
   field ( numbering : managed, readonly ) BookingUUID;
   field ( readonly ) TravelUUID, BookingID;
   field ( readonly ) CreatedBy, LastChangedBy, LocalLastChangedAt;

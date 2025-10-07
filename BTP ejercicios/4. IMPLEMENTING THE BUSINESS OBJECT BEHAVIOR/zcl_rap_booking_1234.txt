@@ -1,0 +1,80 @@
+class lhc_Booking definition inheriting from cl_abap_behavior_handler.
+  private section.
+    methods calculateBookingID for determine on modify
+      importing keys for Booking~calculateBookingID.
+
+    methods calculateTotalPrice for determine on modify
+      importing keys for Booking~calculateTotalPrice.
+
+endclass.
+
+
+class lhc_Booking implementation.
+  method calculateBookingID.
+    data max_bookingid type /dmo/booking_id.
+    data update        type table for update ZI_RAP_Travel_1234\\Booking.
+
+    " Read all travels for the requested bookings.
+    " If multiple bookings of the same travel are requested,
+    " the travel is returned only once.
+    read entities of ZI_RAP_Travel_1234 in local mode
+         entity Booking by \_Travel
+         fields ( TravelUUID )
+         with corresponding #( keys )
+         result data(travels).
+
+    " Process all affected Travels. Read respective bookings, determine the max-id and update the bookings without ID.
+    loop at travels into data(travel).
+      read entities of ZI_RAP_Travel_1234 in local mode
+           entity Travel by \_Booking
+           fields ( BookingID )
+           with value #( ( %tky = travel-%tky ) )
+           result data(bookings).
+
+      " Find max used BookingID in all bookings of this travel
+      max_bookingid = '0000'.
+      loop at bookings into data(booking).
+        if booking-BookingID > max_bookingid.
+          max_bookingid = booking-BookingID.
+        endif.
+      endloop.
+
+      " Provide a booking ID for all bookings that have none.
+      loop at bookings into booking where BookingID is initial.
+        max_bookingid += 10.
+        append value #( %tky      = booking-%tky
+                        BookingID = max_bookingid )
+               to update.
+      endloop.
+    endloop.
+
+    " Update the Booking ID of all relevant bookings
+    modify entities of ZI_RAP_Travel_1234 in local mode
+           entity Booking
+           update fields ( BookingID ) with update
+           reported data(update_reported).
+
+    reported = corresponding #( deep update_reported ).
+  endmethod.
+
+  method calculateTotalPrice.
+    " Read all travels for the requested bookings.
+    " If multiple bookings of the same travel are requested, the travel is returned only once.
+    read entities of ZI_RAP_Travel_1234 in local mode
+         entity Booking by \_Travel
+         fields ( TravelUUID )
+         with corresponding #( keys )
+         result data(travels)
+         " TODO: variable is assigned but never used (ABAP cleaner)
+         failed data(read_failed).
+
+    " Trigger calculation of the total price
+    modify entities of ZI_RAP_Travel_1234 in local mode
+           entity Travel
+           execute recalcTotalPrice
+           from corresponding #( travels )
+           reported data(execute_reported).
+
+    reported = corresponding #( deep execute_reported ).
+  endmethod.
+endclass.
