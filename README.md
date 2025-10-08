@@ -4,4 +4,4 @@
 ![building_01](./img/building_01.png)
 
 ## Vocabulario
-![/vocabulario.md](./vocabulario.md)
+[vocabulario](./vocabulario.md)
