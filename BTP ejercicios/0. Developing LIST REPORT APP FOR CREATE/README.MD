@@ -327,8 +327,18 @@ use etag
 
 ### 3.1 services-definition
 
-contenido 31
+``` abap
+@EndUserText.label: 'SERVICE DEFINITION'
+define service ZUI_TRAVEL_MAIN {
+  expose ZCDS_C_TRAVEL_MAIN as Travel;
+}
+```
 
 ### 3.2 services-binding
 
-contenido 32
+[Crear](/img/NEW_SERVICE_BINDING_01.png)
+[Binding Type](/img/NEW_SERVICE_BINDING_02.png)
+[Publish](/img/NEW_SERVICE_BINDING_03.png)
+[Preview](/img/NEW_SERVICE_BINDING_04.png)
+[Botón Crear](/img/NEW_SERVICE_BINDING_05.png)
+[Guardar](/img/NEW_SERVICE_BINDING_06.png)
