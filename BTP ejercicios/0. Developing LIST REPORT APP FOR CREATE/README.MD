@@ -339,12 +339,12 @@ define service ZUI_TRAVEL_MAIN {
 
 ### 3.2 services-binding
 
-[Crear](/img/NEW_SERVICE_BINDING_01.png)
-[Binding Type](/img/NEW_SERVICE_BINDING_02.png)
-[Publish](/img/NEW_SERVICE_BINDING_03.png)
-[Preview](/img/NEW_SERVICE_BINDING_04.png)
-[Botón Crear](/img/NEW_SERVICE_BINDING_05.png)
-[Guardar](/img/NEW_SERVICE_BINDING_06.png)
+[Crear](./img/NEW_SERVICE_BINDING_01.png)
+[Binding Type](./img/NEW_SERVICE_BINDING_02.png)
+[Publish](./img/NEW_SERVICE_BINDING_03.png)
+[Preview](./img/NEW_SERVICE_BINDING_04.png)
+[Botón Crear](./img/NEW_SERVICE_BINDING_05.png)
+[Guardar](./img/NEW_SERVICE_BINDING_06.png)
 
 ## source-code
 
