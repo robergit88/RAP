@@ -10,7 +10,8 @@
      - 2.1.2 [PROJECTION VIEW](#212-projection-view)
    - 2.2 [METADATA EXTENSIONS](#22-metadata-extensions)
    - 2.3 [BEHAVIOR DEFINITIONS](#23-behavior-definitions)
-
+     - 2.3.1 [BEHAVIOR DEFINITIONS](#231-behavior-definitions)
+     - 2.3.2 [PROJECTION BEHAVIOR](#232-projection-behavior)
 
 ---
 
@@ -177,8 +178,81 @@ define root view entity ZCDS_C_TRAVEL_MAIN
 
 ### 2.2 METADATA EXTENSIONS
 
-Contenido de METADATA EXTENSIONS...
+``` abap
+@Metadata.layer: #CUSTOMER
+@UI: {
+ headerInfo: {
+ typeName: 'Travel',
+ typeNamePlural: 'Viajes',
+ description: { type: #STANDARD, value: 'TravelId' } //case-sensitive
+ }
+}
+annotate entity ZCDS_C_TRAVEL_MAIN with
+{
+  @UI.facet: [ {
+  label: 'Travel',
+  id: 'idIdentification',
+  purpose: #STANDARD,
+  position: 10 ,
+  type: #IDENTIFICATION_REFERENCE
+  } ]
+  @UI: {
+  lineItem: [ { position: 10, importance: #HIGH } ],
+  identification: [ { position: 10 } ],
+  selectionField: [ { position: 10 } ]
+  }
+  TravelID;
+  @UI: {
+  lineItem: [ { position: 20, importance: #HIGH } ],
+  identification: [ { position: 20 } ],
+  selectionField: [ { position: 20 } ]
+  }
+  AgencyID;
+  @UI: {
+  lineItem: [ { position: 30, importance: #HIGH } ],
+  identification: [ { position: 30 } ],
+  selectionField: [ { position: 30 } ]
+  }
+  CustomerID;
+  @UI: {
+  lineItem: [ { position: 40, importance: #MEDIUM } ],
+  identification: [ { position: 40 } ]
+  }
+  BeginDate;
+  @UI: {
+  lineItem: [ { position: 50, importance: #MEDIUM } ],
+  identification: [ { position: 50 } ]
+  }
+  EndDate;
+  @UI.identification: [ { position: 60 } ]
+  Price;
+  @UI: {
+  lineItem: [ { position: 70, importance: #HIGH } ],
+  identification: [ { position: 70 } ],
+  textArrangement: #TEXT_ONLY
+  }
+  OverallStatus;
+  @UI.hidden: true
+  CreatedBy;
+  @UI.hidden: true
+  CreatedAt;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+  @UI.hidden: true
+  LastChangedAt;
+
+}
+```
 
 ### 2.3 BEHAVIOR DEFINITIONS
 
 Contenido de BEHAVIOR DEFINITIONS...
+
+#### 2.3.1 BEHAVIOR DEFINITIONS
+
+Contenido de BEHAVIOR DEFINITIONS...
+
+#### 2.3.2 PROJECTION BEHAVIOR
+
+Contenido de projection behavior
