@@ -251,8 +251,71 @@ Contenido de BEHAVIOR DEFINITIONS...
 
 #### 2.3.1 BEHAVIOR DEFINITIONS
 
-Contenido de BEHAVIOR DEFINITIONS...
+``` abap
+managed
+implementation in class zbp_cds_r_travel_main unique;
+strict ( 2 );
+with draft;
+define behavior for ZCDS_R_TRAVEL_MAIN alias Travel
+persistent table ztravel_main
+draft table ztravel_maind
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global )
+early numbering
+
+{
+
+  field ( readonly )
+  TravelID;
+
+  create;
+  update;
+  delete;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare;
+
+  mapping for ztravel_main corresponding
+    {
+      TravelID           = travel_id;
+      AgencyID           = agency_id;
+      CustomerID         = customer_id;
+      BeginDate          = begin_date;
+      EndDate            = end_date;
+      Price              = price;
+      CurrencyCode       = currency_code;
+      OverallStatus      = overall_status;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
+}
+```
 
 #### 2.3.2 PROJECTION BEHAVIOR
 
-Contenido de projection behavior
+``` abap
+projection
+implementation in class zbp_cds_r_travel_main unique;
+strict ( 2 );
+use draft;
+define behavior for ZCDS_C_TRAVEL_MAIN alias Travel
+use etag
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+}
+```
