@@ -1,14 +1,17 @@
 # MANAGED APP
 
-1. [Crear tabla de BBDD](#crear-tabla-de-bbdd)
-2. [Crear tabla de BBDD DRAFT](#crear-tabla-de-bbdd-draft)
+1. [DICTIONARY](#dictionary)
+   - 1.1 [Crear tabla de BBDD](#crear-tabla-de-bbdd)
+   - 1.2 [Crear tabla de BBDD DRAFT](#crear-tabla-de-bbdd-draft)
 
 ---
 
-## Crear tabla de BBDD
+## DICTIONARY
 
-Descripción de la tarea para crear la tabla principal de base de datos.
-``` abap
+### 1.1 Crear tabla de BBDD
+
+Tabla normal
+```abap
 @EndUserText.label : 'Solo tabla travel'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
 @AbapCatalog.tableCategory : #TRANSPARENT
@@ -35,6 +38,33 @@ define table ztravel_main {
 }
 ```
 
-## Crear tabla de BBDD DRAFT
+### 1.2 Crear tabla de BBDD DRAFT
 
-Descripción de la tarea para crear la tabla de borradores en base de datos.
+Tabla de datos temporales
+``` abap
+@EndUserText.label : 'DRAFT travel main table'
+@AbapCatalog.enhancement.category : #EXTENSIBLE_ANY
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table ztravel_maind {
+
+  key mandt          : mandt not null;
+  key travelid       : /dmo/travel_id not null;
+  agencyid           : /dmo/agency_id;
+  customerid         : /dmo/customer_id;
+  begindate          : /dmo/begin_date;
+  enddate            : /dmo/end_date;
+  @Semantics.amount.currencyCode : 'ztravel_maind.currencycode'
+  price              : /dmo/total_price;
+  currencycode       : /dmo/currency_code;
+  overallstatus      : /dmo/overall_status;
+  createdby          : abp_creation_user;
+  createdat          : abp_creation_tstmpl;
+  locallastchangedby : abp_locinst_lastchange_user;
+  locallastchangedat : abp_locinst_lastchange_tstmpl;
+  lastchangedat      : abp_lastchange_tstmpl;
+  "%admin"           : include sych_bdl_draft_admin_inc;
+
+}
+```
