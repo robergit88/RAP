@@ -8,7 +8,7 @@
 ## Crear tabla de BBDD
 
 Descripción de la tarea para crear la tabla principal de base de datos.
-```ABAP
+``` JS
 @EndUserText.label : 'Solo tabla travel'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
 @AbapCatalog.tableCategory : #TRANSPARENT
