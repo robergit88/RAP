@@ -13,6 +13,9 @@
      - 2.3.1 [BEHAVIOR DEFINITIONS](#231-behavior-definitions)
      - 2.3.2 [PROJECTION BEHAVIOR](#232-projection-behavior)
 
+3. [Business Services](#business-services)
+   - 3.1 [Services Definition](#31-services-definition)
+   - 3.2 [Services Binding](#32-services-binding)
 ---
 
 ## DICTIONARY
@@ -319,3 +322,13 @@ use etag
   use action Prepare;
 }
 ```
+
+## business-services
+
+### 3.1 services-definition
+
+contenido 31
+
+### 3.2 services-binding
+
+contenido 32
