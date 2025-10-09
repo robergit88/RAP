@@ -1,19 +1,23 @@
 # MANAGED APP
 
 1. [DICTIONARY](#dictionary)
-   - 1.1 [Crear tabla de BBDD](#crear-tabla-de-bbdd)
-   - 1.2 [Crear tabla de BBDD DRAFT](#crear-tabla-de-bbdd-draft)
+   - 1.1 [Tabla BBDD](#11-tabla-bbdd)
+   - 1.2 [Tabla BBDD DRAFT](#12-tabla-bbdd-draft)
 
-2. [CORE DATA SERVICES](#DATA-DEFINITIONS)
-   - 2.1 [Crear ROOT VIEW](Crear-ROOT-VIEW)
-   - 2.1 [Crear PROJECTION VIEW](Crear-PROJECTION-VIEW)
+2. [Core Data Services](#core-data-services)
+   - 2.1 [DATA DEFINITIONS](#21-data-definitions)
+     - 2.1.1 [ROOT VIEW](#211-root-view)
+     - 2.1.2 [PROJECTION VIEW](#212-projection-view)
+   - 2.2 [METADATA EXTENSIONS](#22-metadata-extensions)
+   - 2.3 [BEHAVIOR DEFINITIONS](#23-behavior-definitions)
 
 
 ---
 
 ## DICTIONARY
 
-### 1.1 Crear tabla de BBDD
+### 1.1 Tabla BBDD
+
 ``` abap
 @EndUserText.label : 'Solo tabla travel'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
@@ -41,7 +45,8 @@ define table ztravel_main {
 }
 ```
 
-### 1.2 Crear tabla de BBDD DRAFT
+### 1.2 Tabla BBDD DRAFT
+
 ``` abap
 @EndUserText.label : 'DRAFT travel main table'
 @AbapCatalog.enhancement.category : #EXTENSIBLE_ANY
@@ -70,8 +75,12 @@ define table ztravel_maind {
 }
 ```
 
-## DATA-DEFINITIONS
-### 2.1 Crear ROOT VIEW
+## Core Data Services
+
+### 2.1 DATA DEFINITIONS
+
+#### 2.1.1 ROOT VIEW
+
 ``` abap
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @Metadata.allowExtensions: true
@@ -113,10 +122,10 @@ define root view entity ZCDS_R_TRAVEL_MAIN
       _Agency,
       _OverallStatus
 }
-
 ``` 
 
-### 2.2 Crear PROJECTION VIEW
+#### 2.1.2 PROJECTION VIEW
+
 ``` abap
 @Metadata.allowExtensions: true
 @EndUserText.label: 'PROJECTION VIEW'
@@ -165,3 +174,11 @@ define root view entity ZCDS_C_TRAVEL_MAIN
 }
 
 ```
+
+### 2.2 METADATA EXTENSIONS
+
+Contenido de METADATA EXTENSIONS...
+
+### 2.3 BEHAVIOR DEFINITIONS
+
+Contenido de BEHAVIOR DEFINITIONS...
