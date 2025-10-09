@@ -4,14 +4,17 @@
    - 1.1 [Crear tabla de BBDD](#crear-tabla-de-bbdd)
    - 1.2 [Crear tabla de BBDD DRAFT](#crear-tabla-de-bbdd-draft)
 
+2. [CORE DATA SERVICES](#DATA-DEFINITIONS)
+   - 2.1 [Crear ROOT VIEW](Crear-ROOT-VIEW)
+   - 2.1 [Crear PROJECTION VIEW](Crear-PROJECTION-VIEW)
+
+
 ---
 
 ## DICTIONARY
 
 ### 1.1 Crear tabla de BBDD
-
-Tabla normal
-```abap
+``` abap
 @EndUserText.label : 'Solo tabla travel'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
 @AbapCatalog.tableCategory : #TRANSPARENT
@@ -39,8 +42,6 @@ define table ztravel_main {
 ```
 
 ### 1.2 Crear tabla de BBDD DRAFT
-
-Tabla de datos temporales
 ``` abap
 @EndUserText.label : 'DRAFT travel main table'
 @AbapCatalog.enhancement.category : #EXTENSIBLE_ANY
@@ -68,3 +69,48 @@ define table ztravel_maind {
 
 }
 ```
+
+## DATA-DEFINITIONS
+``` abap
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@Metadata.allowExtensions: true
+@EndUserText.label: 'ROOT VIEW ENTITY'
+@Metadata.ignorePropagatedAnnotations: true
+define root view entity ZCDS_R_TRAVEL_MAIN
+  as select from ztravel_main as Travel
+  association [0..1] to /DMO/I_Agency            as _Agency        on $projection.AgencyID = _Agency.AgencyID
+  association [0..1] to /DMO/I_Customer          as _Customer      on $projection.CustomerID = _Customer.CustomerID
+  association [1..1] to /DMO/I_Overall_Status_VH as _OverallStatus on $projection.OverallStatus = _OverallStatus.OverallStatus
+{
+  key travel_id             as TravelID,
+      agency_id             as AgencyID,
+      customer_id           as CustomerID,
+      begin_date            as BeginDate,
+      end_date              as EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
+      price                 as Price,
+      @Consumption.valueHelpDefinition: [ {
+        entity.name: 'I_CurrencyStdVH',
+        entity.element: 'Currency',
+        useForValidation: true
+      } ]
+      currency_code         as CurrencyCode,
+      overall_status        as OverallStatus,
+      @Semantics.user.createdBy: true
+      created_by            as CreatedBy,
+      @Semantics.systemDateTime.createdAt: true
+      created_at            as CreatedAt,
+      @Semantics.user.localInstanceLastChangedBy: true
+      local_last_changed_by as LocalLastChangedBy,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      local_last_changed_at as LocalLastChangedAt,
+      @Semantics.systemDateTime.lastChangedAt: true
+      last_changed_at       as LastChangedAt,
+
+      //public associations
+      _Customer,
+      _Agency,
+      _OverallStatus
+}
+
+``` 
