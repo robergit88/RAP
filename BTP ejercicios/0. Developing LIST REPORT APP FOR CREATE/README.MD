@@ -71,6 +71,7 @@ define table ztravel_maind {
 ```
 
 ## DATA-DEFINITIONS
+### 2.1 Crear ROOT VIEW
 ``` abap
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @Metadata.allowExtensions: true
@@ -114,3 +115,53 @@ define root view entity ZCDS_R_TRAVEL_MAIN
 }
 
 ``` 
+
+### 2.2 Crear PROJECTION VIEW
+``` abap
+@Metadata.allowExtensions: true
+@EndUserText.label: 'PROJECTION VIEW'
+@Metadata.ignorePropagatedAnnotations: true
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@Search.searchable: true
+define root view entity ZCDS_C_TRAVEL_MAIN
+  provider contract transactional_query
+  as projection on ZCDS_R_TRAVEL_MAIN
+{
+
+      @Search.defaultSearchElement: true
+      @Search.fuzzinessThreshold: 0.90
+  key TravelID,
+      @Search.defaultSearchElement: true
+      @ObjectModel.text.element: ['AgencyName']
+      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Agency_StdVH', element: 'AgencyID' }, useForValidation: true }]
+      AgencyID,
+      _Agency.Name              as AgencyName,
+      @Search.defaultSearchElement: true
+      @ObjectModel.text.element: ['CustomerName']
+      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Customer_StdVH', element: 'CustomerID' }, useForValidation: true }]
+      CustomerID,
+      _Customer.LastName        as CustomerName,
+      BeginDate,
+      EndDate,
+      Price,
+      @Semantics.currencyCode: true
+      @Consumption: {
+        valueHelpDefinition: [ {
+          entity.element: 'Currency',
+          entity.name: 'I_CurrencyStdVH',
+          useForValidation: true
+        } ]
+      }
+      CurrencyCode,
+      @ObjectModel.text.element: ['OverallStatusText']
+      @Consumption.valueHelpDefinition: [{ entity: {name: '/DMO/I_Overall_Status_VH', element: 'OverallStatus' }, useForValidation: true }]
+      OverallStatus,
+      _OverallStatus._Text.Text as OverallStatusText : localized,
+      CreatedBy,
+      CreatedAt,
+      LocalLastChangedAt,
+      LastChangedAt
+
+}
+
+```
