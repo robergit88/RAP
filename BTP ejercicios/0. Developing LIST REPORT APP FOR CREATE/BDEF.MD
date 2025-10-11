@@ -5,8 +5,8 @@ Una Behavior Definition es un componente clave del SAP RAP (RESTFUL ABAP Program
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
 # Estructura Básica
-``` abap
-abapmanaged implementation in class zbp_i_travel unique;
+```abap
+managed implementation in class zbp_i_travel unique;
 strict ( 2 );
 
 define behavior for ZI_Travel alias Travel

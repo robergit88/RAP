@@ -253,8 +253,10 @@ annotate entity ZCDS_C_TRAVEL_MAIN with
 
 ### 2.3 BEHAVIOR DEFINITIONS
 
-  Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
-  y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
+Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
+y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
+
+[...detalle](BDEF.MD)
 
 Ventas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
