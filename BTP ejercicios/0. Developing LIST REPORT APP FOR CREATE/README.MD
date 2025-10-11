@@ -256,7 +256,7 @@ annotate entity ZCDS_C_TRAVEL_MAIN with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-[...detalle](/md_docs/BDEF.MD)
+[...detalle](./md_docs/BDEF.MD)
 
 Ventas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
