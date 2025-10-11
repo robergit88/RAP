@@ -253,9 +253,20 @@ annotate entity ZCDS_C_TRAVEL_MAIN with
 
 ### 2.3 BEHAVIOR DEFINITIONS
 
-Contenido de BEHAVIOR DEFINITIONS...
+  Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
+  y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
+
+Ventas:
+* ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
+* ✓ Reutilización: Mismo comportamiento para múltiples interfaces (Fiori, API, etc.)
+* ✓ Mantenibilidad: Cambios centralizados en un solo lugar
+* ✓ Consistencia: Reglas de negocio aplicadas uniformemente
+* ✓ RAP Framework: Aprovecha todas las capacidades del framework moderno de SAP
 
 #### 2.3.1 BEHAVIOR DEFINITIONS
+
+##### Se crea BDEF sobre CDS rot o Interfaz
+![pedo](./img/BDEF_01.png)
 
 ``` abap
 managed
@@ -340,6 +351,7 @@ define service ZUI_TRAVEL_MAIN {
 ### 3.2 services-binding
 
 Pasos para la creación una nueva vinculación.
+
 ![Crear](./img/NEW_SERVICE_BINDING_01.png)
 
 
