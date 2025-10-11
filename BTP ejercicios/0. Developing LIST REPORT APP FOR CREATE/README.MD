@@ -340,23 +340,23 @@ define service ZUI_TRAVEL_MAIN {
 ### 3.2 services-binding
 
 Pasos para la creación una nueva vinculación.
-[Crear](./img/NEW_SERVICE_BINDING_01.png)
+![Crear](./img/NEW_SERVICE_BINDING_01.png)
 
 
 Selección del tipo de vinculación
-[Binding Type](./img/NEW_SERVICE_BINDING_02.png)
+![Binding Type](./img/NEW_SERVICE_BINDING_02.png)
 
 Publicar el servicio
-[Publish](./img/NEW_SERVICE_BINDING_03.png)
+![Publish](./img/NEW_SERVICE_BINDING_03.png)
 
 Visualizar
-[Preview](./img/NEW_SERVICE_BINDING_04.png)
+![Preview](./img/NEW_SERVICE_BINDING_04.png)
 
 Prueba 1 - Crear o alta de registro.
-[Botón Crear](./img/NEW_SERVICE_BINDING_05.png)
+![Botón Crear](./img/NEW_SERVICE_BINDING_05.png)
 
 guardar
-[Guardar](./img/NEW_SERVICE_BINDING_06.png)
+![Guardar](./img/NEW_SERVICE_BINDING_06.png)
 
 ## source-code
 
