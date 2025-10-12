@@ -100,13 +100,15 @@ unmanaged implementation in class zbp_i_travel unique;
 
 # Implementation Type
 
-## Abstract: Para composiciones y herencia
-## Projection: Para exponer comportamientos específicos en servicios
+## Abstract: 
+Para composiciones y herencia
+## Projection: 
+Para exponer comportamientos específicos en servicios
 
 ## Behavior Implementation Class
 La lógica real se implementa en una clase ABAP asociada:
-```aba
-pCLASS zbp_i_travel DEFINITION PUBLIC ABSTRACT FINAL 
+```abap
+CLASS zbp_i_travel DEFINITION PUBLIC ABSTRACT FINAL 
   FOR BEHAVIOR OF zi_travel.
   
   PRIVATE SECTION.
@@ -123,7 +125,8 @@ ENDCLASS.
 ```
 
 # Relación con Fiori Elements
-Las Behavior Definitions se exponen automáticamente a través de servicios OData, y Fiori Elements interpreta estas definiciones para:
+## Las Behavior Definitions se exponen automáticamente a través de servicios OData, 
+## y Fiori Elements interpreta estas definiciones para:
 
 * Mostrar/ocultar botones (Create, Edit, Delete)
 * Habilitar acciones personalizadas en la UI
