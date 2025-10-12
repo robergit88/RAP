@@ -184,6 +184,10 @@ define root view entity ZCDS_C_TRAVEL_MAIN
 
 ### 2.2 METADATA EXTENSIONS
 
+Permiten personalizar y configurar la interfaz de usuario sin necesidad de modificar el código principal.
+
+[...detalle](md_docs/metadata_extensions.md)
+
 ``` abap
 @Metadata.layer: #CUSTOMER
 @UI: {
