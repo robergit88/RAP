@@ -91,7 +91,6 @@ annotate view Z_MY_CDS_VIEW with
 * Agilidad: Cambios rápidos en la presentación sin tocar la lógica de negocio
 * Capas de extensión: Permiten personalizar sin modificar el estándar (usando @Metadata.layer)
 
-Los metadata extensions son esenciales en el desarrollo moderno con Fiori Elements porque te permiten crear aplicaciones empresariales completas de forma declarativa y mantenible.
 Los metadata extensions son esenciales en el desarrollo moderno con Fiori Elements porque permiten crear aplicaciones empresariales completas de forma declarativa y mantenible, facilitando la extensibilidad y personalización sin comprometer el código estándar.
 
 

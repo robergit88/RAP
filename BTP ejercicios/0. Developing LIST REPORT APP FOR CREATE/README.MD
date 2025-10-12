@@ -184,7 +184,14 @@ define root view entity ZCDS_C_TRAVEL_MAIN
 
 ### 2.2 METADATA EXTENSIONS
 
-Permiten personalizar y configurar la interfaz de usuario sin necesidad de modificar el código principal.
+Los Metadata Extensions sirven para definir la configuración de la UI (interfaz de usuario) de forma declarativa, permitiendo la separación entre:
+
+* Lógica de datos (CDS View)
+* Presentación visual (anotaciones UI)
+
+Estas anotaciones se publican automáticamente en el servicio **OData** y son interpretadas por **Fiori Elements** para generar la interfaz sin programación manual.
+
+Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de datos ni frontend.
 
 [...detalle](md_docs/metadata_extensions.md)
 
