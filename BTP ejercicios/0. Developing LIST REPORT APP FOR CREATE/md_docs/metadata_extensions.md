@@ -95,12 +95,11 @@ Los metadata extensions son esenciales en el desarrollo moderno con Fiori Elemen
 
 
 # Relación entre Metadata Extensions y OData
-
-  Flujo de transformación
-  CDS View + Metadata Extensions → OData Service → Fiori Elements App
+## 📌 Flujo de transformación
+> CDS View + Metadata Extensions → OData Service → Fiori Elements App
 
 ## ¿Cómo se conectan?
-### 1. Las anotaciones se publican en el servicio OData Cuando defines anotaciones en un Metadata Extension, estas se incorporan automáticamente en los metadatos del servicio OData (el documento $metadata).
+### 1. Las anotaciones se publican en el servicio OData Cuando defines anotaciones en un Metadata Extension, estas se incorporan automáticamente en los metadatos del servicio OData (el documento `$metadata`).
 
 ```js
 // ABAP
@@ -127,29 +126,121 @@ Esto se convierte en anotaciones de OData
 </Annotations>
 ```
 
-### 2. Fiori Elements lee los metadatos OData 
+### 2. Fiori Elements lee los metadatos OData
+
 ### La aplicación Fiori Elements:
 
 1. Consume el servicio OData
-2. Lee el documento $metadata
+2. Lee el documento `$metadata`
 3. Interpreta las anotaciones UI para generar la interfaz automáticamente
 4. Renderiza la UI sin necesidad de programación freestyle
 
+# Componentes clave
+## CDS View (Backend - ABAP)
+```cds
+@AbapCatalog.viewEnhancementCategory: [#NONE]
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Products View'
+define view Z_PRODUCT_VIEW as select from zproducts
+{
+  key product_id as ProductID,
+      product_name as ProductName,
+      price as Price,
+      currency as Currency
+}
+```
+
+# Metadata Extension (Backend - ABAP)
+```abap
+@Metadata.layer: #CUSTOMER
+annotate view Z_PRODUCT_VIEW with
+{
+  @UI.lineItem: [{ position: 10 }]
+  @UI.selectionField: [{ position: 10 }]
+  ProductID;
+  
+  @UI.lineItem: [{ position: 20 }]
+  ProductName;
+  
+  @UI.lineItem: [{ position: 30 }]
+  @Semantics.amount.currencyCode: 'Currency'
+  Price;
+}
+```
+# Service Definition (Backend - ABAP)
+```abap
+@EndUserText.label: 'Product Service'
+define service Z_PRODUCT_SRV {
+  expose Z_PRODUCT_VIEW as Products;
+}
+```
+# Service Binding (Backend - ABAP)
+## Publica la Service Definition como servicio OData V2 o V4
+# OData $metadata (Resultado)
+``` xml
+<edmx:Edmx Version="4.0">
+  <edmx:DataServices>
+    <Schema Namespace="Z_PRODUCT_SRV">
+      <EntityType Name="Products">
+        <Key>
+          <PropertyRef Name="ProductID"/>
+        </Key>
+        <Property Name="ProductID" Type="Edm.String"/>
+        <Property Name="ProductName" Type="Edm.String"/>
+        <Property Name="Price" Type="Edm.Decimal"/>
+        <Property Name="Currency" Type="Edm.String"/>
+      </EntityType>
+    </Schema>
+    
+    <!-- ANOTACIONES UI desde Metadata Extensions -->
+    <Annotations Target="Z_PRODUCT_SRV.Products/ProductID">
+      <Annotation Term="UI.LineItem">
+        <Collection>
+          <Record><PropertyValue Property="Position" Int="10"/></Record>
+        </Collection>
+      </Annotation>
+      <Annotation Term="UI.SelectionField">
+        <Collection>
+          <Record><PropertyValue Property="Position" Int="10"/></Record>
+        </Collection>
+      </Annotation>
+    </Annotations>
+  </edmx:DataServices>
+</edmx:Edmx>
+```
+
+# Fiori Elements (Frontend - JavaScript)
+```json
+javascript
+// manifest.json - configuración simplificada
+{
+  "sap.app": {
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata4/sap/z_product_srv/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  }
+}
+```
+
 # La app lee el $metadata y genera automáticamente:
 
-* Tablas con las columnas definidas en **@UI.lineItem**
-* Filtros con los campos de @UI.selectionField
-* Formularios con los grupos de @UI.fieldGroup, etc.
+* Tablas con las columnas definidas en `@UI.lineItem`
+* Filtros con los campos de `@UI.selectionField`
+* Formularios con los grupos de `@UI.fieldGroup`, etc.
 
-# Puntos clave de la relación
+# Puntos clave de la relación. Separación de responsabilidades
 
-## 1. Metadata Extensions son la fuente: Defines las anotaciones en ABAP
-## 2. OData es el transporte: Las anotaciones viajan en el $metadata
-## 3. Fiori Elements es el consumidor: Lee e interpreta las anotaciones para renderizar la UI
+1. Metadata Extensions son la fuente: Defines las anotaciones en ABAP
+2. OData es el transporte: Las anotaciones viajan en el $metadata
+3. Fiori Elements es el consumidor: Lee e interpreta las anotaciones para renderizar la UI
 
 # Ventaja principal
-## Separación de responsabilidades:
-
 ### Backend (ABAP): Define datos y anotaciones UI
 ### OData: Protocolo estándar de comunicación
 ### Frontend (Fiori): Interpreta y renderiza automáticamente
