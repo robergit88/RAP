@@ -330,6 +330,13 @@ early numbering
 
 #### 2.3.2 PROJECTION BEHAVIOR
 
+#### Ventajas
+
+1. Separación de Responsabilidades: Interface (lógica) vs Consumption (UI)
+2. Múltiples UIs: Puedes tener varias proyecciones para diferentes roles
+3. Mantenibilidad: Cambios en la lógica se reflejan automáticamente
+4. Seguridad: Controlas qué expones en cada capa
+
 ``` abap
 projection
 implementation in class zbp_cds_r_travel_main unique;
