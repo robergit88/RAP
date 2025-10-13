@@ -25,3 +25,10 @@
 ## UNMANAGED APP
 
 [....detalle](sss)
+
+```mermaid
+graph LR
+    A[Caja de Inicio] -->|Etiqueta 1| B[Caja Intermedia]
+    B -->|Etiqueta 2| C[Caja Final]
+    A -->|Atajo directo| C
+```
