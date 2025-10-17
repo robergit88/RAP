@@ -26,6 +26,10 @@
 
 [....detalle](sss)
 
+## TRANSACCIONES
+
+[....detalle](transacciones.MD)
+
 ```mermaid
 graph LR
     A[Caja de Inicio] -->|Etiqueta 1| B[Caja Intermedia]
