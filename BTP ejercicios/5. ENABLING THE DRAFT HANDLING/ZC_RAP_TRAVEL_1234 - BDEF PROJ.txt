@@ -1,0 +1,44 @@
+//&---------------------------------------------------------------------*
+//& ID_OBJETO: ZC_RAP_TRAVEL_1234                                       *
+//&                                                                     *
+//& TIPO DE PROGRAMA: BEHAVIOR PROJECTION                               *
+//&                                                                     *
+//& DESCRIPCION: Se expone que comportamiento se ofrece al cliente      *
+//&                                                                     *
+//& AUTOR: 0021038 - Roberto Puma                                       *
+//&                                                                     *
+//& FECHA DE CREACIÓN: 08.10.2025                                       *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+//&                                                                     *
+//& HISTORIAL DE CAMBIOS                                                *
+//&                                                                     *
+//&  FECHA      AUTOR        DESC.                                      *
+//&  ------     ----------   -------------                              *
+//& DD.MM.AAAA  XXXXXXX      001                                        *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+
+projection;
+use draft;
+define behavior for ZC_RAP_TRAVEL_1234 alias Travel
+use etag
+{
+  use create;
+  use update;
+  use delete;
+  use action acceptTravel;
+  use action rejectTravel;
+
+  use association _Booking { create; with draft;}
+}
+
+define behavior for ZC_RAP_BOOKING_1234 alias Booking
+use etag
+{
+
+  use update;
+  use delete;
+
+  use association _Travel { with draft; }
+}
