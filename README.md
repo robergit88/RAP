@@ -1,11 +1,5 @@
 # Building Apps with the ABAP RESTful Application Programming Model 
 
-## Construcción
-![building_01](./img/building_01.png)
-
-## Orden de creación de los objetos
-![building_04](./img/building_04.png)
-
 ## The big picture
 ![building_02](./img/building_02.png)
 
@@ -49,3 +43,9 @@
 - /DMO/I_FLIGHT
 - /DMO/I_AGENCY
 - /DMO/I_CURRENCY
+
+## Construcción
+![building_01](./img/building_01.png)
+
+## Orden de creación de los objetos
+![building_04](./img/building_04.png)
