@@ -29,3 +29,23 @@
 ## List of Useful SAP Fiori TCodes
 
 [....detalle](transacciones.MD)
+
+## STANDARD OBJECT /DMO/
+### Paquetes:
+- /DMO/FLIGHT_DRAFT
+- /DMO/FLIGHT
+- /DMO/FLIGHT_SWC
+
+### Tablas:
+- /DMO/A_TRAVEL_D
+- /DMO/A_BOOKING_D
+
+### CDS:
+- /DMO/I_TRAVEL
+- /DMO/I_AGENCY
+- /DMO/I_CUSTOMER
+- /DMO/I_CARRIER
+- /DMO/I_CONNECTION
+- /DMO/I_FLIGHT
+- /DMO/I_AGENCY
+- /DMO/I_CURRENCY
