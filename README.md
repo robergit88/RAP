@@ -8,7 +8,7 @@
 
 ## Vocabulario
 
-[vocabulario](./vocabulario.md)
+[vocabulario](./docs/vocabulario.md)
 
 ## MANAGED APP
 
@@ -20,9 +20,13 @@
 
 [....detalle](sss)
 
+## UNDERSTANDING ENTITY MANIPULATION LANGUAGE (EML)
+
+[....detalle](./docs/EML.md)
+
 ## List of Useful SAP Fiori TCodes
 
-[....detalle](transacciones.MD)
+[....detalle](./docs/transacciones.MD)
 
 ## STANDARD OBJECT /DMO/
 ### Paquetes:
