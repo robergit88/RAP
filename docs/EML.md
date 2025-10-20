@@ -10,7 +10,7 @@
 ## ¿Cómo se ve las sintaxis de EML?
 ### Cuando se ejecuta EML
 
-``` mermaid
+``` mermaid js
 graph
     A[Interaction Phase]
 
@@ -28,9 +28,7 @@ graph
     B --> C
     C --> B
 
-style A fill:#fff     
-style B fill:#fff    
-style C fill:#fff     
+ 
 ```
 ## ¿Cómo se ve las sintaxis de EML?
 ### EML contiene sintaxis para LEER, MODIFICAR (Crear, Actualizar, Eliminar, Ejecutar acciones) y CONFIRMAR. Veamos cada sintaxis paso a paso.
@@ -101,3 +99,93 @@ Al realizar operaciones de lectura de EML, no solo debe considerar la tabla de r
 sino también las tablas de errores y las tablas de informes.
 - failed: se utiliza para indicar operaciones fallidas.
 - reported: se utiliza opcionalmente para proporcionar mensajes T100 relacionados.
+
+## MODIFY ENTITIES - CREATE
+```abap
+    modify entities of ZI_RAP_Travel_1234
+           entity travel
+           create
+           set fields with value
+             #( ( %cid        = 'cid1'
+                  AgencyID    = '70012'
+                  CustomerID  = '14'
+                  BeginDate   = cl_abap_context_info=>get_system_date( )
+                  EndDate     = cl_abap_context_info=>get_system_date( ) + 10
+                  Description = 'NEW TRAVEL ADDED BY ROBERTO PUM!!' ) )
+
+           mapped data(mapped)
+           failed data(failed)
+           reported data(reported).
+
+    out->write( mapped-travel ).
+
+    commit entities
+           response of ZI_RAP_Travel_1234
+           failed   data(failed_commit)
+           reported data(reported_commit).
+
+    out->write( 'Create done' ).
+```
+la instrucción MODIFY con la cláusula CREATE creará entidades nuevas.
+Al finalizar se devuelve una tabla mapeada que asigna la instancia creada al ID de contenido proporcionado.
+
+## MODIFY ENTITIES - UPDATE
+```abap
+modify entities of ZI_RAP_Travel_1234
+           entity travel
+           update
+           set fields with value
+             #( ( TravelUUID  = '01B76631521D6D95190054A2FA8B1542'
+                  Description = 'I like RAP@openSAP' ) )
+           failed data(failed)
+           reported data(reported).
+
+    " step 6b - Commit Entities. Tambien funciona con COMMIT WORK
+    commit entities
+           response of ZI_RAP_Travel_1234
+           failed   data(failed_commit)
+           reported data(reported_commit).
+
+    out->write( 'Update done' ).
+```
+modificar una entidad existente.
+
+## MODIFY ENTITIES - DELETE FROM
+```abap
+modify entities of ZI_RAP_Travel_1234
+           entity travel
+           delete from
+           value
+             #( ( TravelUUID  = '7E76DD340D501FE0A8D585850BB32E55' ) )
+           failed data(failed)
+           reported data(reported).
+
+    commit entities
+           response of ZI_RAP_Travel_1234
+           failed   data(failed_commit)
+           reported data(reported_commit).
+
+    out->write( 'Delete done' ).
+```
+El borrado de entidades se realiza con la instrucción MODIFY ENTITIES con la cláusula DELETE.
+
+## MODIFY ENTITIES - ACTION
+```abap
+modify entities of ZI_RAP_Travel_1234
+           entity travel
+           EXECUTE acceptTravel
+           from value
+             #( ( TravelUUID  = '7E76DD340D501FE0A8D585850BB32E55' ) )
+           result data(result)
+           mapped data(mapped)
+           failed data(failed)
+           reported data(reported).
+
+    commit entities
+           response of ZI_RAP_Travel_1234
+           failed   data(failed_commit)
+           reported data(reported_commit).
+
+    out->write( 'Delete done' ).
+```
+En ABAP RAP, MODIFY ENTITIES es una sentencia EML que se utiliza para modificar entidades de objetos de negocio, y ACTION es una operación específica no estándar que se puede invocar mediante MODIFY ENTITIES para cambiar el estado de una instancia.
