@@ -177,6 +177,9 @@ annotate view Z_C_PERSON with
 }
 ```
 
+<!-- ![LISTA](./i) -->
+
+
 ### 2.3 BEHAVIOR DEFINITIONS
 
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
