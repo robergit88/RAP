@@ -124,7 +124,7 @@ define root view entity Z_C_PERSON
 
 ### 2.2 METADATA EXTENSIONS
 
-[...detalle](md_docs/metadata_extensions.md)
+[...detalle](/docs/metadata_extensions.md)
 
 ``` abap
 @Metadata.layer: #CUSTOMER
@@ -190,12 +190,14 @@ annotate view Z_C_PERSON with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-[...detalle](./md_docs/BDEF.MD)
+[...detalle](/docs/BDEF_MANAGED_1.md)
 
 #### 2.3.1 BEHAVIOR DEFINITIONS
 
-##### Se crea BDEF sobre CDS rot o Interfaz
-![pedo](./img/BDEF_01.png)
+##### Se crea BDEF sobre CDS root o Interfaz
+
+<!-- ![pedo](./img/BDEF_01.png) -->
+<!-- ![pedo](/img/) -->
 
 ``` abap
 unmanaged
