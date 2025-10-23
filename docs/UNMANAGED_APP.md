@@ -177,8 +177,13 @@ annotate view Z_C_PERSON with
 }
 ```
 
-<!-- ![LISTA](./i) -->
+#### DETALLE DE LISTADO
 
+![LISTA](/img/UNMANAGED_01.png)
+
+#### DETALLE ELEMENTO
+
+![LISTA](/img/UNMANAGED_02.png)
 
 ### 2.3 BEHAVIOR DEFINITIONS
 
