@@ -269,9 +269,9 @@ define service ZSD_PERSON {
 
 ### 3.2 services-binding
 
-Pasos para la creación una nueva vinculación.
+Servicio OData V4
 
-![pedo](./img/Service_BINDING_O4.png)
+![pedos](/img/SERVICE_BINDING_O4.png)
 
 
 ## source-code
@@ -279,10 +279,10 @@ Pasos para la creación una nueva vinculación.
 ### 4.1 clases
 
 ``` abap
-CLASS zbp_cds_r_travel_main DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zcds_r_travel_main.
+CLASS zbp_i_person DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF z_i_person.
 ENDCLASS.
 
-CLASS zbp_cds_r_travel_main IMPLEMENTATION.
+CLASS zbp_i_person IMPLEMENTATION.
 ENDCLASS.
 ```
 
@@ -297,87 +297,157 @@ CLASS lhc_Travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 ENDCLASS.
 
 
-CLASS lhc_Travel IMPLEMENTATION.
+CLASS lhc_person DEFINITION INHERITING FROM cl_abap_behavior_handler.
+  PRIVATE SECTION.
+    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR person RESULT result.
+
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR person RESULT result.
+
+    METHODS create FOR MODIFY
+      IMPORTING entities FOR CREATE person.
+
+    METHODS update FOR MODIFY
+      IMPORTING entities FOR UPDATE person.
+
+    METHODS delete FOR MODIFY
+      IMPORTING keys FOR DELETE person.
+
+    METHODS read FOR READ
+      IMPORTING keys FOR READ person RESULT result.
+
+    METHODS lock FOR LOCK
+      IMPORTING keys FOR LOCK person.
+
+ENDCLASS.
+
+
+CLASS lhc_person IMPLEMENTATION.
+  METHOD get_instance_authorizations.
+  ENDMETHOD.
+
   METHOD get_global_authorizations.
   ENDMETHOD.
 
-  METHOD earlynumbering_create.
+  METHOD create.
+    DATA lt_person TYPE TABLE OF zperson_t.
+    DATA ls_person TYPE zperson_t.
 
-    DATA entity           TYPE STRUCTURE FOR CREATE zcds_r_travel_main.
-    DATA travel_id_max    TYPE /dmo/travel_id.
-    DATA use_number_range TYPE abap_bool VALUE abap_true.
+    GET TIME STAMP FIELD DATA(lv_timestamp).
+    DATA(lv_user) = sy-uname.
 
-    " Ensure Travel ID is not set yet (idempotent)- must be checked when BO is draft-enabled
-    LOOP AT entities INTO entity WHERE TravelID IS NOT INITIAL.
-      APPEND CORRESPONDING #( entity ) TO mapped-travel.
+    LOOP AT entities ASSIGNING FIELD-SYMBOL(<entity>).
+      CLEAR ls_person.
+      ls_person-client     = sy-mandt.
+      ls_person-id         = <entity>-Id.
+      ls_person-name       = <entity>-Name.
+      ls_person-address    = <entity>-Address.
+      ls_person-created_by = lv_user.
+      ls_person-created_at = lv_timestamp.
+
+      APPEND ls_person TO lt_person.
     ENDLOOP.
 
-    DATA(entities_wo_travelid) = entities.
-
-    " Remove the entries with an existing Travel ID
-    DELETE entities_wo_travelid WHERE TravelID IS NOT INITIAL.
-
-    IF use_number_range = abap_true.
-
-      " Get numbers
-      TRY.
-          cl_numberrange_runtime=>number_get( EXPORTING nr_range_nr       = '01'
-                                                        object            = '/DMO/TRV_M'
-                                                        quantity          = CONV #( lines( entities_wo_travelid ) )
-                                              IMPORTING number            = DATA(number_range_key)
-                                              " TODO: variable is assigned but never used (ABAP cleaner)
-                                                        returncode        = DATA(number_range_return_code)
-                                                        returned_quantity = DATA(number_range_returned_quantity) ).
-        CATCH cx_number_ranges INTO DATA(lx_number_ranges).
-            " In case of an error, report all entities as failed
-          LOOP AT entities_wo_travelid INTO entity.
-            APPEND VALUE #( %cid      = entity-%cid
-                            %key      = entity-%key
-                            %is_draft = entity-%is_draft
-                            %msg      = lx_number_ranges )
-                   TO reported-travel.
-
-            APPEND VALUE #( %cid      = entity-%cid
-                            %key      = entity-%key
-                            %is_draft = entity-%is_draft )
-                   TO failed-travel.
-          ENDLOOP.
-          RETURN.
-      ENDTRY.
-
-      " determine the first free travel ID from the number range
-      travel_id_max = number_range_key - number_range_returned_quantity.
-    ELSE.
-      " determine the first free travel ID without number range
-      " Get max travel ID from active table
-      SELECT FROM ztravel_main
-       FIELDS MAX( travel_id ) AS travelID
-        INTO @travel_id_max UP TO 1 ROWS.
-
-      " Get max travel ID from draft table
-      SELECT FROM ztravel_maind
-       FIELDS MAX( travelid )
-        INTO @DATA(max_travelid_draft) UP TO 1 ROWS.
-
-      IF max_travelid_draft > travel_id_max.
-        travel_id_max = max_travelid_draft.
-      ENDIF.
-
-    ENDIF.
-
-    " Set Travel ID for new instances w/o ID
-    LOOP AT entities_wo_travelid INTO entity.
-
-      travel_id_max += 1.
-      entity-TravelID = travel_id_max.
-
-      APPEND VALUE #( %cid      = entity-%cid
-                      %key      = entity-%key
-                      %is_draft = entity-%is_draft )
-             TO mapped-travel.
-    ENDLOOP.
-
+    INSERT zperson_t FROM TABLE @lt_person.
   ENDMETHOD.
 
+  METHOD update.
+    DATA lt_person TYPE TABLE OF zperson_t.
+
+    GET TIME STAMP FIELD DATA(lv_timestamp).
+    DATA(lv_user) = sy-uname.
+
+    SELECT * FROM zperson_t
+      FOR ALL ENTRIES IN @entities
+      WHERE id = @entities-Id
+      INTO TABLE @lt_person.
+
+    LOOP AT entities ASSIGNING FIELD-SYMBOL(<entity>).
+
+      ASSIGN lt_person[ id = <entity>-Id ] TO FIELD-SYMBOL(<db>).
+
+      IF sy-subrc <> 0.
+        CONTINUE.
+      ENDIF.
+
+      <db>-name            = COND #( WHEN <entity>-%control-Name = if_abap_behv=>mk-on
+                                     THEN <entity>-Name
+                                     ELSE <db>-name ).
+
+      <db>-address         = COND #( WHEN <entity>-%control-Address = if_abap_behv=>mk-on
+                                     THEN <entity>-Address
+                                     ELSE <db>-address ).
+      <db>-last_changed_by = lv_user.
+      <db>-last_changed_at = lv_timestamp.
+    ENDLOOP.
+
+    UPDATE zperson_t FROM TABLE @lt_person.
+  ENDMETHOD.
+
+  METHOD delete.
+    DATA lt_person TYPE TABLE OF zperson_t.
+
+    SELECT * FROM zperson_t
+      FOR ALL ENTRIES IN @keys
+      WHERE id = @keys-Id
+      INTO TABLE @lt_person.
+
+    DELETE zperson_t FROM TABLE @lt_person.
+  ENDMETHOD.
+
+  METHOD read.
+    DATA lt_person TYPE TABLE OF zperson_t.
+
+    SELECT * FROM zperson_t
+      FOR ALL ENTRIES IN @keys
+      WHERE id = @keys-Id
+      INTO TABLE @lt_person.
+
+    result = VALUE #( FOR ls_stud IN lt_person
+                      ( Id            = ls_stud-id
+                        Name          = ls_stud-name
+                        Address       = ls_stud-address
+                        CreatedBy     = ls_stud-created_by
+                        CreatedAt     = ls_stud-created_at
+                        LastChangedBy = ls_stud-last_changed_by
+                        LastChangedAt = ls_stud-last_changed_at ) ).
+  ENDMETHOD.
+
+  METHOD lock.
+  ENDMETHOD.
+ENDCLASS.
+
+
+CLASS lsc_Z_I_PERSON DEFINITION INHERITING FROM cl_abap_behavior_saver.
+  PROTECTED SECTION.
+    METHODS finalize          REDEFINITION.
+
+    METHODS check_before_save REDEFINITION.
+
+    METHODS save              REDEFINITION.
+
+    METHODS cleanup           REDEFINITION.
+
+    METHODS cleanup_finalize  REDEFINITION.
+
+ENDCLASS.
+
+
+CLASS lsc_Z_I_PERSON IMPLEMENTATION.
+  METHOD finalize.
+  ENDMETHOD.
+
+  METHOD check_before_save.
+  ENDMETHOD.
+
+  METHOD save.
+  ENDMETHOD.
+
+  METHOD cleanup.
+  ENDMETHOD.
+
+  METHOD cleanup_finalize.
+  ENDMETHOD.
 ENDCLASS.
 ```
