@@ -196,9 +196,6 @@ y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Upda
 
 ##### Se crea BDEF sobre CDS root o Interfaz
 
-<!-- ![pedo](./img/BDEF_01.png) -->
-<!-- ![pedo](/img/) -->
-
 ``` abap
 unmanaged
 implementation in class zbp_i_person unique;
@@ -239,13 +236,6 @@ authorization master ( instance )
 ```
 
 #### 2.3.2 PROJECTION BEHAVIOR
-
-#### Ventajas
-
-1. Separación de Responsabilidades: Interface (lógica) vs Consumption (UI)
-2. Múltiples UIs: Puedes tener varias proyecciones para diferentes roles
-3. Mantenibilidad: Cambios en la lógica se reflejan automáticamente
-4. Seguridad: Controlas qué expones en cada capa
 
 ``` abap
 projection;
