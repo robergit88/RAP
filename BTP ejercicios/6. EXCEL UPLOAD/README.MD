@@ -189,7 +189,33 @@ define root abstract entity ZPO_A_STREAM
 }
 
 ```
+Anotaciones clave:
+```js
+@Semantics.largeObject: { mimeType: 'MimeType',
+                          fileName: 'FileName',
+                          contentDispositionPreference: #INLINE,
+                          acceptableMimeTypes: [ 'application/vnd.ms-excel',
+                                                 'application/vnd.openxmlformats-officedocument...' ]
+}
+```
+Esto significa:
 
+✅ "Este campo contiene un archivo grande (Excel)"
+✅ "Solo acepta archivos .xls y .xlsx"
+✅ "El nombre y tipo del archivo vienen en los otros campos"
+
+Resumen en cristiano 🎯
+En una app Fiori donde el usuario puede subir un archivo Excel:
+
+ZPO_A_FILE = El "formulario" que el usuario ve (con un botón para adjuntar)
+ZPO_A_STREAM = Los "datos del archivo" que se envían al backend (el contenido, nombre, y tipo)
+
+Uso típico en una acción:
+```js
+action uploadExcel parameter ZPO_A_FILE result [1] ZPO_A_STREAM;
+```
+
+Esto permite que desde Fiori UI puedas hacer clic en "Subir Excel" → seleccionar archivo → enviarlo al sistema SAP.
 
 ### 2.2 METADATA EXTENSIONS
 ¡Aquí se definen tres botones de interacción!
