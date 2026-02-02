@@ -201,8 +201,11 @@ Anotaciones clave:
 Esto significa:
 
 ✅ "Este campo contiene un archivo grande (Excel)"
+
 ✅ "Solo acepta archivos .xls y .xlsx"
+
 ✅ "El nombre y tipo del archivo vienen en los otros campos"
+
 
 Resumen en cristiano 🎯
 En una app Fiori donde el usuario puede subir un archivo Excel:
