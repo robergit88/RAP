@@ -8,8 +8,9 @@
    - 2.1 [DATA DEFINITIONS](#21-data-definitions)
      - 2.1.1 [ROOT VIEW](#211-root-view)
      - 2.1.2 [PROJECTION VIEW](#212-projection-view)
-   - 2.2 [METADATA EXTENSIONS](#22-metadata-extensions)
-   - 2.3 [BEHAVIOR DEFINITIONS](#23-behavior-definitions)
+     - 2.1.3 [ABSTRACT ENTITY](#213-abstract-entity)
+   - 2.2 [METADATA EXTENSIONS ¡Aquí se definen tres botones de interacción!](#22-metadata-extensions)
+    - 2.3 [BEHAVIOR DEFINITIONS](#23-behavior-definitions)
      - 2.3.1 [BEHAVIOR DEFINITIONS](#231-behavior-definitions)
      - 2.3.2 [PROJECTION BEHAVIOR](#232-projection-behavior)
 
@@ -26,28 +27,23 @@
 ### 1.1 Tabla BBDD
 
 ``` abap
-@EndUserText.label : 'Solo tabla travel'
+@EndUserText.label : 'PO Master list'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
 @AbapCatalog.tableCategory : #TRANSPARENT
 @AbapCatalog.deliveryClass : #A
 @AbapCatalog.dataMaintenance : #RESTRICTED
-define table ztravel_main {
+define table zpo_master_list {
 
-  key client            : abap.clnt not null;
-  key travel_id         : /dmo/travel_id not null;
-  agency_id             : /dmo/agency_id;
-  customer_id           : /dmo/customer_id;
-  begin_date            : /dmo/begin_date;
-  end_date              : /dmo/end_date;
-  @Semantics.amount.currencyCode : 'ztravel_main.currency_code'
-  price                 : /dmo/total_price;
-  currency_code         : /dmo/currency_code;
-  overall_status        : /dmo/overall_status;
-  created_by            : abp_creation_user;
-  created_at            : abp_creation_tstmpl;
-  local_last_changed_by : abp_locinst_lastchange_user;
-  local_last_changed_at : abp_locinst_lastchange_tstmpl;
-  last_changed_at       : abp_lastchange_tstmpl;
+  key client      : abap.clnt not null;
+  key end_user    : syuname not null;
+  key file_id     : sysuuid_x16 not null;
+  key line_numb   : abap.numc(10) not null;
+  po_number       : ebeln;
+  po_item         : ebelp;
+  gr_quantity     : abap.dec(13,3);
+  unit_of_measure : abap.char(3);
+  site_id         : abap.char(16);
+  header_text     : abap.char(40);
 
 }
 ```
@@ -55,31 +51,27 @@ define table ztravel_main {
 ### 1.2 Tabla BBDD DRAFT
 
 ``` abap
-@EndUserText.label : 'DRAFT travel main table'
-@AbapCatalog.enhancement.category : #EXTENSIBLE_ANY
+@EndUserText.label : 'PO Master list Draft'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
 @AbapCatalog.tableCategory : #TRANSPARENT
 @AbapCatalog.deliveryClass : #A
 @AbapCatalog.dataMaintenance : #RESTRICTED
-define table ztravel_maind {
+define table zpo_master_listd {
 
-  key mandt          : mandt not null;
-  key travelid       : /dmo/travel_id not null;
-  agencyid           : /dmo/agency_id;
-  customerid         : /dmo/customer_id;
-  begindate          : /dmo/begin_date;
-  enddate            : /dmo/end_date;
-  @Semantics.amount.currencyCode : 'ztravel_maind.currencycode'
-  price              : /dmo/total_price;
-  currencycode       : /dmo/currency_code;
-  overallstatus      : /dmo/overall_status;
-  createdby          : abp_creation_user;
-  createdat          : abp_creation_tstmpl;
-  locallastchangedby : abp_locinst_lastchange_user;
-  locallastchangedat : abp_locinst_lastchange_tstmpl;
-  lastchangedat      : abp_lastchange_tstmpl;
-  "%admin"           : include sych_bdl_draft_admin_inc;
-
+  key mandt     : mandt not null;
+  key enduser   : syuname not null;
+  key fileid    : sysuuid_x16 not null;
+  key linenumb  : abap.numc(10) not null;
+  ponumber      : ebeln;
+  poitem        : ebelp;
+  grquantity    : abap.dec(13,3);
+  unitofmeasure : abap.char(3);
+  siteid        : abap.char(16);
+  headertext    : abap.char(40);
+  "%admin"      : include sych_bdl_draft_admin_inc;
 }
+
+
 ```
 
 ## Core Data Services
@@ -89,100 +81,58 @@ define table ztravel_maind {
 #### 2.1.1 ROOT VIEW
 
 ``` abap
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@Metadata.allowExtensions: true
-@EndUserText.label: 'ROOT VIEW ENTITY'
-@Metadata.ignorePropagatedAnnotations: true
-define root view entity ZCDS_R_TRAVEL_MAIN
-  as select from ztravel_main as Travel
-  association [0..1] to /DMO/I_Agency            as _Agency        on $projection.AgencyID = _Agency.AgencyID
-  association [0..1] to /DMO/I_Customer          as _Customer      on $projection.CustomerID = _Customer.CustomerID
-  association [1..1] to /DMO/I_Overall_Status_VH as _OverallStatus on $projection.OverallStatus = _OverallStatus.OverallStatus
-{
-  key travel_id             as TravelID,
-      agency_id             as AgencyID,
-      customer_id           as CustomerID,
-      begin_date            as BeginDate,
-      end_date              as EndDate,
-      @Semantics.amount.currencyCode: 'CurrencyCode'
-      price                 as Price,
-      @Consumption.valueHelpDefinition: [ {
-        entity.name: 'I_CurrencyStdVH',
-        entity.element: 'Currency',
-        useForValidation: true
-      } ]
-      currency_code         as CurrencyCode,
-      overall_status        as OverallStatus,
-      @Semantics.user.createdBy: true
-      created_by            as CreatedBy,
-      @Semantics.systemDateTime.createdAt: true
-      created_at            as CreatedAt,
-      @Semantics.user.localInstanceLastChangedBy: true
-      local_last_changed_by as LocalLastChangedBy,
-      @Semantics.systemDateTime.localInstanceLastChangedAt: true
-      local_last_changed_at as LocalLastChangedAt,
-      @Semantics.systemDateTime.lastChangedAt: true
-      last_changed_at       as LastChangedAt,
 
-      //public associations
-      _Customer,
-      _Agency,
-      _OverallStatus
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Excel Data CDS'
+@Metadata.ignorePropagatedAnnotations: true
+define root view entity ZPO_I_MASTER_LIST
+  as select from zpo_master_list
+
+{
+  key end_user        as EndUser,
+  key file_id         as FileId,
+  key line_numb       as LineNumb,
+      po_number       as PoNumber,
+      po_item         as PoItem,
+      gr_quantity     as GrQuantity,
+      unit_of_measure as UnitOfMeasure,
+      site_id         as SiteId,
+      header_text     as HeaderText
 }
+
 ``` 
 
 #### 2.1.2 PROJECTION VIEW
 
 ``` abap
-@Metadata.allowExtensions: true
-@EndUserText.label: 'PROJECTION VIEW'
-@Metadata.ignorePropagatedAnnotations: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
-@Search.searchable: true
-define root view entity ZCDS_C_TRAVEL_MAIN
+@EndUserText.label: 'Excel Data CDS Consumption'
+@Metadata.ignorePropagatedAnnotations: true
+@Metadata.allowExtensions: true
+
+define root view entity ZPO_C_MASTER_LIST
   provider contract transactional_query
-  as projection on ZCDS_R_TRAVEL_MAIN
+  as projection on ZPO_I_MASTER_LIST
+
 {
-
-      @Search.defaultSearchElement: true
-      @Search.fuzzinessThreshold: 0.90
-  key TravelID,
-      @Search.defaultSearchElement: true
-      @ObjectModel.text.element: ['AgencyName']
-      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Agency_StdVH', element: 'AgencyID' }, useForValidation: true }]
-      AgencyID,
-      _Agency.Name              as AgencyName,
-      @Search.defaultSearchElement: true
-      @ObjectModel.text.element: ['CustomerName']
-      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Customer_StdVH', element: 'CustomerID' }, useForValidation: true }]
-      CustomerID,
-      _Customer.LastName        as CustomerName,
-      BeginDate,
-      EndDate,
-      Price,
-      @Semantics.currencyCode: true
-      @Consumption: {
-        valueHelpDefinition: [ {
-          entity.element: 'Currency',
-          entity.name: 'I_CurrencyStdVH',
-          useForValidation: true
-        } ]
-      }
-      CurrencyCode,
-      @ObjectModel.text.element: ['OverallStatusText']
-      @Consumption.valueHelpDefinition: [{ entity: {name: '/DMO/I_Overall_Status_VH', element: 'OverallStatus' }, useForValidation: true }]
-      OverallStatus,
-      _OverallStatus._Text.Text as OverallStatusText : localized,
-      CreatedBy,
-      CreatedAt,
-      LocalLastChangedAt,
-      LastChangedAt
-
+  key EndUser,
+  key FileId,
+  key LineNumb,
+      PoNumber,
+      PoItem,
+      GrQuantity,
+      UnitOfMeasure,
+      SiteId,
+      HeaderText
 }
 
 ```
 
+#### 2.1.3 ABSTRACT ENTITY
+Hola. 
+
 ### 2.2 METADATA EXTENSIONS
+¡Aquí se definen tres botones de interacción!
 
 Los Metadata Extensions sirven para definir la configuración de la UI (interfaz de usuario) de forma declarativa, permitiendo la separación entre:
 
@@ -196,69 +146,56 @@ Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de dato
 [...detalle](md_docs/metadata_extensions.md)
 
 ``` abap
-@Metadata.layer: #CUSTOMER
-@UI: {
- headerInfo: {
- typeName: 'Travel',
- typeNamePlural: 'Viajes',
- description: { type: #STANDARD, value: 'TravelId' } //case-sensitive
- }
-}
-annotate entity ZCDS_C_TRAVEL_MAIN with
+@Metadata.layer: #CORE
+
+@UI.headerInfo: { typeName: 'Excel File Data',
+                  typeNamePlural: 'Excel File Datassssssssss',
+                  title: { type: #STANDARD, value: 'EndUser' },
+                  description: { type: #STANDARD, value: 'FileId' } }
+
+annotate entity ZPO_C_MASTER_LIST with
+
 {
-  @UI.facet: [ {
-  label: 'Travel',
-  id: 'idIdentification',
-  purpose: #STANDARD,
-  position: 10 ,
-  type: #IDENTIFICATION_REFERENCE
-  } ]
-  @UI: {
-  lineItem: [ { position: 10, importance: #HIGH } ],
-  identification: [ { position: 10 } ],
-  selectionField: [ { position: 10 } ]
-  }
-  TravelID;
-  @UI: {
-  lineItem: [ { position: 20, importance: #HIGH } ],
-  identification: [ { position: 20 } ],
-  selectionField: [ { position: 20 } ]
-  }
-  AgencyID;
-  @UI: {
-  lineItem: [ { position: 30, importance: #HIGH } ],
-  identification: [ { position: 30 } ],
-  selectionField: [ { position: 30 } ]
-  }
-  CustomerID;
-  @UI: {
-  lineItem: [ { position: 40, importance: #MEDIUM } ],
-  identification: [ { position: 40 } ]
-  }
-  BeginDate;
-  @UI: {
-  lineItem: [ { position: 50, importance: #MEDIUM } ],
-  identification: [ { position: 50 } ]
-  }
-  EndDate;
-  @UI.identification: [ { position: 60 } ]
-  Price;
-  @UI: {
-  lineItem: [ { position: 70, importance: #HIGH } ],
-  identification: [ { position: 70 } ],
-  textArrangement: #TEXT_ONLY
-  }
-  OverallStatus;
+  @UI.facet: [ { id: 'ExcelFile',
+                 purpose: #STANDARD,
+                 type: #IDENTIFICATION_REFERENCE,
+                 position: 10,
+                 label: 'Excel File' } ]
   @UI.hidden: true
-  CreatedBy;
-  @UI.hidden: true
-  CreatedAt;
+  @UI.lineItem: [ { type: #FOR_ACTION, label: 'Upload Data',  dataAction: 'uploadExcelData' },
+                  { type: #FOR_ACTION, label: 'Process Data', dataAction: 'processData'     } ]
+  EndUser;
 
   @UI.hidden: true
-  LocalLastChangedAt;
-  @UI.hidden: true
-  LastChangedAt;
+  FileId;
 
+  @UI.identification: [ { position: 5, label: 'Line Number' } ]
+  @UI.lineItem: [ { position: 5, label: 'Line' } ]
+  LineNumb;
+
+  @UI.identification: [ { position: 10, label: 'PO Number' } ]
+  @UI.lineItem: [ { position: 10, label: 'PO Number' } ]
+  PoNumber;
+
+  @UI.identification: [ { position: 20, label: 'PO Item' } ]
+  @UI.lineItem: [ { position: 20, label: 'PO Item' } ]
+  PoItem;
+
+  @UI.identification: [ { position: 30, label: 'Quantity' } ]
+  @UI.lineItem: [ { position: 30, label: 'Quantity' } ]
+  GrQuantity;
+
+  @UI.identification: [ { position: 40, label: 'Unit' } ]
+  @UI.lineItem: [ { position: 40, label: 'UoM' } ]
+  UnitOfMeasure;
+
+  @UI.identification: [ { position: 50, label: 'Site ID' } ]
+  @UI.lineItem: [ { position: 50, label: 'Site ID' } ]
+  SiteId;
+
+  @UI.identification: [ { position: 60, label: 'Header Text' } ]
+  @UI.lineItem: [ { position: 60, label: 'Header Text' } ]
+  HeaderText;
 }
 ```
 
