@@ -625,16 +625,16 @@ endclass.
 ## pruebas
 ![Presentación](./img/SCREEN_01.png)
 
-[Presentación](./img/SCREEN_02_UPLOAD.png)
+![Presentación](./img/SCREEN_02_UPLOAD.png)
 
-[Presentación](./img/SCREEN_03_FILES.png)
+![Presentación](./img/SCREEN_03_FILES.png)
 
-[Presentación](./img/SCREEN_04_UPLOAD.png)
+![Presentación](./img/SCREEN_04_UPLOAD.png)
 
-[Presentación](./img/SCREEN_05_UPLOADED.png)
+![Presentación](./img/SCREEN_05_UPLOADED.png)
 
-[Presentación](./img/SCREEN_06_GO.png)
+![Presentación](./img/SCREEN_06_GO.png)
 
-[Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
+![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
-[Presentación](./img/SCREEN_08_SAVE.png)
+![Presentación](./img/SCREEN_08_SAVE.png)
