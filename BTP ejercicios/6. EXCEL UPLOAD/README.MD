@@ -233,7 +233,8 @@ Estas anotaciones se publican automáticamente en el servicio **OData** y son in
 
 Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de datos ni frontend.
 
-[...detalle](md_docs/metadata_extensions.md)
+<!-- [...detalle](md_docs/metadata_extensions.md) -->
+[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
 
 ``` abap
 @Metadata.layer: #CORE
@@ -294,7 +295,8 @@ annotate entity ZPO_C_MASTER_LIST with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-[...detalle](./md_docs/BDEF.MD)
+<!-- [...detalle](./md_docs/BDEF.MD) -->
+[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
 
 Ventas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
@@ -305,10 +307,10 @@ Ventas:
 
 #### 2.3.1 BEHAVIOR DEFINITIONS
 
-##### Se crea BDEF sobre CDS rot o Interfaz
+##### Se crea BDEF sobre CDS root o Interfaz
 ![pedo](./img/BDEF_01.png)
 
-``` abap
+``` c#
 managed implementation in class zbp_po_cl_master_list unique;
 strict ( 2 );
 with draft;
@@ -405,9 +407,9 @@ define behavior for ZPO_A_FILE //alias <alias_name>
 ### 3.1 services-definition
 
 ``` abap
-@EndUserText.label: 'SERVICE DEFINITION'
-define service ZUI_TRAVEL_MAIN {
-  expose ZCDS_C_TRAVEL_MAIN as Travel;
+@EndUserText.label: 'SERVICE DEFINITION Master List Projection'
+define service ZSD_PO_C_MASTER_LIST {
+  expose ZPO_C_MASTER_LIST;
 }
 ```
 
@@ -415,23 +417,29 @@ define service ZUI_TRAVEL_MAIN {
 
 Pasos para la creación una nueva vinculación.
 
-![Crear](./img/NEW_SERVICE_BINDING_01.png)
+![Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_01.png)
+<!-- ![Crear](./img/NEW_SERVICE_BINDING_01.png) -->
 
 
 Selección del tipo de vinculación
-![Binding Type](./img/NEW_SERVICE_BINDING_02.png)
+<!-- ![Binding Type](./img/NEW_SERVICE_BINDING_02.png) -->
+![Binding Type](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_02.png)
 
 Publicar el servicio
-![Publish](./img/NEW_SERVICE_BINDING_03.png)
+<!-- ![Publish](./img/NEW_SERVICE_BINDING_03.png) -->
+![Publish](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_03.png)
 
 Visualizar
-![Preview](./img/NEW_SERVICE_BINDING_04.png)
+<!-- ![Preview](./img/NEW_SERVICE_BINDING_04.png) -->
+![Preview](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
 
 Prueba 1 - Crear o alta de registro.
-![Botón Crear](./img/NEW_SERVICE_BINDING_05.png)
+<!-- ![Botón Crear](./img/NEW_SERVICE_BINDING_05.png) -->
+![Botón Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_05.png)
 
 guardar
-![Guardar](./img/NEW_SERVICE_BINDING_06.png)
+<!-- ![Guardar](./img/NEW_SERVICE_BINDING_06.png) -->
+![Guardar](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_06.png)
 
 ## source-code
 
