@@ -129,7 +129,67 @@ define root view entity ZPO_C_MASTER_LIST
 ```
 
 #### 2.1.3 ABSTRACT ENTITY
-Hola. 
+
+**¿Qué es?**
+
+* Es una entidad abstracta = Una estructura de datos que NO tiene tabla física detrás
+* Se usa para definir parámetros de entrada/salida en funciones o acciones
+* Similar a una estructura (TYPES) pero para RAP
+
+En este caso:
+
+* Tiene un campo dummy de tipo boolean
+* Tiene una asociación _Stream a ZPO_A_STREAM
+* Se usa probablemente para manejar la carga de archivos Excel
+
+``` abap
+@EndUserText.label: 'Abstract Entity for Excel Data File'
+define root abstract entity ZPO_A_FILE
+
+{
+  @UI.hidden: true
+  dummy   : abap_boolean;
+
+  _Stream : association [1] to ZPO_A_STREAM on 1 = 1;
+}
+
+```
+
+> define root abstract entity ZPO_A_STREAM
+
+**¿Qué es?**
+
+* Otra entidad abstracta que representa el archivo Excel en sí
+* Define cómo se va a recibir/enviar el archivo
+
+Campos importantes:
+
+* **ExcelFile** (rawstring) = El contenido binario del archivo Excel
+* **MimeType** (char 128) = Tipo de archivo (ej: "application/vnd.ms-excel")
+* **FileName** (char 128) = Nombre del archivo (ej: "datos.xlsx")
+
+``` abap
+@EndUserText.label: 'Abstract Entity for Excel Data File'
+define root abstract entity ZPO_A_STREAM
+
+{
+  @EndUserText.label: 'Select Excel file'
+  @Semantics.largeObject: { mimeType: 'MimeType',
+                            fileName: 'FileName',
+                            contentDispositionPreference: #INLINE,
+                            acceptableMimeTypes: [ 'application/vnd.ms-excel',
+                                                   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ] }
+  ExcelFile : abap.rawstring(0);
+
+  @UI.hidden: true
+  MimeType  : abap.char(128);
+
+  @UI.hidden: true
+  FileName  : abap.char(128);
+}
+
+```
+
 
 ### 2.2 METADATA EXTENSIONS
 ¡Aquí se definen tres botones de interacción!
