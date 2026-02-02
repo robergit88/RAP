@@ -623,7 +623,7 @@ endclass.
 ```
 
 ## pruebas
-[Presentación](./img/SCREEN_01.png)
+![Presentación](./img/SCREEN_01.png)
 
 [Presentación](./img/SCREEN_02_UPLOAD.png)
 
