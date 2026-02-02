@@ -211,6 +211,7 @@ Resumen en cristiano 🎯
 En una app Fiori donde el usuario puede subir un archivo Excel:
 
 ZPO_A_FILE = El "formulario" que el usuario ve (con un botón para adjuntar)
+
 ZPO_A_STREAM = Los "datos del archivo" que se envían al backend (el contenido, nombre, y tipo)
 
 Uso típico en una acción:
