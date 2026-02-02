@@ -308,9 +308,10 @@ Ventas:
 #### 2.3.1 BEHAVIOR DEFINITIONS
 
 ##### Se crea BDEF sobre CDS root o Interfaz
-![pedo](./img/BDEF_01.png)
+<!-- ![pedo](./img/BDEF_01.png) -->
+![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
 
-``` c#
+``` abap
 managed implementation in class zbp_po_cl_master_list unique;
 strict ( 2 );
 with draft;
