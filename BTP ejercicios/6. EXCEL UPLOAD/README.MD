@@ -305,26 +305,24 @@ Ventas:
 ![pedo](./img/BDEF_01.png)
 
 ``` abap
-managed
-implementation in class zbp_cds_r_travel_main unique;
+managed implementation in class zbp_po_cl_master_list unique;
 strict ( 2 );
 with draft;
-define behavior for ZCDS_R_TRAVEL_MAIN alias Travel
-persistent table ztravel_main
-draft table ztravel_maind
-etag master LocalLastChangedAt
-lock master total etag LastChangedAt
+define behavior for ZPO_I_MASTER_LIST alias ExcData
+persistent table zpo_master_list
+draft table zpo_master_listd
+etag master FileId
+lock master total etag FileId
 authorization master ( global )
-early numbering
-
 {
-
-  field ( readonly )
-  TravelID;
-
   create;
   update;
   delete;
+  field ( readonly, numbering : managed ) FileId;
+  field ( readonly ) EndUser, LineNumb;
+
+  static action uploadExcelData deep parameter ZPO_A_FILE;
+  action processData result [1] $self;
 
   draft action Activate optimized;
   draft action Discard;
@@ -332,22 +330,19 @@ early numbering
   draft action Resume;
   draft determine action Prepare;
 
-  mapping for ztravel_main corresponding
+  mapping for zpo_master_list
     {
-      TravelID           = travel_id;
-      AgencyID           = agency_id;
-      CustomerID         = customer_id;
-      BeginDate          = begin_date;
-      EndDate            = end_date;
-      Price              = price;
-      CurrencyCode       = currency_code;
-      OverallStatus      = overall_status;
-      CreatedBy          = created_by;
-      CreatedAt          = created_at;
-      LocalLastChangedBy = local_last_changed_by;
-      LocalLastChangedAt = local_last_changed_at;
-      LastChangedAt      = last_changed_at;
+      EndUser       = end_user;
+      FileId        = file_id;
+      LineNumb      = line_numb;
+      PoNumber      = po_number;
+      PoItem        = po_item;
+      GrQuantity    = gr_quantity;
+      UnitOfMeasure = unit_of_measure;
+      SiteId        = site_id;
+      HeaderText    = header_text;
     }
+
 }
 ```
 
@@ -361,22 +356,43 @@ early numbering
 4. Seguridad: Controlas qué expones en cada capa
 
 ``` abap
-projection
-implementation in class zbp_cds_r_travel_main unique;
+projection;
 strict ( 2 );
 use draft;
-define behavior for ZCDS_C_TRAVEL_MAIN alias Travel
-use etag
+
+define behavior for ZPO_C_MASTER_LIST //alias <alias_name>
 {
   use create;
   use update;
   use delete;
 
-  use action Edit;
+  use action uploadExcelData;
+  use action processData;
+
   use action Activate;
   use action Discard;
+  use action Edit;
   use action Resume;
   use action Prepare;
+}
+```
+
+``` abap
+abstract;
+strict ( 2 );
+with hierarchy;
+define behavior for ZPO_A_STREAM //alias <alias_name>
+{
+}
+```
+
+``` abap
+abstract;
+strict ( 2 );
+with hierarchy;
+define behavior for ZPO_A_FILE //alias <alias_name>
+{
+  association _Stream with hierarchy;
 }
 ```
 
@@ -418,105 +434,174 @@ guardar
 ### 4.1 clases
 
 ``` abap
-CLASS zbp_cds_r_travel_main DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zcds_r_travel_main.
+CLASS zbp_po_cl_master_list DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zpo_i_master_list.
 ENDCLASS.
 
-CLASS zbp_cds_r_travel_main IMPLEMENTATION.
+CLASS zbp_po_cl_master_list IMPLEMENTATION.
 ENDCLASS.
 ```
 
 ``` abap
-CLASS lhc_Travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR Travel RESULT result.
-    METHODS earlynumbering_create FOR NUMBERING
-      IMPORTING entities FOR CREATE Travel.
+class lhc_ZPO_I_MASTER_LIST definition inheriting from cl_abap_behavior_handler.
+  private section.
+    methods get_global_authorizations for global authorization
+      importing request requested_authorizations for ExcData result result.
 
-ENDCLASS.
+    methods processData for modify
+      importing keys for action zpo_i_master_list~processData result result.
+
+    methods uploadExcelData for modify
+      importing keys for action zpo_i_master_list~uploadExcelData.
+
+endclass.
 
 
-CLASS lhc_Travel IMPLEMENTATION.
-  METHOD get_global_authorizations.
-  ENDMETHOD.
+class lhc_ZPO_I_MASTER_LIST implementation.
+  method get_global_authorizations.
+  endmethod.
 
-  METHOD earlynumbering_create.
+  method processData.
+  endmethod.
 
-    DATA entity           TYPE STRUCTURE FOR CREATE zcds_r_travel_main.
-    DATA travel_id_max    TYPE /dmo/travel_id.
-    DATA use_number_range TYPE abap_bool VALUE abap_true.
+  method uploadExcelData.
+    types: begin of gty_gr_xl,
+             po_number       type string,
+             po_item         type string,
+             gr_quantity     type string,
+             unit_of_measure type string,
+             site_id         type string,
+             header_text     type string,
+             line_number     type string,
+             file_id         type string,
+             end_user        type string,
+           end of gty_gr_xl.
 
-    " Ensure Travel ID is not set yet (idempotent)- must be checked when BO is draft-enabled
-    LOOP AT entities INTO entity WHERE TravelID IS NOT INITIAL.
-      APPEND CORRESPONDING #( entity ) TO mapped-travel.
-    ENDLOOP.
+    data lo_table_descr  type ref to cl_abap_tabledescr.
+    data lo_struct_descr type ref to cl_abap_structdescr.
+    data lt_excel        type standard table of gty_gr_xl.
+    data lt_data         type table for create zpo_i_master_list\\ExcData.
+    data lv_index        type sy-index.
 
-    DATA(entities_wo_travelid) = entities.
+    field-symbols <lfs_col_header> type string.
 
-    " Remove the entries with an existing Travel ID
-    DELETE entities_wo_travelid WHERE TravelID IS NOT INITIAL.
+    data(lv_attachment) = value #( keys[ 1 ]-%param-_stream-ExcelFile optional ).
+    if lv_attachment is initial.
+      return.
+    endif.
 
-    IF use_number_range = abap_true.
+    data(lo_xlsx) = xco_cp_xlsx=>document->for_file_content( iv_file_content = lv_attachment )->read_access( ).
 
-      " Get numbers
-      TRY.
-          cl_numberrange_runtime=>number_get( EXPORTING nr_range_nr       = '01'
-                                                        object            = '/DMO/TRV_M'
-                                                        quantity          = CONV #( lines( entities_wo_travelid ) )
-                                              IMPORTING number            = DATA(number_range_key)
-                                              " TODO: variable is assigned but never used (ABAP cleaner)
-                                                        returncode        = DATA(number_range_return_code)
-                                                        returned_quantity = DATA(number_range_returned_quantity) ).
-        CATCH cx_number_ranges INTO DATA(lx_number_ranges).
-            " In case of an error, report all entities as failed
-          LOOP AT entities_wo_travelid INTO entity.
-            APPEND VALUE #( %cid      = entity-%cid
-                            %key      = entity-%key
-                            %is_draft = entity-%is_draft
-                            %msg      = lx_number_ranges )
-                   TO reported-travel.
+    data(lo_worksheet) = lo_xlsx->get_workbook( )->worksheet->at_position( 1 ).
 
-            APPEND VALUE #( %cid      = entity-%cid
-                            %key      = entity-%key
-                            %is_draft = entity-%is_draft )
-                   TO failed-travel.
-          ENDLOOP.
-          RETURN.
-      ENDTRY.
+    data(lo_selection_pattern) = xco_cp_xlsx_selection=>pattern_builder->simple_from_to( )->get_pattern( ).
 
-      " determine the first free travel ID from the number range
-      travel_id_max = number_range_key - number_range_returned_quantity.
-    ELSE.
-      " determine the first free travel ID without number range
-      " Get max travel ID from active table
-      SELECT FROM ztravel_main
-       FIELDS MAX( travel_id ) AS travelID
-        INTO @travel_id_max UP TO 1 ROWS.
+    data(lo_execute) = lo_worksheet->select( lo_selection_pattern )->row_stream( )->operation->write_to(
+                                                                      ref #( lt_excel ) ).
 
-      " Get max travel ID from draft table
-      SELECT FROM ztravel_maind
-       FIELDS MAX( travelid )
-        INTO @DATA(max_travelid_draft) UP TO 1 ROWS.
+    lo_execute->set_value_transformation( xco_cp_xlsx_read_access=>value_transformation->string_value
+                                        )->if_xco_xlsx_ra_operation~execute( ).
 
-      IF max_travelid_draft > travel_id_max.
-        travel_id_max = max_travelid_draft.
-      ENDIF.
+    try.
+        lo_table_descr ?= cl_abap_tabledescr=>describe_by_data( p_data = lt_excel ).
+        lo_struct_descr ?= lo_table_descr->get_table_line_type( ).
+        data(lv_no_of_cols) = lines( lo_struct_descr->components ).
+      catch cx_sy_move_cast_error.
 
-    ENDIF.
+    endtry.
 
-    " Set Travel ID for new instances w/o ID
-    LOOP AT entities_wo_travelid INTO entity.
+    data(ls_excel) = value #( lt_excel[ 1 ] optional ).
+    if ls_excel is not initial.
+      do lv_no_of_cols times.
+        lv_index = sy-index.
+        assign component lv_index of structure ls_excel to <lfs_col_header>.
+        if <lfs_col_header> is not assigned.
+          continue.
+        endif.
+        data(lv_value) = to_upper( <lfs_col_header> ).
+        data(lv_has_error) = abap_false.
+        case lv_index.
+          when 1.
+            lv_has_error = cond #( when lv_value <> 'PO NUMBER (10)' then abap_true else lv_has_error ).
+          when 2.
+            lv_has_error = cond #( when lv_value <> 'PO ITEM (5)' then abap_true else lv_has_error ).
+          when 3.
+            lv_has_error = cond #( when lv_value <> 'QUANTITY' then abap_true else lv_has_error ).
+          when 4.
+            lv_has_error = cond #( when lv_value <> 'UNIT (3)' then abap_true else lv_has_error ).
+          when 5.
+            lv_has_error = cond #( when lv_value <> 'SITE ID (16)' then abap_true else lv_has_error ).
+          when 6.
+            lv_has_error = cond #( when lv_value <> 'HEADER TEXT (40)' then abap_true else lv_has_error ).
+        endcase.
+        if lv_has_error = abap_true.
+          " append value #( %cid = keys[ 1 ]-%cid ) to failed-excdata.
+          append value #( %msg = new_message_with_text( severity = if_abap_behv_message=>severity-error
+                                                        text     = 'Wrong File Format!!' ) ) to reported-excdata.
+          unassign <lfs_col_header>.
+          exit.
+        endif.
+        unassign <lfs_col_header>.
+      enddo.
+    endif.
+    if lv_has_error = abap_true.
+      return.
+    endif.
 
-      travel_id_max += 1.
-      entity-TravelID = travel_id_max.
+    delete lt_excel index 1.
+    delete lt_excel where po_number is initial.
 
-      APPEND VALUE #( %cid      = entity-%cid
-                      %key      = entity-%key
-                      %is_draft = entity-%is_draft )
-             TO mapped-travel.
-    ENDLOOP.
+    try.
+        data(lv_file_id) = cl_system_uuid=>create_uuid_x16_static( ).
+      catch cx_uuid_error.
+    endtry.
+    loop at lt_excel assigning field-symbol(<lfs_excel>).
+      <lfs_excel>-file_id     = lv_file_id.
+      <lfs_excel>-line_number = sy-tabix.
+      <lfs_excel>-end_user    = cl_abap_context_info=>get_user_technical_name( ).
+    endloop.
 
-  ENDMETHOD.
+    lt_data = value #( for lwa_excel in lt_excel
+                       ( "%cid         = keys[ 1 ]-%cid
+                         "%is_draft    = keys[ 1 ]-%is_draft
+                         %data    = value #( EndUser       = lwa_excel-end_user
+                                             FileId        = lwa_excel-file_id
+                                             LineNumb      = lwa_excel-line_number
+                                             PoNumber      = lwa_excel-po_number
+                                             PoItem        = lwa_excel-po_item
+                                             GrQuantity    = lwa_excel-gr_quantity
+                                             UnitOfMeasure = lwa_excel-unit_of_measure
+                                             SiteId        = lwa_excel-site_id
+                                             HeaderText    = lwa_excel-header_text )
+                         %control = value #( EndUser       = if_abap_behv=>mk-on
+                                             FileId        = if_abap_behv=>mk-on
+                                             LineNumb      = if_abap_behv=>mk-on
+                                             PoNumber      = if_abap_behv=>mk-on
+                                             PoItem        = if_abap_behv=>mk-on
+                                             GrQuantity    = if_abap_behv=>mk-on
+                                             UnitOfMeasure = if_abap_behv=>mk-on
+                                             SiteId        = if_abap_behv=>mk-on
+                                             HeaderText    = if_abap_behv=>mk-on ) ) ).
 
-ENDCLASS.
+    modify entities of zpo_i_master_list in local mode
+           entity ExcData create auto fill cid with lt_data
+           mapped data(lt_mapped)
+           reported data(lt_reported)
+           failed data(lt_failed).
+
+    reported = lt_reported.
+    mapped = lt_mapped.
+    failed = lt_failed.
+
+    if lt_failed is initial.
+      append value #( %msg = new_message_with_text( severity = if_abap_behv_message=>severity-success
+                                                    text     = 'Excel File have been uploaded' ) ) to reported-excdata.
+
+      read entities of zpo_i_master_list in local mode
+           entity ExcData all fields with corresponding #( lt_mapped-excdata )
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           result data(lt_updated).
+
+    endif.
+  endmethod.
+endclass.
 ```
