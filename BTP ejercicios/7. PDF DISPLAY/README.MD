@@ -464,14 +464,6 @@ Visualizar
 <!-- ![Preview](./img/NEW_SERVICE_BINDING_04.png) -->
 ![Preview](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
 
-<!-- Prueba 1 - Crear o alta de registro.
-<!-- ![Botón Crear](./img/NEW_SERVICE_BINDING_05.png) -->
-<!-- ![Botón Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_05.png) -->
-
-<!-- guardar -->
-<!-- ![Guardar](./img/NEW_SERVICE_BINDING_06.png) -->
-<!-- ![Guardar](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_06.png) --> -->
-
 ## source-code
 
 ### 4.1 clases
@@ -611,4 +603,6 @@ endclass.
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
-![Presentación](./img/SCREEN_08_SAVE.png)
+![Presentación](./img/SCREEN_08_DETAIL_ATTACH.png)
+
+![Presentación](./img/SCREEN_09_PDF_VISOR.png)
