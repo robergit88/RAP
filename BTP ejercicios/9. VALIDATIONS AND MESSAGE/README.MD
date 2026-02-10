@@ -246,6 +246,7 @@ annotate view ZC_TRAVEL_APP_01 with
   _BaseEntity;
 }
 ```
+![Presentación](./img/SCREEN_01.png)
 
 ### 2.3 BEHAVIOR DEFINITIONS
 
@@ -526,10 +527,6 @@ class lhc_zr_travel_app_01 implementation.
       " ========================================
       " PASO 5: Crear el mensaje de error
       " ========================================
-      " Método 1: new_message_with_text (el que usas actualmente)
-*      ls_reported-%msg        = new_message_with_text( severity = if_abap_behv_message=>severity-error
-*                                                       text     = |¡El cliente { ls_travel-CustomerID } no existe!| ).
-
       ls_reported-%msg        = new_message( id       = 'ZRAP_MSG_VAL'
                                              number   = '001'
                                              severity = if_abap_behv_message=>severity-error
@@ -558,18 +555,14 @@ endclass.
 ## pruebas
 ![Presentación](./img/SCREEN_01.png)
 
-![Presentación](./img/SCREEN_02_UPLOAD.png)
-
-![Presentación](./img/SCREEN_03_FILES.png)
-
-![Presentación](./img/SCREEN_04_UPLOAD.png)
-
-![Presentación](./img/SCREEN_05_UPLOADED.png)
-
 ![Presentación](./img/SCREEN_06_GO.png)
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
-![Presentación](./img/SCREEN_08_DETAIL_ATTACH.png)
+![Presentación](./img/CREATE_01.png)
 
-![Presentación](./img/SCREEN_09_PDF_VISOR.png)
+![Presentación](./img/CREATE_02.png)
+
+![Presentación](./img/CREATE_03.png)
+
+![Presentación](./img/VALIDATION_01.png)
