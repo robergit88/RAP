@@ -30,25 +30,24 @@
 ### 1.1 Tabla BBDD
 
 ``` abap
-@EndUserText.label : 'Pdf file documents'
+@EndUserText.label : 'Tabla turismo'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
 @AbapCatalog.tableCategory : #TRANSPARENT
 @AbapCatalog.deliveryClass : #A
 @AbapCatalog.dataMaintenance : #RESTRICTED
-define table zpdf_documents {
+define table ztravel_app_01 {
 
-  key client      : abap.clnt not null;
-  key document_id : sysuuid_x16 not null;
-  file_name       : abap.char(128);
-  file_extension  : abap.char(10);
-  mime_type       : abap.char(128);
-  file_size       : abap.int8;
-  description     : abap.char(128);
-  attachment      : abap.rawstring(0);
-  uploaded_by     : syuname;
-  uploaded_at     : abap.dec(15,0);
-  changed_by      : syuname;
-  changed_at      : abap.dec(15,0);
+  key client            : abap.clnt not null;
+  key travel_id         : /dmo/travel_id not null;
+  begin_date            : /dmo/begin_date;
+  end_date              : /dmo/end_date;
+  customer_id           : /dmo/customer_id;
+  overall_status        : /dmo/overall_status;
+  created_by            : abp_creation_user;
+  created_at            : abp_creation_tstmpl;
+  local_last_changed_by : abp_locinst_lastchange_user;
+  local_last_changed_at : abp_locinst_lastchange_tstmpl;
+  last_changed_at       : timestampl;
 
 }
 ```
@@ -56,26 +55,25 @@ define table zpdf_documents {
 ### 1.2 Tabla BBDD DRAFT
 
 ``` abap
-@EndUserText.label : 'Pdf file documents'
-@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@EndUserText.label : 'Draft Database Table for ZTRAVEL_APP_01_D'
+@AbapCatalog.enhancement.category : #EXTENSIBLE_ANY
 @AbapCatalog.tableCategory : #TRANSPARENT
 @AbapCatalog.deliveryClass : #A
 @AbapCatalog.dataMaintenance : #RESTRICTED
-define table zpdf_documentsd {
+define table ztravel_app_01_d {
 
-  key client     : abap.clnt not null;
-  key documentid : sysuuid_x16 not null;
-  filename       : abap.char(128);
-  fileextension  : abap.char(10);
-  mimetype       : abap.char(128);
-  filesize       : abap.int8;
-  description    : abap.char(128);
-  attachment     : abap.rawstring(0);
-  uploadedby     : syuname;
-  uploadedat     : abap.dec(15,0);
-  changedby      : syuname;
-  changedat      : abap.dec(15,0);
-  "%admin"       : include sych_bdl_draft_admin_inc;
+  key mandt          : mandt not null;
+  key travelid       : /dmo/travel_id not null;
+  begindate          : /dmo/begin_date;
+  enddate            : /dmo/end_date;
+  customerid         : /dmo/customer_id;
+  overallstatus      : /dmo/overall_status;
+  createdby          : abp_creation_user;
+  createdat          : abp_creation_tstmpl;
+  locallastchangedby : abp_locinst_lastchange_user;
+  locallastchangedat : abp_locinst_lastchange_tstmpl;
+  lastchangedat      : timestampl;
+  "%admin"           : include sych_bdl_draft_admin_inc;
 
 }
 ```
@@ -87,25 +85,27 @@ define table zpdf_documentsd {
 #### 2.1.1 ROOT VIEW
 
 ``` abap
-
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'PDF Data CDS'
-@Metadata.ignorePropagatedAnnotations: true
-define root view entity ZI_PDF_DOCUMENTS
-  as select from zpdf_documents
+@AccessControl.authorizationCheck: #MANDATORY
+@Metadata.allowExtensions: true
+@ObjectModel.sapObjectNodeType.name: 'ZTRAVEL_APP_01'
+@EndUserText.label: '###GENERATED Core Data Service Entity'
+define root view entity ZR_TRAVEL_APP_01
+  as select from ztravel_app_01
 {
-  key document_id       as DocumentId,
-      file_name         as FileName,
-      file_extension    as FileExtension,
-      mime_type         as MimeType,
-      file_size         as FileSize,
-      description       as Description,    
-      attachment        as Attachment,
-      uploaded_by       as UploadedBy,
-      uploaded_at       as UploadedAt,
-      changed_by        as ChangedBy,
-      changed_at        as ChangedAt
-
+  key travel_id             as TravelID,
+      begin_date            as BeginDate,
+      end_date              as EndDate,
+      customer_id           as CustomerID,
+      overall_status        as OverallStatus,
+      @Semantics.user.createdBy: true
+      created_by            as CreatedBy,
+      @Semantics.systemDateTime.createdAt: true
+      created_at            as CreatedAt,
+      @Semantics.user.localInstanceLastChangedBy: true
+      local_last_changed_by as LocalLastChangedBy,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      local_last_changed_at as LocalLastChangedAt,
+      last_changed_at       as LastChangedAt
 }
 
 ``` 
@@ -113,120 +113,66 @@ define root view entity ZI_PDF_DOCUMENTS
 #### 2.1.2 PROJECTION VIEW
 
 ``` abap
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'PDF Data CDS Consumption'
+@AccessControl.authorizationCheck: #MANDATORY
+@EndUserText.label: '###GENERATED Core Data Service Entity'
 @Metadata.allowExtensions: true
 @Metadata.ignorePropagatedAnnotations: true
+@ObjectModel.sapObjectNodeType.name: 'ZTRAVEL_APP_01'
 
-define root view entity ZC_PDF_DOCUMENTS
+define root view entity ZC_TRAVEL_APP_01
   provider contract transactional_query
-  as projection on ZI_PDF_DOCUMENTS
+  as projection on ZR_TRAVEL_APP_01
+
+  association [1..1] to ZR_TRAVEL_APP_01 as _BaseEntity on $projection.TravelID = _BaseEntity.TravelID
 
 {
-  key DocumentId,
+  key TravelID,
 
-      FileName,
-      FileExtension,
-      MimeType,
-      FileSize,
-      Description,
+      BeginDate,
+      EndDate,
 
-      // Solución Real: Usar el patrón de Attachment
-      // La forma correcta en RAP para mostrar PDFs es exponerlos como attachment en el Object Page,
-      // no como acción.
-      @Semantics.largeObject: { mimeType: 'MimeType', 
-                                fileName: 'FileName', 
-                                contentDispositionPreference: #INLINE }
-      Attachment,
-      
-      UploadedBy,
-      UploadedAt,
-      ChangedBy,
-      ChangedAt
+      @Consumption.valueHelpDefinition: [
+             { entity: {
+                name: '/DMO/I_Customer_StdVH',
+                element: 'CustomerID' }
+             } ]
+      CustomerID,
+
+      @Consumption.valueHelpDefinition: [
+            { entity: { name: '/DMO/I_Overall_Status_VH_Text', 
+              element: 'OverallStatus' } } ]      
+      OverallStatus,
+
+      @Semantics.user.createdBy: true
+      CreatedBy,
+
+      @Semantics.systemDateTime.createdAt: true
+      CreatedAt,
+
+      @Semantics.user.localInstanceLastChangedBy: true
+      LocalLastChangedBy,
+
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      LocalLastChangedAt,
+
+      LastChangedAt,
+
+      _BaseEntity
 }
+
 ```
 
 #### 2.1.3 ABSTRACT ENTITY
 
-**¿Qué es?**
-
-* Es una entidad abstracta = Una estructura de datos que NO tiene tabla física detrás
-* Se usa para definir parámetros de entrada/salida en funciones o acciones
-* Similar a una estructura (TYPES) pero para RAP
-
-En este caso:
-
-* Tiene un campo dummy de tipo boolean
-* Tiene una asociación _Stream a ZA_UPLOAD_STREAM
-* Se usa probablemente para manejar la carga de archivos
-
 ``` abap
-@EndUserText.label: 'Upload PDF File'
-define root abstract entity ZA_UPLOAD_PDF_FILE
-
-{
-  @UI.hidden : true
-  Dummy      : abap_boolean;
-    
-  _Stream    : association [1] to ZA_UPLOAD_STREAM on 1 = 1;
-}
-```
-
-> define root abstract entity ZA_UPLOAD_STREAM
-
-**¿Qué es?**
-
-* Otra entidad abstracta que representa el archivo en sí
-* Define cómo se va a recibir/enviar el archivo
-
-``` abap
-@EndUserText.label: 'Upload PDF Parameters'
-define root abstract entity ZA_UPLOAD_STREAM
-
-{
-  @EndUserText.label: 'Select pdf file'
-  @Semantics.largeObject: { mimeType: 'MimeType',
-                            fileName: 'FileName',
-                            contentDispositionPreference: #INLINE,
-                            acceptableMimeTypes: [ 'application/pdf' ] }
-
-  AttachmentRaw : abap.rawstring(0);
-
-  @UI.hidden: true
-  MimeType  : abap.char(128);
-
-  @UI.hidden: true
-  FileName  : abap.char(128);
-}
+no aplica
 ```
 Anotaciones clave:
 ```js
-@Semantics.largeObject: { mimeType: 'MimeType',
-                          fileName: 'FileName',
-                          contentDispositionPreference: #INLINE,
-                          acceptableMimeTypes: [ 'application/pdf' ]
-}
+no aplica
 ```
-Esto significa:
-
-✅ "Este campo contiene un archivo grande (PDF)"
-
-✅ "Solo acepta archivos PDF"
-
-✅ "El nombre y tipo del archivo vienen en los otros campos"
-
-
-Resumen en cristiano 🎯
-En una app Fiori donde el usuario puede subir un archivo Excel:
-
-ZA_UPLOAD_PDF_FILE = El "formulario" que el usuario ve (con un botón para adjuntar)
-
-ZA_UPLOAD_STREAM = Los "datos del archivo" que se envían al backend (el contenido, nombre, y tipo)
-
-Esto permite que desde Fiori UI puedas hacer clic en "Subir fichero" → seleccionar archivo → enviarlo al sistema SAP.
 
 ### 2.2 METADATA EXTENSIONS
-¡Aquí se definen tres botones de interacción!
 
 Los Metadata Extensions sirven para definir la configuración de la UI (interfaz de usuario) de forma declarativa, permitiendo la separación entre:
 
@@ -237,73 +183,67 @@ Estas anotaciones se publican automáticamente en el servicio **OData** y son in
 
 Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de datos ni frontend.
 
-<!-- [...detalle](md_docs/metadata_extensions.md) -->
 [...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
 
 ``` abap
 @Metadata.layer: #CORE
 
-@UI.headerInfo: { typeName: 'PDF Document',
-                  typeNamePlural: 'PDF Documents',
-                  title: { type: #STANDARD, value: 'DocumentId' },
-                  description: { type: #STANDARD, value: 'DocumentId' } }
+@UI.headerInfo: { title: { type: #STANDARD, value: 'TravelID' },
+                  description: { type: #STANDARD, value: 'TravelID' } }
 
-annotate entity ZC_PDF_DOCUMENTS with
+annotate view ZC_TRAVEL_APP_01 with
 
 {
-  @UI.facet: [ { id: 'DocumentInfo',
+  @UI.facet: [ { label: 'General Information',
+                 id: 'GeneralInfo',
                  purpose: #STANDARD,
-                 type: #IDENTIFICATION_REFERENCE,
                  position: 10,
-                 label: 'Document Information' } ]
+                 type: #IDENTIFICATION_REFERENCE } ]
+  @UI.identification: [ { position: 10 } ]
+  @UI.lineItem: [ { position: 10 } ]
+  @UI.selectionField: [ { position: 10 } ]
+  TravelID;
 
-  // Botón en la barra superior, sin necesidad de seleccionar una fila
-  @UI.lineItem: [ { type: #FOR_ACTION, label: 'Upload PDF', dataAction: 'uploadPdf' } ]
-  @UI.hidden: true
-  DocumentId;
+  @UI.identification: [ { position: 20 } ]
+  @UI.lineItem: [ { position: 20 } ]
+  @UI.selectionField: [ { position: 20 } ]
+  BeginDate;
 
-  // Campos con botón View en cada fila
-  @UI.identification: [ { position: 10, label: 'File Name' } ]
-  @UI.lineItem: [ { position: 10, label: 'File Name' } ]
-  FileName;
+  @UI.identification: [ { position: 30 } ]
+  @UI.lineItem: [ { position: 30 } ]
+  @UI.selectionField: [ { position: 30 } ]
+  EndDate;
 
-  @UI.identification: [ { position: 20, label: 'Extension' } ]
-  @UI.lineItem: [ { position: 20, label: 'Extension' } ]
-  FileExtension;
+  @UI.identification: [ { position: 40 } ]
+  @UI.lineItem: [ { position: 40 } ]
+  @UI.selectionField: [ { position: 40 } ]
+  CustomerID;
 
-  @UI.identification: [ { position: 30, label: 'File Size' } ]
-  @UI.lineItem: [ { position: 30, label: 'Size (bytes)' } ]
-  FileSize;
-
-  @UI.identification: [ { position: 40, label: 'Uploaded By' } ]
-  @UI.lineItem: [ { position: 40, label: 'Uploaded By' } ]
-  UploadedBy;
-
-  @UI.identification: [ { position: 50, label: 'Uploaded At' } ]
-  @UI.lineItem: [ { position: 50, label: 'Upload Date' } ]
-  UploadedAt;
-
-  @UI.facet: [
-    // ← NUEVA FACETA
-    {
-      id: 'PDFViewer',
-      purpose: #STANDARD,
-      type: #FIELDGROUP_REFERENCE,
-      targetQualifier: 'PDFContent',
-      position: 60,
-      label: 'Ficheros adjuntos'
-    }
-    ]
-
-  @UI.lineItem: [ { position: 60, label: 'PDFContent' } ]
-  @UI.fieldGroup: [ { qualifier: 'PDFContent', position: 60 } ]
-  Attachment;
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50 } ]
+  @UI.selectionField: [ { position: 50 } ]
+  OverallStatus;
 
   @UI.hidden: true
-  ChangedAt;
+  CreatedBy;
 
   @UI.hidden: true
-  MimeType;
+  CreatedAt;
+
+  @UI.hidden: true
+  LocalLastChangedBy;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+  @UI.hidden: true
+  LastChangedAt;
+
+  @EndUserText.label: '_BaseEntity'
+  @UI.identification: [ { position: 110, label: '_BaseEntity' } ]
+  @UI.lineItem: [ { position: 110, label: '_BaseEntity' } ]
+  @UI.selectionField: [ { position: 110 } ]
+  _BaseEntity;
 }
 ```
 
@@ -312,7 +252,6 @@ annotate entity ZC_PDF_DOCUMENTS with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-<!-- [...detalle](./md_docs/BDEF.MD) -->
 [...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
 
 Ventas:
@@ -325,37 +264,42 @@ Ventas:
 #### 2.3.1 BEHAVIOR DEFINITIONS
 
 ##### Se crea BDEF sobre CDS root o Interfaz
-<!-- ![pedo](./img/BDEF_01.png) -->
+
 ![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
 
 ``` abap
-managed implementation in class zbp_i_pdf_documents unique;
-strict ( 1 );
+managed implementation in class ZBP_R_TRAVEL_APP_01 unique;
+strict ( 2 );
 with draft;
-define behavior for ZI_PDF_DOCUMENTS alias PdfDocument
-persistent table zpdf_documents
-draft table zpdf_documentsd
-etag master DocumentId
-lock master total etag DocumentId
+extensible;
+define behavior for ZR_TRAVEL_APP_01 alias ZrTravelApp01
+persistent table ztravel_app_01
+extensible
+draft table ztravel_app_01_d
+etag master LocalLastChangedAt
+lock master total etag LocalLastChangedAt
 authorization master ( global )
 {
-  // Operaciones CRUD básicas
+
   create;
   update;
   delete;
-  field ( numbering : managed ) DocumentId;
-  field ( readonly ) UploadedBy, UploadedAt, ChangedBy, ChangedAt;
 
-  // Campos obligatorios
-  field ( mandatory ) FileName;
+  field ( mandatory : create )
+  TravelID;
 
-  // Acciones
-  // Upload - STATIC (sin fila seleccionada)
-  static action uploadPdf deep parameter ZA_UPLOAD_PDF_FILE;
+  field ( readonly )
+  CreatedBy,
+  CreatedAt,
+  LocalLastChangedBy,
+  LocalLastChangedAt;
 
-  // View - INSTANCIA (necesita fila seleccionada)
-  // action viewPdf deep result [1]  ZA_VIEW_PDF;
-  // function viewPdf deep result [1]  ZA_VIEW_PDF;
+  field ( readonly : update )
+  TravelID;
+
+  // Declaración de la validación
+  validation validateDates on save { field BeginDate, EndDate; create; }
+  validation validateCustomer on save { field CustomerID; create; }
 
   draft action Activate optimized;
   draft action Discard;
@@ -363,21 +307,20 @@ authorization master ( global )
   draft action Resume;
   draft determine action Prepare;
 
-  //   Mapeo de campos tabla <-> CDS
-  mapping for zpdf_documents
+  mapping for ztravel_app_01 corresponding extensible
     {
-      DocumentId    = document_id;
-      FileName      = file_name;
-      FileExtension = file_extension;
-      MimeType      = mime_type;
-      FileSize      = file_size;
-      Description   = description;
-      Attachment    = attachment;
-      UploadedBy    = uploaded_by;
-      UploadedAt    = uploaded_at;
-      ChangedBy     = changed_by;
-      ChangedAt     = changed_at;
+      TravelID           = travel_id;
+      BeginDate          = begin_date;
+      EndDate            = end_date;
+      CustomerID         = customer_id;
+      OverallStatus      = overall_status;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
     }
+
 }
 ```
 
@@ -391,23 +334,22 @@ authorization master ( global )
 4. Seguridad: Controlas qué expones en cada capa
 
 ``` abap
-projection;
-strict ( 1 );
+projection implementation in class ZBP_C_TRAVEL_APP_01 unique;
+strict ( 2 );
+extensible;
 use draft;
-
-define behavior for ZC_PDF_DOCUMENTS //alias xxxx
+use side effects;
+define behavior for ZC_TRAVEL_APP_01 alias ZcTravelApp01
+extensible
+use etag
 {
-  // Usar las mismas operaciones de la vista padre
   use create;
   use update;
   use delete;
 
-  // Usar las mismas acciones
-  use action uploadPdf ;
-
+  use action Edit;
   use action Activate;
   use action Discard;
-  use action Edit;
   use action Resume;
   use action Prepare;
 
@@ -415,22 +357,6 @@ define behavior for ZC_PDF_DOCUMENTS //alias xxxx
 ```
 
 ``` abap
-abstract;
-strict ( 1 );
-with hierarchy;
-define behavior for ZA_UPLOAD_STREAM //alias <alias_name>
-{
-}
-```
-
-``` abap
-abstract;
-strict ( 1 );
-with hierarchy;
-define behavior for ZA_UPLOAD_PDF_FILE //alias <alias_name>
-{
-  association _Stream with hierarchy;
-}
 ```
 
 ## business-services
@@ -438,9 +364,16 @@ define behavior for ZA_UPLOAD_PDF_FILE //alias <alias_name>
 ### 3.1 services-definition
 
 ``` abap
-@EndUserText.label: 'SERVICE DEFINITION PDF'
-define service ZSD_PDF_DOC {
-  expose ZC_PDF_DOCUMENTS;
+@EndUserText: {
+  label: 'Service Definition for ZC_TRAVEL_APP_01'
+}
+@ObjectModel: {
+  leadingEntity: {
+    name: 'ZC_TRAVEL_APP_01'
+  }
+}
+define service ZUI_TRAVEL_APP_01_O4 provider contracts odata_v4_ui {
+  expose ZC_TRAVEL_APP_01;
 }
 ```
 
@@ -469,122 +402,156 @@ Visualizar
 ### 4.1 clases
 
 ``` abap
-CLASS zbp_i_pdf_documents DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_pdf_documents.
+class ZBP_R_TRAVEL_APP_01 definition
+  public
+  abstract
+  final
+  for behavior of ZR_TRAVEL_APP_01 .
+
+public section.
+protected section.
+private section.
 ENDCLASS.
 
-CLASS zbp_i_pdf_documents IMPLEMENTATION.
+
+
+CLASS ZBP_R_TRAVEL_APP_01 IMPLEMENTATION.
 ENDCLASS.
 ```
 
 ``` abap
-class lhc_ZPO_I_MASTER_LIST definition inheriting from cl_abap_behavior_handler.
+class lhc_zr_travel_app_01 definition inheriting from cl_abap_behavior_handler.
   private section.
     methods get_global_authorizations for global authorization
-      importing request requested_authorizations for ExcData result result.
-
-    methods processData for modify
-      importing keys for action zpo_i_master_list~processData result result.
-
-    methods uploadExcelData for modify
-      importing keys for action zpo_i_master_list~uploadExcelData.
-
-endclass.
-
-class lhc_PdfDocument definition inheriting from cl_abap_behavior_handler.
-  private section.
-    methods get_global_authorizations for global authorization
-      importing request requested_authorizations for PdfDocument result result.
-
-    methods uploadPdf for modify
-      importing keys for action PdfDocument~uploadPdf.
-
-*    methods viewPdf for read
-*    importing keys for function PdfDocument~viewPdf result result.
-
+              importing
+                 request requested_authorizations for ZrTravelApp01
+              result result.
+    methods validateDates for validate on save
+                  importing keys for ZrTravelApp01~validateDates.
+    methods validateCustomer for validate on save
+      importing keys for ZrTravelApp01~validateCustomer.
 endclass.
 
 
-class lhc_PdfDocument implementation.
+class lhc_zr_travel_app_01 implementation.
   method get_global_authorizations.
   endmethod.
 
-  method uploadPdf.
-    " 1.    Leer los parámetros recibidos
-    " 2.    Generar uuid
-    " 3.    Obtener usuario actual y timestamp
-    " 4.    Construir el registro
-    " 5.    Insertar en la tabla
-    " 6.    Devolver resultado
+  method validateDates.
+    " 1. Leer las fechas de los registros que se están guardando
+    read entities of ZR_Travel_App_01 in local mode
+         entity ZrTravelApp01
+         fields ( BeginDate EndDate )
+         with corresponding #( keys )
+         result data(lt_travels).
 
-    try.
-        data(lv_document_id) = cl_system_uuid=>create_uuid_x16_static( ).
-      catch cx_uuid_error.
-    endtry.
+    loop at lt_travels into data(ls_travel).
 
-    " Obtener timestamp actual
-    cl_abap_tstmp=>systemtstmp_syst2utc( exporting syst_date = cl_abap_context_info=>get_system_date( )
-                                                   syst_time = cl_abap_context_info=>get_system_time( )
-                                         importing utc_tstmp = data(lv_timestamp) ).
+      " 2. Lógica de validación
+      if ls_travel-EndDate < ls_travel-BeginDate. " Fecha fin antes que inicio
 
-    " Crear usando RAP
-    modify entities of zi_pdf_documents in local mode
-           entity PdfDocument
-           create fields ( DocumentId FileName MimeType Attachment
-                           FileSize FileExtension UploadedBy UploadedAt ChangedBy ChangedAt )
-           with value #( ( DocumentId    = lv_document_id
-                           FileName      = keys[ 1 ]-%param-_stream-FileName
-                           MimeType      = keys[ 1 ]-%param-_stream-MimeType
-                           Attachment    = keys[ 1 ]-%param-_stream-AttachmentRaw "PdfData
-                           FileSize      = xstrlen( keys[ 1 ]-%param-_stream-AttachmentRaw )" PdfData )
-                           FileExtension = 'PDF'
-                           UploadedBy    = cl_abap_context_info=>get_user_technical_name( )
-                           UploadedAt    = lv_timestamp
-                           ChangedBy     = cl_abap_context_info=>get_user_technical_name( )
-                           ChangedAt     = lv_timestamp
-                           %control      = value #( DocumentId    = if_abap_behv=>mk-on
-                                                    FileName      = if_abap_behv=>mk-on
-                                                    MimeType      = if_abap_behv=>mk-on
-                                                    Attachment    = if_abap_behv=>mk-on
-                                                    FileSize      = if_abap_behv=>mk-on
-                                                    FileExtension = if_abap_behv=>mk-on
-                                                    UploadedBy    = if_abap_behv=>mk-on
-                                                    UploadedAt    = if_abap_behv=>mk-on
-                                                    ChangedBy     = if_abap_behv=>mk-on
-                                                    ChangedAt     = if_abap_behv=>mk-on ) ) )
-           " TODO: variable is assigned but never used (ABAP cleaner)
-           mapped data(lt_mapped)
-           " TODO: variable is assigned but never used (ABAP cleaner)
-           reported data(lt_reported)
-           failed data(lt_failed).
+        " 3. Reportar el error a la UI
+        append value #( %tky = ls_travel-%tky ) to failed-zrtravelapp01.
 
-    if lt_failed is initial.
-      " Mensaje de éxito
-      append value #( %msg = new_message_with_text(
-                                 severity = if_abap_behv_message=>severity-success
-                                 text     = 'El fichero PDF se ha cargado de forma exitosa!. Refrescar selección' ) )
-             to reported-pdfdocument.
-    endif.
+        append value #( %tky               = ls_travel-%tky
+                        %state_area        = 'VALIDATE_DATES'
+                        %msg               = new_message_with_text(
+                                                 severity = if_abap_behv_message=>severity-error
+                                                 text     = 'La fecha de fin no puede ser anterior a la de inicio' )
+                        %element-begindate = if_abap_behv=>mk-on
+                        %element-enddate   = if_abap_behv=>mk-on ) to reported-zrtravelapp01.
+
+      elseif ls_travel-BeginDate < cl_abap_context_info=>get_system_date( ). " Fecha en el pasado
+
+        append value #( %tky = ls_travel-%tky ) to failed-zrtravelapp01.
+
+        append value #( %tky               = ls_travel-%tky
+                        %state_area        = 'VALIDATE_DATES'
+                        %msg               = new_message_with_text(
+                                                 severity = if_abap_behv_message=>severity-error
+                                                 text     = 'No puedes registrar viajes en el pasado' )
+                        %element-begindate = if_abap_behv=>mk-on ) to reported-zrtravelapp01.
+      endif.
+
+    endloop.
   endmethod.
 
+  method validateCustomer.
+    " ========================================
+    " PASO 1: Declarar variables de trabajo
+    " ========================================
+    data ls_reported type structure for reported zr_travel_app_01\\ZrTravelApp01.
 
-*  method viewpdf.
-*    " Leer el documento de la base de datos
-*    read entities of zi_pdf_documents in local mode
-*         entity PdfDocument
-*         fields ( DocumentId FileName MimeType Attachment )
-*         with corresponding #( keys )
-*         result data(lt_documents).
-*
-*    " Leer el primer documento
-*    read table lt_documents index 1 into data(ls_document).
-*
-*    if sy-subrc = 0.
-*      " Construir el resultado
-*      result = value #( ( %param-pdf_content = ls_document-Attachment
-*                          %param-FileName    = ls_document-FileName
-*                          %param-MimeType    = ls_document-MimeType ) ).
-*    endif.
-*  endmethod.
+    " 1. Leer las fechas de los registros que se están guardando
+    read entities of ZR_Travel_App_01 in local mode
+         entity ZrTravelApp01
+         fields ( CustomerID )
+         with corresponding #( keys )
+         result data(lt_travels).
+
+    loop at lt_travels into data(ls_travel).
+
+      select count(*) from /DMO/I_Customer
+        where CustomerID = @ls_travel-CustomerID.
+
+      if sy-subrc = 0.
+        continue.
+      endif.
+
+      " ========================================
+      " PASO 2: Crear la estructura para REPORTED
+      " ========================================
+      " Inicializamos la estructura vacía
+      clear ls_reported.
+
+      " ========================================
+      " PASO 3: Asignar la clave técnica (%tky)
+      " ========================================
+      " %tky identifica de forma única la instancia que falló
+      " Copia todos los campos clave de la entidad
+      ls_reported-%tky        = ls_travel-%tky.
+      " Ejemplo: si tu clave es TravelID, esto es equivalente a:
+      " ls_reported-TravelID = ls_travel-TravelID.
+
+      " ========================================
+      " PASO 4: Asignar el state_area
+      " ========================================
+      " Define el área de estado donde ocurrió el error
+      " Agrupa mensajes relacionados
+      ls_reported-%state_area = 'VALIDATE_CUSTOMER'.
+
+      " Alternativa: Para marcar TODOS los state areas
+      " ls_reported-%state_area = if_abap_behv=>state_area_all.
+
+      " ========================================
+      " PASO 5: Crear el mensaje de error
+      " ========================================
+      " Método 1: new_message_with_text (el que usas actualmente)
+*      ls_reported-%msg        = new_message_with_text( severity = if_abap_behv_message=>severity-error
+*                                                       text     = |¡El cliente { ls_travel-CustomerID } no existe!| ).
+
+      ls_reported-%msg        = new_message( id       = 'ZRAP_MSG_VAL'
+                                             number   = '001'
+                                             severity = if_abap_behv_message=>severity-error
+                                             v1       = ls_travel-CustomerID ).
+
+      " ========================================
+      " PASO 6: Marcar el campo que tiene el error
+      " ========================================
+      " Marca el campo CustomerID como el que tiene el problema
+      " if_abap_behv=>mk-on = 'X' (marca activada)
+      ls_reported-%element-customerid = if_abap_behv=>mk-on.
+
+      " Esto hace que en Fiori Elements se resalte el campo en rojo
+
+      " ========================================
+      " PASO 7: Agregar al tabla REPORTED
+      " ========================================
+      insert initial line into table reported-zrtravelapp01 assigning field-symbol(<f>).
+      <f> = corresponding #( ls_reported ).
+
+    endloop.
+  endmethod.
 endclass.
 ```
 
