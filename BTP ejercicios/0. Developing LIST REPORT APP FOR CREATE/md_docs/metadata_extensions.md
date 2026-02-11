@@ -14,11 +14,11 @@ Los metadata extensions permiten **separar las anotaciones UI de la definición 
 
 ### Estructura y presentación
 
-- **@UI.lineItem**: Configura las columnas de tablas (List Reports, Object Pages)
-- **@UI.fieldGroup**: Agrupa campos en secciones de formularios
+- **@UI.headerInfo**: Configura el encabezado de la página de objeto
 - **@UI.facet**: Define la estructura de pestañas y secciones en Object Pages
 - **@UI.selectionField**: Especifica los campos disponibles en filtros de búsqueda
-- **@UI.headerInfo**: Configura el encabezado de la página de objeto
+- **@UI.lineItem**: Configura las columnas de tablas (List Reports, Object Pages)
+- **@UI.fieldGroup**: Agrupa campos en secciones de formularios
 - **@UI.identification**: Define campos en la sección de identificación
 - **@UI.hidden**: Ocultar campos que existen en la vista CDS pero no deben mostrarse
 
