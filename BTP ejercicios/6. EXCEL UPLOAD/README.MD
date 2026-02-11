@@ -157,7 +157,7 @@ define root abstract entity ZPO_A_FILE
 }
 
 ```
-``` js
+``` c#
 define root abstract entity ZPO_A_STREAM
 ```
 
