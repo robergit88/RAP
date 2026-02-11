@@ -157,8 +157,9 @@ define root abstract entity ZPO_A_FILE
 }
 
 ```
-
-> define root abstract entity ZPO_A_STREAM
+``` js
+define root abstract entity ZPO_A_STREAM
+```
 
 **¿Qué es?**
 

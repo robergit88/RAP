@@ -27,9 +27,8 @@ graph
     B --> A
     B --> C
     C --> B
-
- 
 ```
+
 ## ¿Cómo se ve las sintaxis de EML?
 ### EML contiene sintaxis para LEER, MODIFICAR (Crear, Actualizar, Eliminar, Ejecutar acciones) y CONFIRMAR. Veamos cada sintaxis paso a paso.
 

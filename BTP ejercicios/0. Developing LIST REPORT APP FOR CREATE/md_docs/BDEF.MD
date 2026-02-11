@@ -5,7 +5,7 @@ Una Behavior Definition es un componente clave del SAP RAP (RESTFUL ABAP Program
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
 # Estructura Básica
-```abap
+``` abap
 managed implementation in class zbp_i_travel unique;
 strict ( 2 );
 
@@ -88,8 +88,8 @@ Campo para control de concurrencia optimista (detecta modificaciones simultánea
 
 # Tipos de Behavior Definition
 ## Managed
-SAP gestiona automáticamente la persistencia y transacciones:
-```abap
+SAP gestiona automáticamente la persistencia:
+``` abap
 managed implementation in class zbp_i_travel unique;
 ```
 ## Unmanaged
