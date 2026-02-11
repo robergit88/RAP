@@ -678,4 +678,3 @@ endclass.
 
 ![Presentación](./img/CREATE_03.png)
 
-![Presentación](./img/VALIDATION_01.png)
