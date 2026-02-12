@@ -819,7 +819,7 @@ endclass.
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
-### Reprogrmar (viaje)
+### Reprogramar (viaje)
 
 ![Presentación](./img/REPROGRAMAR_01.png)
 
@@ -829,3 +829,12 @@ endclass.
 
 ![Presentación](./img/REPROGRAMAR_04.png)
 
+### Copiar (viaje)
+
+![Presentación](./img/COPIAR_01.png)
+
+![Presentación](./img/COPIAR_02.png)
+
+![Presentación](./img/COPIAR_03.png)
+
+![Presentación](./img/COPIAR_04.png)
