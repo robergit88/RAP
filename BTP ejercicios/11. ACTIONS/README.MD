@@ -335,6 +335,7 @@ Beneficio: Permite al usuario segmentar la lista de viajes rápidamente (ej: ver
 | `reprogramarViaje` | **Reprogramar** | Dispara la lógica para modificar fechas del viaje. |
 | `copiarViaje` | **Copiar** | Crea una nueva instancia tipo Draft basada en la actual. |
 
+
 ``` abap
 @Metadata.layer: #CORE
 
