@@ -831,10 +831,14 @@ endclass.
 
 ### Copiar (viaje)
 
+### Seleccionar registro a ser copiado y click en `Copiar`
 ![Presentación](./img/COPIAR_01.png)
 
+### Se presenta registro nuevo con información copiada
 ![Presentación](./img/COPIAR_02.png)
 
+### Se modifica aeropuerto destino y grabamos
 ![Presentación](./img/COPIAR_03.png)
 
+### Se muestra listado con registro nuevo
 ![Presentación](./img/COPIAR_04.png)
