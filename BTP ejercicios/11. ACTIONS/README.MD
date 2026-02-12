@@ -304,6 +304,31 @@ Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de dato
 
 [...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
 
+🔘 Documentación de Interfaz: Acciones Custom (Botones)
+En SAP Fiori Elements, las acciones definidas en el Backend (BDEF) se exponen en la interfaz mediante anotaciones en la Metadata Extension (MDE). En este caso, se utilizan sobre el campo OverallStatus.
+
+🛠️ Desglose de Anotaciones
+1. `@UI.identification` (Object Page)
+Define cómo se comportan los botones dentro de la página de detalles del objeto.
+
+Ubicación: Los botones aparecerán en la barra de herramientas de la sección donde se encuentre el campo.
+
+Acciones vinculadas: Se exponen tres botones críticos: `Rechazar`, `Reprogramar` y `Copiar`.
+
+Tipo: `#FOR_ACTION` vincula el botón directamente con el nombre de la acción definido en el Behavior Definition.
+
+2. `@UI.lineItem` (List Report)
+Define la presencia de los botones en la tabla principal (lista de registros).
+
+Funcionalidad: Permite al usuario ejecutar acciones sobre uno o varios registros seleccionados sin necesidad de entrar al detalle.
+
+Posición: Se le asigna la position: 110 para mantener la jerarquía visual junto al estado del viaje.
+
+3. `@UI.selectionField`
+Muestra el campo `OverallStatus` como un filtro de búsqueda en la parte superior de la aplicación.
+
+Beneficio: Permite al usuario segmentar la lista de viajes rápidamente (ej: ver solo los viajes "Rechazados").
+
 ``` abap
 @Metadata.layer: #CORE
 
