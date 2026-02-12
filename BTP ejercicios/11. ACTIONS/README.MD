@@ -1,5 +1,6 @@
 # MANAGED APP
 
+0. [RESÚMEN](#resúmen)
 1. [DICTIONARY](#dictionary)
    - 1.1 [Tabla BBDD](#11-tabla-bbdd)
    - 1.2 [Tabla BBDD DRAFT](#12-tabla-bbdd-draft)
@@ -24,6 +25,21 @@
 5. [Pruebas](#pruebas)
 
 ---
+
+## RESÚMEN 
+
+Resumen Técnico: Determinaciones en RAP
+Objetivo: Inicializar valores automáticamente (CurrencyCode = 'EUR', OverallStatus = 'O') al crear un nuevo registro, sin intervención del usuario.
+
+Definición (BDEF): Se define dentro de la entidad como determination setInitialValues on modify { create; }. Esto le dice al framework que se ejecute ni bien el registro "toca" la base de datos (o el buffer de Draft).
+
+Implementación (Clase Pool): * Se usa READ ENTITIES para capturar la llave (%tky) del registro recién nacido.
+
+Se usa MODIFY ENTITIES para "pisar" los campos con los valores por defecto.
+
+Tip Pro: Usamos %control-FieldName = if_abap_behv=>mk-on para asegurar que el framework reconozca el cambio.
+
+Sinergia con Field Control: Complementamos la determinación con field ( readonly ) CurrencyCode; para que el valor sea visible pero no editable, evitando errores de usuario.
 
 ## DICTIONARY
 
