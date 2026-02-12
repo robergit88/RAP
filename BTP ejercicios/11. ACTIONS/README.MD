@@ -332,8 +332,8 @@ Beneficio: Permite al usuario segmentar la lista de viajes rápidamente (ej: ver
 
 | Acción Técnica | Etiqueta (Label) | Función Principal |
 | :--- | :--- | :--- |
-| `setRejected` | **Rechazar** | Cambia el estado del viaje a 'R' (Rechazado). |
-| `reprogramarViaje` | **Reprogramar** | Dispara la lógica para modificar fechas del viaje. |
+| `setRejected` | **Rechazar** | Cambia el estado del viaje a 'X' (Rechazado). |
+| `reprogramarViaje` | **Reprogramar** | POPUP de parámetros modificar fechas del viaje. |
 | `copiarViaje` | **Copiar** | Crea una nueva instancia tipo Draft basada en la actual. |
 
 
