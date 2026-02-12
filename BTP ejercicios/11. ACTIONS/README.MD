@@ -22,7 +22,7 @@
 4. [Source Code Library](#source-code)
    - 4.1 [Clases](#41-clases)
 
-5. [Pruebas](#pruebas)
+5. [Pruebas](#Pruebas)
 
 ---
 
@@ -812,7 +812,7 @@ class lhc_zr_travel_03 implementation.
 endclass.
 ```
 
-## pruebas
+## Pruebas
 ![Presentación](./img/SCREEN_01.png)
 
 ![Presentación](./img/SCREEN_06_GO.png)
@@ -821,24 +821,28 @@ endclass.
 
 ### Reprogramar (viaje)
 
+#### Seleccionar registro a ser reprogramado y click en `Reprogramar`
 ![Presentación](./img/REPROGRAMAR_01.png)
 
+#### Sistema solicita fechas nuevas
 ![Presentación](./img/REPROGRAMAR_02.png)
 
+#### El usuario llena las fechas
 ![Presentación](./img/REPROGRAMAR_03.png)
 
+#### En el listado aparece el registro con las fechas modificadas
 ![Presentación](./img/REPROGRAMAR_04.png)
 
 ### Copiar (viaje)
 
-### Seleccionar registro a ser copiado y click en `Copiar`
+#### Seleccionar registro a ser copiado y click en `Copiar`
 ![Presentación](./img/COPIAR_01.png)
 
-### Se presenta registro nuevo con información copiada
+#### Se presenta registro nuevo con información copiada
 ![Presentación](./img/COPIAR_02.png)
 
-### Se modifica aeropuerto destino y grabamos
+#### Se modifica aeropuerto destino y grabamos
 ![Presentación](./img/COPIAR_03.png)
 
-### Se muestra listado con registro nuevo
+#### Se muestra listado con registro nuevo
 ![Presentación](./img/COPIAR_04.png)
