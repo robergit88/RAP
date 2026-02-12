@@ -55,7 +55,7 @@ Utilizadas para automatizar el llenado de campos sin intervención del usuario, 
   * `CurrencyCode` -> `'EUR'`.
   * `OverallStatus` -> `'O'` (Open).
 
-> **Tip Pro:**
+**Tip Pro:**
 Es vital activar el flag `%control-FieldName = if_abap_behv=>mk-on` para que el framework detecte que el valor fue asignado programáticamente.
 
 ---
