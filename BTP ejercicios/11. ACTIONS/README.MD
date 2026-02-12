@@ -29,6 +29,7 @@
 ## RESÚMEN 
 
 📘 Resumen Técnico: Determinaciones en RAP
+
 🎯 Objetivo
 Inicializar valores automáticamente al crear un nuevo registro, garantizando la integridad de los datos sin intervención manual del usuario.
 
@@ -37,6 +38,7 @@ Moneda: Predeterminada a EUR.
 Estado: Inicializado como O (Open/Abierto).
 
 🏗️ Definición en el Behavior Definition (BDEF)
+
 Se declara la determinación dentro de la entidad correspondiente para que el framework sepa cuándo disparar la lógica.
 
 ABAP
@@ -44,6 +46,7 @@ determination setInitialValues on modify { create; }
 Nota: Al usar on modify { create; }, nos aseguramos de que la lógica se ejecute tanto en registros persistentes como en el buffer de Draft.
 
 💻 Implementación (Clase de Comportamiento - CCIMP)
+
 La implementación sigue un patrón de tres pasos dentro del método setInitialValues:
 
 Lectura: Se utiliza READ ENTITIES para capturar la clave técnica (%tky) de los registros que se están creando.
@@ -53,11 +56,13 @@ Modificación: Se utiliza MODIFY ENTITIES en modo local para asignar los valores
 Mapeo: Se vinculan los resultados para que el framework procese los cambios.
 
 💡 Tip Pro: El flag %control
+
 Para asegurar que el framework reconozca el cambio programático, es vital activar el campo en la estructura de control:
 
 %control-CurrencyCode = if_abap_behv=>mk-on
 
 🤝 Sinergia con Field Control
+
 Para una experiencia de usuario (UX) superior, combinamos la lógica del backend con restricciones en la UI:
 
 Comportamiento: field ( readonly ) CurrencyCode;
