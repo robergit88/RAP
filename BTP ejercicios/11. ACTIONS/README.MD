@@ -28,50 +28,54 @@
 
 ## RESÚMEN 
 
-📘 Resumen Técnico: Determinaciones en RAP
+## 🚀 1. Creación de Acciones (Botones Custom)
+Para permitir que el usuario dispare una lógica específica (como copiar un viaje), definimos acciones en el **Behavior Definition (BDEF)**.
 
-🎯 Objetivo
-Inicializar valores automáticamente al crear un nuevo registro, garantizando la integridad de los datos sin intervención manual del usuario.
-
-* **Campos afectados:** 
-    * `CurrencyCode` -> Inicializado en `'EUR'`.
-    * `OverallStatus` -> Inicializado en `'O'` (Open).
-
-🏗️ Definición en el Behavior Definition (BDEF)
-
-Se declara la determinación dentro de la entidad correspondiente para que el framework sepa cuándo disparar la lógica.
-
-ABAP
-
-`determination setInitialValues on modify { create; }`
-
-Nota: Al usar on modify { create; }, nos aseguramos de que la lógica se ejecute tanto en registros persistentes como en el buffer de Draft.
-
-💻 Implementación (Clase de Comportamiento - CCIMP)
-
-La implementación sigue un patrón de tres pasos dentro del método setInitialValues:
-
-Lectura: Se utiliza READ ENTITIES para capturar la clave técnica (%tky) de los registros que se están creando.
-
-Modificación: Se utiliza **MODIFY ENTITIES** en modo local para asignar los valores por defecto.
-
-Mapeo: Se vinculan los resultados para que el framework procese los cambios.
-
-💡 Tip Pro: El flag %control
-
-Para asegurar que el framework reconozca el cambio programático, es vital activar el campo en la estructura de control:
-
-``` js
-%control-CurrencyCode = if_abap_behv=>mk-on
+* **Definición:** 
+```abap
+    action ( features : instance ) copiarViaje result [1] $self;
 ```
 
-🤝 Sinergia con Field Control
+* **Lógica de Copia:** Se implementa en la clase local (`CCIMP`) realizando un `READ` del registro seleccionado y un `MODIFY ENTITIES` para crear el nuevo registro tipo **Draft**.
 
-Para una experiencia de usuario (UX) superior, combinamos la lógica del backend con restricciones en la UI:
+* **Navegacion:** Al usar `result [1] $self`, el framework permite que tras la ejecución el sistema sepa qué registro nuevo mostrar.
 
-Comportamiento: field ( readonly ) CurrencyCode;
+---
 
-Resultado: El valor aparece automáticamente (gracias a la determinación) pero queda bloqueado para el usuario, evitando errores accidentales o ingresos de monedas no permitidas.
+## 🎯 2. Determinaciones (Inicialización Automática)
+
+Utilizadas para automatizar el llenado de campos sin intervención del usuario, especialmente útil al presionar el botón **CREATE** estándar o tras una copia.
+
+* **Definición:** 
+```abap
+    determination setInitialValues on modify { create; }
+```
+
+* **Campos Inicializados:** 
+  * `CurrencyCode` -> `'EUR'`.
+  * `OverallStatus` -> `'O'` (Open).
+
+> **Tip Pro:**
+Es vital activar el flag `%control-FieldName = if_abap_behv=>mk-on` para que el framework detecte que el valor fue asignado programáticamente.
+
+---
+
+## 🛡️ 3. Sinergia con Field Control
+Para garantizar que los valores automáticos (como el EUR) no sean alterados por error, protegemos el campo en el BDEF:
+
+```abap
+field ( readonly ) CurrencyCode;
+```
+
+## 🎨 4. Vinculación en la UI (Metadata Extension)
+
+Para que los botones aparezcan en la interfaz de Fiori, los declaramos en la anotación `@UI.lineItem` o `@UI.identification`:
+
+``` abap
+@UI.lineItem: [ { position: 10, type: #FOR_ACTION, dataAction: 'copiarViaje', label: 'Copiar' } ]
+```
+
+Resultado: Una interfaz limpia donde el usuario ve botones personalizados y los campos nacen con los valores correctos y bloqueados.
 
 ## DICTIONARY
 
