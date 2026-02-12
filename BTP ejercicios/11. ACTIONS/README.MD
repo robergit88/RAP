@@ -329,6 +329,12 @@ Muestra el campo `OverallStatus` como un filtro de búsqueda en la parte superio
 
 Beneficio: Permite al usuario segmentar la lista de viajes rápidamente (ej: ver solo los viajes "Rechazados").
 
+| Acción Técnica | Etiqueta (Label) | Función Principal |
+| :--- | :--- | :--- |
+| `setRejected` | **Rechazar** | Cambia el estado del viaje a 'R' (Rechazado). |
+| `reprogramarViaje` | **Reprogramar** | Dispara la lógica para modificar fechas del viaje. |
+| `copiarViaje` | **Copiar** | Crea una nueva instancia tipo Draft basada en la actual. |
+
 ``` abap
 @Metadata.layer: #CORE
 
