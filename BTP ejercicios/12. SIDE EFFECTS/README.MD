@@ -28,54 +28,18 @@
 
 ## RESÚMEN 
 
-## 🚀 1. Creación de Acciones (Botones Custom)
-Para permitir que el usuario dispare una lógica específica (como copiar un viaje), definimos acciones en el **Behavior Definition (BDEF)**.
+## 🚀 1. Creación de SIDE EFFECTS
+# Escenarios de Side Effects - Aplicación de Turismo
 
-* **Definición:** 
-```abap
-    action ( features : instance ) copiarViaje result [1] $self;
-```
+| # | Escenario | Trigger (Disparador) | Target (Lo que se refresca) |
+| :--- | :--- | :--- | :--- |
+| **1** | **Cálculo de Tiempo** | `begin_date`, `end_date` | `duration_days` |
+| **2** | **Cálculo de Costos** | `booking_fee`, `tax_amount` | `total_price` |
+| **3** | **Gestión de Estado** | Acción `rejectTravel` | `overall_status` y **Permissions** (Field Control) |
 
-* **Lógica de Copia:** Se implementa en la clase local (`CCIMP`) realizando un `READ` del registro seleccionado y un `MODIFY ENTITIES` para crear el nuevo registro tipo **Draft**.
+Para el 1 y 2: Se necesita usar field ... affects field ....
 
-* **Navegacion:** Al usar `result [1] $self`, el framework permite que tras la ejecución el sistema sepa qué registro nuevo mostrar.
-
----
-
-## 🎯 2. Determinaciones (Inicialización Automática)
-
-Utilizadas para automatizar el llenado de campos sin intervención del usuario, especialmente útil al presionar el botón **CREATE** estándar o tras una copia.
-
-* **Definición:** 
-```abap
-    determination setInitialValues on modify { create; }
-```
-
-* **Campos Inicializados:** 
-  * `CurrencyCode` -> `'EUR'`.
-  * `OverallStatus` -> `'O'` (Open).
-
-**Tip Pro:**
-Es vital activar el flag `%control-FieldName = if_abap_behv=>mk-on` para que el framework detecte que el valor fue asignado programáticamente.
-
----
-
-## 🛡️ 3. Sinergia con Field Control
-Para garantizar que los valores automáticos (como el EUR) no sean alterados por error, protegemos el campo en el BDEF:
-
-```abap
-field ( readonly ) CurrencyCode;
-```
-
-## 🎨 4. Vinculación en la UI (Metadata Extension)
-
-Para que los botones aparezcan en la interfaz de Fiori, los declaramos en la anotación `@UI.lineItem` o `@UI.identification`:
-
-``` abap
-@UI.lineItem: [ { position: 10, type: #FOR_ACTION, dataAction: 'copiarViaje', label: 'Copiar' } ]
-```
-
-Resultado: Una interfaz limpia donde el usuario ve botones personalizados y los campos nacen con los valores correctos y bloqueados.
+Para el 3: usar action ... affects field ..., permissions ( self ).
 
 ## DICTIONARY
 
@@ -466,33 +430,11 @@ Ventas:
 
 ![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
 
+permissions ( update ): Es la forma de decirle a Fiori "volvé a fijarte si los campos ahora son solo lectura o no".
 
-Markdown
-# ⚙️ Documentación Técnica: Behavior Definition (BDEF)
+Nombres de campos: Fijate que puse BeginDate y no begin_date, porque como tenés un mapping, la BDEF prefiere los nombres de los campos de la entidad (los que están a la izquierda en tu mapping).
 
-El **Behavior Definition** actúa como el contrato de reglas de negocio para la entidad `ZrTravel03`.
-
-Define cómo se comporta el objeto de negocio, sus restricciones y las acciones disponibles.
-
-## 🏗️ Cabecera y Configuración Global
-
-* **Implementation Type:** `managed`. El framework SAP RAP gestiona automáticamente las operaciones de base de datos (Insert, Update, Delete).
-
-* **Protocolo:** `strict ( 2 )`. Obliga al uso de las mejores prácticas y validaciones más recientes del modelo RAP.
-
-* **Manejo de Borradores:** `with draft`. Habilita la persistencia temporal de datos, permitiendo al usuario retomar ediciones sin perder cambios.
-
-* **Control de Concurrencia:** `etag master LocalLastChangedAt`. Protege la integridad de los datos evitando que dos usuarios editen el mismo registro simultáneamente.
-
----
-
-## 🔒 Control de Campos (Field Control)
-
-| Campos | Propiedad | Razón |
-| :--- | :--- | :--- |
-| `TravelUUID`, `CreatedBy`, `CreatedAt`, etc. | `readonly` | Campos técnicos y de auditoría gestionados por el sistema. |
-| `CurrencyCode` | <span style="color:red">**readonly**</span> | Bloqueado por regla de negocio para operar exclusivamente en **EUR**. |
-| `TravelUUID` | `numbering : managed` | El sistema genera automáticamente la clave primaria (UUID). |
+La Llave: Asegurate de que el bloque side effects { ... } esté bien cerradito con su llave antes de que empiecen las determinations.
 
 ---
 
