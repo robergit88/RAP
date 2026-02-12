@@ -33,7 +33,7 @@
 🎯 Objetivo
 Inicializar valores automáticamente al crear un nuevo registro, garantizando la integridad de los datos sin intervención manual del usuario.
 
-Moneda: Predeterminada a EUR.
+Moneda: Predeterminada a **EUR**.
 
 Estado: Inicializado como O (Open/Abierto).
 
@@ -42,7 +42,9 @@ Estado: Inicializado como O (Open/Abierto).
 Se declara la determinación dentro de la entidad correspondiente para que el framework sepa cuándo disparar la lógica.
 
 ABAP
-determination setInitialValues on modify { create; }
+
+`determination setInitialValues on modify { create; }`
+
 Nota: Al usar on modify { create; }, nos aseguramos de que la lógica se ejecute tanto en registros persistentes como en el buffer de Draft.
 
 💻 Implementación (Clase de Comportamiento - CCIMP)
@@ -51,7 +53,7 @@ La implementación sigue un patrón de tres pasos dentro del método setInitialV
 
 Lectura: Se utiliza READ ENTITIES para capturar la clave técnica (%tky) de los registros que se están creando.
 
-Modificación: Se utiliza MODIFY ENTITIES en modo local para asignar los valores por defecto.
+Modificación: Se utiliza **MODIFY ENTITIES** en modo local para asignar los valores por defecto.
 
 Mapeo: Se vinculan los resultados para que el framework procese los cambios.
 
