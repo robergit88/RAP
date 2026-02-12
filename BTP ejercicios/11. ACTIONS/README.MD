@@ -28,18 +28,41 @@
 
 ## RESÚMEN 
 
-Resumen Técnico: Determinaciones en RAP
-Objetivo: Inicializar valores automáticamente (CurrencyCode = 'EUR', OverallStatus = 'O') al crear un nuevo registro, sin intervención del usuario.
+📘 Resumen Técnico: Determinaciones en RAP
+🎯 Objetivo
+Inicializar valores automáticamente al crear un nuevo registro, garantizando la integridad de los datos sin intervención manual del usuario.
 
-Definición (BDEF): Se define dentro de la entidad como determination setInitialValues on modify { create; }. Esto le dice al framework que se ejecute ni bien el registro "toca" la base de datos (o el buffer de Draft).
+Moneda: Predeterminada a EUR.
 
-Implementación (Clase Pool): * Se usa READ ENTITIES para capturar la llave (%tky) del registro recién nacido.
+Estado: Inicializado como O (Open/Abierto).
 
-Se usa MODIFY ENTITIES para "pisar" los campos con los valores por defecto.
+🏗️ Definición en el Behavior Definition (BDEF)
+Se declara la determinación dentro de la entidad correspondiente para que el framework sepa cuándo disparar la lógica.
 
-Tip Pro: Usamos %control-FieldName = if_abap_behv=>mk-on para asegurar que el framework reconozca el cambio.
+ABAP
+determination setInitialValues on modify { create; }
+Nota: Al usar on modify { create; }, nos aseguramos de que la lógica se ejecute tanto en registros persistentes como en el buffer de Draft.
 
-Sinergia con Field Control: Complementamos la determinación con field ( readonly ) CurrencyCode; para que el valor sea visible pero no editable, evitando errores de usuario.
+💻 Implementación (Clase de Comportamiento - CCIMP)
+La implementación sigue un patrón de tres pasos dentro del método setInitialValues:
+
+Lectura: Se utiliza READ ENTITIES para capturar la clave técnica (%tky) de los registros que se están creando.
+
+Modificación: Se utiliza MODIFY ENTITIES en modo local para asignar los valores por defecto.
+
+Mapeo: Se vinculan los resultados para que el framework procese los cambios.
+
+💡 Tip Pro: El flag %control
+Para asegurar que el framework reconozca el cambio programático, es vital activar el campo en la estructura de control:
+
+%control-CurrencyCode = if_abap_behv=>mk-on
+
+🤝 Sinergia con Field Control
+Para una experiencia de usuario (UX) superior, combinamos la lógica del backend con restricciones en la UI:
+
+Comportamiento: field ( readonly ) CurrencyCode;
+
+Resultado: El valor aparece automáticamente (gracias a la determinación) pero queda bloqueado para el usuario, evitando errores accidentales o ingresos de monedas no permitidas.
 
 ## DICTIONARY
 
