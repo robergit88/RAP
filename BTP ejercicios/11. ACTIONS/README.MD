@@ -509,7 +509,9 @@ Se habilitan las capacidades CRUD básicas: `create`, `update` y `delete`.
 | `reprogramarViaje` | `parameter Z_A_ReprogramarDates` | **Reprogramar:** Abre un cuadro de diálogo (Popup) para capturar nuevas fechas. |
 
 ### 🔹 Determinaciones
-* **`setInitialValues`**: Se ejecuta `on modify { create; }`. Inicializa automáticamente la moneda en 'EUR' y el estado en 'Open' al crear el registro.
+* **`setInitialValues`**: Se ejecuta `on modify { create; }`. 
+
+Inicializa automáticamente la moneda en 'EUR' y el estado en 'Open' al crear el registro.
 
 ---
 
