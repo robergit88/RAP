@@ -819,9 +819,17 @@ endclass.
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
+### Rechazar (viaje)
+
+#### Seleccionar registro y click en `Rechazar`
+![Presentación](./img/RECHAZAR_01.png)
+
+#### En el listado aparece el registro con estado rechazado
+![Presentación](./img/RECHAZAR_02.png)
+
 ### Reprogramar (viaje)
 
-#### Seleccionar registro a ser reprogramado y click en `Reprogramar`
+#### Seleccionar registro y click en `Reprogramar`
 ![Presentación](./img/REPROGRAMAR_01.png)
 
 #### Sistema solicita fechas nuevas
@@ -835,7 +843,7 @@ endclass.
 
 ### Copiar (viaje)
 
-#### Seleccionar registro a ser copiado y click en `Copiar`
+#### Seleccionar registro y click en `Copiar`
 ![Presentación](./img/COPIAR_01.png)
 
 #### Se presenta registro nuevo con información copiada
