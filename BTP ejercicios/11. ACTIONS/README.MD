@@ -61,7 +61,9 @@ Mapeo: Se vinculan los resultados para que el framework procese los cambios.
 
 Para asegurar que el framework reconozca el cambio programático, es vital activar el campo en la estructura de control:
 
+``` js
 %control-CurrencyCode = if_abap_behv=>mk-on
+```
 
 🤝 Sinergia con Field Control
 
