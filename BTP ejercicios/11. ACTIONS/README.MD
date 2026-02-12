@@ -466,6 +466,75 @@ Ventas:
 
 ![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
 
+
+Markdown
+# ⚙️ Documentación Técnica: Behavior Definition (BDEF)
+
+El **Behavior Definition** actúa como el contrato de reglas de negocio para la entidad `ZrTravel03`.
+
+Define cómo se comporta el objeto de negocio, sus restricciones y las acciones disponibles.
+
+## 🏗️ Cabecera y Configuración Global
+
+* **Implementation Type:** `managed`. El framework SAP RAP gestiona automáticamente las operaciones de base de datos (Insert, Update, Delete).
+
+* **Protocolo:** `strict ( 2 )`. Obliga al uso de las mejores prácticas y validaciones más recientes del modelo RAP.
+
+* **Manejo de Borradores:** `with draft`. Habilita la persistencia temporal de datos, permitiendo al usuario retomar ediciones sin perder cambios.
+
+* **Control de Concurrencia:** `etag master LocalLastChangedAt`. Protege la integridad de los datos evitando que dos usuarios editen el mismo registro simultáneamente.
+
+---
+
+## 🔒 Control de Campos (Field Control)
+
+| Campos | Propiedad | Razón |
+| :--- | :--- | :--- |
+| `TravelUUID`, `CreatedBy`, `CreatedAt`, etc. | `readonly` | Campos técnicos y de auditoría gestionados por el sistema. |
+| `CurrencyCode` | <span style="color:red">**readonly**</span> | Bloqueado por regla de negocio para operar exclusivamente en **EUR**. |
+| `TravelUUID` | `numbering : managed` | El sistema genera automáticamente la clave primaria (UUID). |
+
+---
+
+## ⚡ Operaciones y Acciones (Lógica de Negocio)
+
+### 🔹 Operaciones Estándar
+Se habilitan las capacidades CRUD básicas: `create`, `update` y `delete`.
+
+### 🔹 Acciones Personalizadas (Botones)
+| Acción Técnica | Resultado | Descripción |
+| :--- | :--- | :--- |
+| `setRejected` | `result [1] $self` | **Rechazar:** Cambia el estado del viaje a 'Rechazado' y refresca la instancia. |
+| `copiarViaje` | `result [1] $self` | **Copiar:** Crea una nueva instancia de Draft basada en los datos actuales. |
+| `reprogramarViaje` | `parameter Z_A_ReprogramarDates` | **Reprogramar:** Abre un cuadro de diálogo (Popup) para capturar nuevas fechas. |
+
+### 🔹 Determinaciones
+* **`setInitialValues`**: Se ejecuta `on modify { create; }`. Inicializa automáticamente la moneda en 'EUR' y el estado en 'Open' al crear el registro.
+
+---
+
+## 🔄 Mapeo de Datos (Mapping)
+
+Vincula los nombres de los campos del modelo de datos (ABAP-friendly) con los nombres técnicos de la tabla de base de datos `ztravel_03`.
+
+```abap
+mapping for ztravel_03 corresponding extensible
+{
+  TravelUUID           = travel_uuid;
+  BeginDate            = begin_date;
+  EndDate              = end_date;
+  AirportOriginID      = airport_origin_id;
+  AirportDestinationID = airport_destination_id;
+  BookingFee           = booking_fee;
+  TaxAmount            = tax_amount;
+  TotalPrice           = total_price;
+  CurrencyCode         = currency_code;
+  CustomerID           = customer_id;
+  OverallStatus        = overall_status;
+  // ... campos de auditoría
+}
+```
+
 ``` abap
 managed implementation in class ZBP_R_TRAVEL_03 unique;
 strict ( 2 );
