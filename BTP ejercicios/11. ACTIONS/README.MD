@@ -33,9 +33,9 @@
 🎯 Objetivo
 Inicializar valores automáticamente al crear un nuevo registro, garantizando la integridad de los datos sin intervención manual del usuario.
 
-Moneda: Predeterminada a **EUR**.
-
-Estado: Inicializado como O (Open/Abierto).
+* **Campos afectados:** 
+    * `CurrencyCode` -> Inicializado en `'EUR'`.
+    * `OverallStatus` -> Inicializado en `'O'` (Open).
 
 🏗️ Definición en el Behavior Definition (BDEF)
 
