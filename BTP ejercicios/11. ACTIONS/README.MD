@@ -120,18 +120,10 @@ define root view entity ZR_TRAVEL_03
       end_date               as EndDate,
       airport_origin_id      as AirportOriginID,
       airport_destination_id as AirportDestinationID,
-
-      @Semantics.amount.currencyCode: 'CurrencyCode'
       booking_fee            as BookingFee,
-
-      @Semantics.amount.currencyCode: 'CurrencyCode'
       tax_amount             as TaxAmount,
-
-      @Semantics.amount.currencyCode: 'CurrencyCode'
       total_price            as TotalPrice,
-
       currency_code          as CurrencyCode,
-
       customer_id            as CustomerID,
       overall_status         as OverallStatus,
       duration_days          as DurationDays,
@@ -156,7 +148,7 @@ define root view entity ZR_TRAVEL_03
 
 ``` abap
 @AccessControl.authorizationCheck: #MANDATORY
-@EndUserText.label: '###GENERATED Core Data Service Entity'
+@EndUserText.label: '!CUSTOM ACTIONS!'
 @Metadata.allowExtensions: true
 @Metadata.ignorePropagatedAnnotations: true
 @ObjectModel.sapObjectNodeType.name: 'ZTRAVEL_03'
@@ -173,14 +165,14 @@ define root view entity ZC_TRAVEL_03
       BeginDate,
       EndDate,
 
-      @Consumption.valueHelpDefinition: [
-        { entity: { name: '/DMO/I_Airport_StdVH', 
-                    element: 'AirportID' } } ]      
+      @Consumption.valueHelpDefinition: [ { entity: 
+      { name: '/DMO/I_Airport_StdVH', 
+      element: 'AirportID' } } ]
       AirportOriginID,
 
-      @Consumption.valueHelpDefinition: [
-        { entity: { name: '/DMO/I_Airport_StdVH', 
-                    element: 'AirportID' } } ]      
+      @Consumption.valueHelpDefinition: [ { entity: 
+      { name: '/DMO/I_Airport_StdVH', 
+      element: 'AirportID' } } ]
       AirportDestinationID,
 
       @Semantics.amount.currencyCode: 'CurrencyCode'
@@ -192,22 +184,19 @@ define root view entity ZC_TRAVEL_03
       @Semantics.amount.currencyCode: 'CurrencyCode'
       TotalPrice,
 
-      @Consumption.valueHelpDefinition: [ { entity: { element: 'Currency', name: 'I_CurrencyStdVH' },
-                                            useForValidation: true } ]
+     @UI.hidden: true
       CurrencyCode,
 
-      @Consumption.valueHelpDefinition: [ 
-        { entity: { name: '/DMO/I_Customer_StdVH', 
-                    element: 'CustomerID' } } ]
+      @Consumption.valueHelpDefinition: [ { entity: 
+      { name: '/DMO/I_Customer_StdVH', 
+      element: 'CustomerID' } } ]
       CustomerID,
 
-      @Consumption.valueHelpDefinition: [
-            { entity: { name: '/DMO/I_Overall_Status_VH_Text', 
-              element: 'OverallStatus' } 
-              
-              } ]      
+      @Consumption.valueHelpDefinition: [ { entity: 
+      { name: '/DMO/I_Overall_Status_VH_Text', 
+      element: 'OverallStatus' } } ]
       OverallStatus,
-      
+
       DurationDays,
 
       @Semantics.user.createdBy: true
@@ -225,6 +214,8 @@ define root view entity ZC_TRAVEL_03
       LastChangedAt,
 
       _BaseEntity
+}
+
 ```
 
 #### 2.1.3 ABSTRACT ENTITY
@@ -307,47 +298,53 @@ annotate view ZC_TRAVEL_03 with
   @UI.lineItem: [ { position: 60 } ]
   BookingFee;
 
-  @EndUserText.label: 'IVA 21%'
+//  @EndUserText.label: 'Moneda'
   @UI.identification: [ { position: 70 } ]
-  @UI.lineItem: [ { position: 70 } ]
+//  @UI.lineItem: [ { position: 70 } ]
+//  @UI.hidden: true
+  CurrencyCode;
+
+  @EndUserText.label: 'IVA 21%'
+  @UI.identification: [ { position: 80 } ]
+  @UI.lineItem: [ { position: 80 } ]
   TaxAmount;
 
   @EndUserText.label: 'Total + Impuesto'
-  @UI.identification: [ { position: 80 } ]
-  @UI.lineItem: [ { position: 80 } ]
-  TotalPrice;
-
   @UI.identification: [ { position: 90 } ]
   @UI.lineItem: [ { position: 90 } ]
-  @UI.selectionField: [ { position: 90 } ]
+  TotalPrice;
+
+  @UI.identification: [ { position: 100 } ]
+  @UI.lineItem: [ { position: 100 } ]
+  @UI.selectionField: [ { position: 100 } ]
   CustomerID;
 
   // ---------------------------------------------------------
   // !BOTONES!
   // ---------------------------------------------------------
-  @UI.identification: [ { position: 100 },
-                        { type: #FOR_ACTION, dataAction: 'setTerminado', label: 'Terminar Viaje' },
+  @UI.identification: [ { position: 110 },
+                        { type: #FOR_ACTION, dataAction: 'setRejected', label: 'Rechazar' },
                         { type: #FOR_ACTION, dataAction: 'reprogramarViaje', label: 'Reprogramar' },
-                        { type: #FOR_ACTION, dataAction: 'copiarViaje', label: 'Copiar Viaje' } ]
-  @UI.lineItem: [ { position: 100 },
-                  { type: #FOR_ACTION, dataAction: 'setTerminado', label: 'Terminar Viaje' },
+                        { type: #FOR_ACTION, dataAction: 'copiarViaje', label: 'Copiar' } ]
+  @UI.lineItem: [ { position: 110 },
+                  { type: #FOR_ACTION, dataAction: 'setRejected', label: 'Rechazar' },
                   { type: #FOR_ACTION, dataAction: 'reprogramarViaje', label: 'Reprogramar' },
-                  { type: #FOR_ACTION, dataAction: 'copiarViaje', label: 'Copiar Viaje' } ]
-  @UI.selectionField: [ { position: 100 } ]
+                  { type: #FOR_ACTION, dataAction: 'copiarViaje', label: 'Copiar' } ]
+  @UI.selectionField: [ { position: 110 } ]
   OverallStatus;
   // ---------------------------------------------------------
 
   @EndUserText.label: 'DurationDays'
-  @UI.identification: [ { position: 110, label: 'DurationDays' } ]
-  @UI.lineItem: [ { position: 110, label: 'DurationDays' } ]
+  @UI.identification: [ { position: 120, label: 'DurationDays' } ]
+  @UI.lineItem: [ { position: 120, label: 'DurationDays' } ]
   DurationDays;
-
-  @UI.identification: [ { position: 120 } ]
-  @UI.lineItem: [ { position: 120 } ]
-  CreatedBy;
 
   @UI.identification: [ { position: 130 } ]
   @UI.lineItem: [ { position: 130 } ]
+  CreatedBy;
+
+  @UI.identification: [ { position: 140 } ]
+  @UI.lineItem: [ { position: 140 } ]
   CreatedAt;
 
   @UI.hidden: true
@@ -398,6 +395,7 @@ etag master LocalLastChangedAt
 lock master total etag LocalLastChangedAt
 authorization master ( global )
 {
+
   field ( readonly )
   TravelUUID,
   CreatedBy,
@@ -405,8 +403,12 @@ authorization master ( global )
   LocalLastChangedBy,
   LocalLastChangedAt;
 
+  //Esto lo hace no editable
+  field ( readonly ) CurrencyCode;
+
   field ( numbering : managed )
   TravelUUID;
+
 
   create;
   update;
@@ -419,17 +421,22 @@ authorization master ( global )
   draft determine action Prepare;
 
   // -----------------------------------------------------------
+  // DETERMINACIONES
+  // -----------------------------------------------------------
+  determination setInitialValues on modify { create; }
+
+  // -----------------------------------------------------------
   // ACÁ DEFINIMOS LAS ACCIONES (LOS BOTONES)
   // -----------------------------------------------------------
 
-  // Botón "Terminar Viaje" (Simple)
-  // CAMBIÁ ESTO: De 'factory action' a 'action' común de instancia
+  // Botón "Terminar Viaje"
   // El 'result [1] $self' le dice que devuelve la misma fila actualizada
-  action setTerminado result [1] $self;
+  action setRejected result [1] $self;
 
   // Botón "Copiar Viaje" (Crea uno nuevo)
   // El [1] significa que la acción devuelve exactamente una nueva instancia
-  factory action copiarViaje [1];
+  //  factory action copiarViaje [1];
+  action copiarViaje result [1] $self;
 
   // Botón "Reprogramar" (Con Popup - requiere Abstract Entity)
   action ( features : instance ) reprogramarViaje parameter Z_A_ReprogramarDates result [1] $self;
@@ -484,7 +491,8 @@ use etag
   use update;
   use delete;
 
-  use action setTerminado;
+// Se exponen los botones
+  use action setRejected;
   use action copiarViaje;
   use action reprogramarViaje;
 
@@ -554,8 +562,6 @@ protected section.
 private section.
 ENDCLASS.
 
-
-
 CLASS ZBP_R_TRAVEL_03 IMPLEMENTATION.
 ENDCLASS.
 ```
@@ -572,13 +578,15 @@ class lhc_zr_travel_03 definition inheriting from cl_abap_behavior_handler.
                   importing keys request requested_features for ZrTravel03 result result.
 
     methods copiarViaje for modify
-      importing keys for action ZrTravel03~copiarViaje.
+      importing keys for action ZrTravel03~copiarViaje result result.
 
     methods reprogramarViaje for modify
       importing keys for action ZrTravel03~reprogramarViaje result result.
 
-    methods setTerminado for modify
-      importing keys for action ZrTravel03~setTerminado result result.
+    methods setRejected for modify
+      importing keys for action ZrTravel03~setRejected result result.
+    methods setInitialValues for determine on modify
+      importing keys for ZrTravel03~setInitialValues.
 endclass.
 
 
@@ -600,23 +608,42 @@ class lhc_zr_travel_03 implementation.
     " %is_draft: Si usás draft, esto decide si el nuevo nace como borrador
     data lt_travel_create type table for create zr_travel_03\\ZrTravel03.
 
-    lt_travel_create = value #( for travel in lt_travel_read
-                                ( %is_draft = travel-%is_draft
-                                  " Copiamos todo menos el ID
-                                  %data     = corresponding #( travel except TravelUUID ) ) ).
+    lt_travel_create = value #( for ls in lt_travel_read index into i
+                                ( %is_draft = if_abap_behv=>mk-on
+                                  %cid      = |Copiado_{ i }|  " <-- ID temporal
+                                  " Copiamos todo menos...
+                                  " Usamos BASE para heredar todo y después asignar el campo OverallStatus
+                                  %data     = value #( base corresponding #( ls except TravelUUID )
+                                                       OverallStatus = 'O'
+                                                       CurrencyCode  = 'EUR' ) ) ).
 
     " 3. Ejecutamos la creación
     modify entities of zr_travel_03 in local mode
            entity ZrTravel03
-           create fields ( BeginDate EndDate AirportOriginID AirportDestinationID
-                           BookingFee TaxAmount TotalPrice CurrencyCode CustomerID OverallStatus )
+           create fields ( BeginDate
+                           EndDate
+                           AirportOriginID
+                           AirportDestinationID
+                           BookingFee
+                           TaxAmount
+                           TotalPrice
+                           CurrencyCode
+                           CustomerID
+                           OverallStatus
+                           DurationDays )
            with lt_travel_create
            mapped data(mapped_create)
            failed failed
            reported reported.
 
     " 4. Devolvemos el nuevo registro creado para que Fiori lo muestre
-    mapped-ZrTravel03 = mapped_create-ZrTravel03.
+    " Mapeamos primero el MAPPED para que el framework sepa qué se creó
+    mapped-zrtravel03 = mapped_create-zrtravel03.
+
+    " Ahora llenamos el RESULT de forma que el compilador lo entienda
+    result = value #( for rel in mapped_create-zrtravel03 index into idx
+                      ( %tky   = keys[ idx ]-%tky  " La clave del original
+                        %param = corresponding #( rel ) ) ).
   endmethod.
 
   method reprogramarViaje.
@@ -652,7 +679,7 @@ class lhc_zr_travel_03 implementation.
                         %param = travel ) ).
   endmethod.
 
-  method setTerminado.
+  method setRejected.
     " ¿Qué acabamos de hacer?
     " MODIFY ENTITIES: Es el comando que le dice a RAP: "Buscá este viaje y cambiale el campo OverallStatus".
 
@@ -666,7 +693,7 @@ class lhc_zr_travel_03 implementation.
            update fields ( OverallStatus )
            with value #( for key in keys
                          ( %tky          = key-%tky
-                           OverallStatus = 'A' ) ) " 'A' de Accepted/Terminado
+                           OverallStatus = 'X' ) ) " Rechazado
            failed failed
            reported reported.
 
@@ -679,6 +706,24 @@ class lhc_zr_travel_03 implementation.
     result = value #( for travel in lt_travel
                       ( %tky   = travel-%tky
                         %param = travel ) ).
+  endmethod.
+
+  method setInitialValues.
+    " Leemos los registros que se están creando
+    read entities of zr_travel_03 in local mode
+         entity ZrTravel03
+         fields ( CurrencyCode ) with corresponding #( keys )
+         result data(lt_travel).
+
+    " Si el campo está vacío, le mandamos el EUR de una
+    " Ya que estamos, lo dejamos en Open
+    modify entities of zr_travel_03 in local mode
+           entity ZrTravel03
+           update fields ( CurrencyCode OverallStatus )
+           with value #( for travel in lt_travel
+                         ( %tky          = travel-%tky
+                           CurrencyCode  = 'EUR'
+                           OverallStatus = 'O' ) ).
   endmethod.
 endclass.
 ```
