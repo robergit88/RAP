@@ -419,72 +419,70 @@ La Llave: Asegurate de que el bloque side effects { ... } esté bien cerradito c
 
 ## ⚡ Operaciones y Acciones (Lógica de Negocio)
 
-### 🔹 Operaciones Estándar
-Se habilitan las capacidades CRUD básicas: `create`, `update` y `delete`.
+### 🔹 Side Effects
 
-### 🔹 Acciones Personalizadas (Botones)
-| Acción Técnica | Resultado | Descripción |
-| :--- | :--- | :--- |
-| `setRejected` | `result [1] $self` | **Rechazar:** Cambia el estado del viaje a 'Rechazado' y refresca la instancia. |
-| `copiarViaje` | `result [1] $self` | **Copiar:** Crea una nueva instancia de Draft basada en los datos actuales. |
-| `reprogramarViaje` | `parameter Z_A_ReprogramarDates` | **Reprogramar:** Abre un cuadro de diálogo (Popup) para capturar nuevas fechas. |
+📋 Nuestros Side Effects (El "Si pasa A, entonces refrescamos B")
+1. El "Efecto Calendario" 📅
+Trigger (Si cambias): begin_date o end_date.
 
-### 🔹 Determinaciones
-* **`setInitialValues`**: Se ejecuta `on modify { create; }`. 
+Target (Refrescar): duration_days.
 
-Inicializa automáticamente la moneda en 'EUR' y el estado en 'Open' al crear el registro.
+¿Por qué? Porque si cambiás las fechas, el cálculo de los días de viaje tiene que actualizarse al toque en la pantalla.
+
+2. El "Efecto Billetera" 💰
+Trigger (Si cambias): booking_fee.
+
+Target (Refrescar): total_price y tax_amount.
+
+¿Por qué? Para que el usuario vea cuánto le duele el bolsillo en tiempo real sin tener que sacar la calculadora.
+
+## `SIDE EFFECTS (La magia)`
+
+```abap
+
+  side effects
+  {
+    // 1. Cálculo de Tiempo dias de duración
+    field BeginDate affects field DurationDays;
+    field EndDate affects field DurationDays;
+
+    // 2. Cálculo de Costos: IVA imp. y Precio Total
+    field BookingFee affects field TaxAmount, field TotalPrice;
+
+    // 3. Gestión de Estado y Permisos
+    action setRejected affects field OverallStatus, permissions ( update );
+  }
+```
 
 ---
 
-## 🔄 Mapeo de Datos (Mapping)
-
-Vincula los nombres de los campos del modelo de datos (ABAP-friendly) con los nombres técnicos de la tabla de base de datos `ztravel_03`.
-
-```abap
-mapping for ztravel_03 corresponding extensible
-{
-  TravelUUID           = travel_uuid;
-  BeginDate            = begin_date;
-  EndDate              = end_date;
-  AirportOriginID      = airport_origin_id;
-  AirportDestinationID = airport_destination_id;
-  BookingFee           = booking_fee;
-  TaxAmount            = tax_amount;
-  TotalPrice           = total_price;
-  CurrencyCode         = currency_code;
-  CustomerID           = customer_id;
-  OverallStatus        = overall_status;
-  // ... campos de auditoría
-}
-```
-
 ``` abap
-managed implementation in class ZBP_R_TRAVEL_03 unique;
+managed implementation in class ZBP_R_TRAVEL_04 unique;
 strict ( 2 );
 with draft;
 extensible;
-define behavior for ZR_TRAVEL_03 alias ZrTravel03
-persistent table ztravel_03
+define behavior for ZR_TRAVEL_04 alias ZrTravel04
+persistent table ztravel_04
 extensible
-draft table ztravel_03_d
+draft table ztravel_04_d
 etag master LocalLastChangedAt
 lock master total etag LocalLastChangedAt
 authorization master ( global )
 {
-
   field ( readonly )
   TravelUUID,
   CreatedBy,
   CreatedAt,
   LocalLastChangedBy,
-  LocalLastChangedAt;
-
-  //Esto lo hace no editable
-  field ( readonly ) CurrencyCode;
+  LocalLastChangedAt,
+//  CurrencyCode,
+  // Campos que se calculan solos
+  TaxAmount,
+  TotalPrice,
+  DurationDays;
 
   field ( numbering : managed )
   TravelUUID;
-
 
   create;
   update;
@@ -496,30 +494,35 @@ authorization master ( global )
   draft action Resume;
   draft determine action Prepare;
 
-  // -----------------------------------------------------------
-  // DETERMINACIONES
-  // -----------------------------------------------------------
-  determination setInitialValues on modify { create; }
+  // --- SIDE EFFECTS (La magia) ---
+  side effects
+  {
+    // 1. Cálculo de Tiempo dias de duración
+    field BeginDate affects field DurationDays;
+    field EndDate affects field DurationDays;
 
-  // -----------------------------------------------------------
-  // ACÁ DEFINIMOS LAS ACCIONES (LOS BOTONES)
-  // -----------------------------------------------------------
+    // 2. Cálculo de Costos: IVA imp. y Precio Total
+    field BookingFee affects field TaxAmount, field TotalPrice;
 
-  // Botón "Terminar Viaje"
-  // El 'result [1] $self' le dice que devuelve la misma fila actualizada
+    // 3. Gestión de Estado y Permisos
+    action setRejected affects field OverallStatus, permissions ( update );
+  }
+
+  // --- ACCIONES ---
+  // Acción para el Punto 3 de nuestra tabla
   action setRejected result [1] $self;
 
-  // Botón "Copiar Viaje" (Crea uno nuevo)
-  // El [1] significa que la acción devuelve exactamente una nueva instancia
-  //  factory action copiarViaje [1];
+  // Tu acción de copiar (aunque no tenga side effects específicos ahora)
   action copiarViaje result [1] $self;
 
-  // Botón "Reprogramar" (Con Popup - requiere Abstract Entity)
-  action ( features : instance ) reprogramarViaje parameter Z_A_ReprogramarDates result [1] $self;
+  // --- DETERMINACIONES ---
+  determination calculateTotalPrice on modify { field BookingFee; }
 
-  // -----------------------------------------------------------
+  determination calculateDuration on modify { field BeginDate, EndDate; }
 
-  mapping for ztravel_03 corresponding extensible
+  determination setInitialValues on modify { create; }
+
+  mapping for ztravel_04 corresponding extensible
     {
       TravelUUID           = travel_uuid;
       BeginDate            = begin_date;
