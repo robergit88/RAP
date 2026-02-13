@@ -382,10 +382,7 @@ annotate view ZC_TRAVEL_03 with
   @UI.lineItem: [ { position: 60 } ]
   BookingFee;
 
-//  @EndUserText.label: 'Moneda'
   @UI.identification: [ { position: 70 } ]
-//  @UI.lineItem: [ { position: 70 } ]
-//  @UI.hidden: true
   CurrencyCode;
 
   @EndUserText.label: 'IVA 21%'
@@ -559,11 +556,10 @@ authorization master ( global )
   LocalLastChangedAt;
 
   //Esto lo hace no editable
-  field ( readonly ) CurrencyCode;
+//  field ( readonly ) CurrencyCode;
 
   field ( numbering : managed )
   TravelUUID;
-
 
   create;
   update;
@@ -631,7 +627,8 @@ authorization master ( global )
 3. Mantenibilidad: Cambios en la lógica se reflejan automáticamente
 4. Seguridad: Controlas qué expones en cada capa
 
-### Se exponen los botones: TerminarViaje, copiarViaje, reprogramarViaje
+### Se exponen los botones: `TerminarViaje`, `copiarViaje`, `reprogramarViaje`
+
 ``` abap
 projection implementation in class ZBP_C_TRAVEL_03 unique;
 strict ( 2 );
@@ -660,8 +657,6 @@ use etag
 }
 ```
 
-``` abap
-```
 
 ## business-services
 
@@ -723,7 +718,17 @@ ENDCLASS.
 
 ``` abap
 class lhc_zr_travel_03 definition inheriting from cl_abap_behavior_handler.
+
+    " ══════════════════════════════════════════════════════════
+    " CONSTANTES
+    " ══════════════════════════════════════════════════════════
+    constants c_tax_rate         type p length 5 decimals 2 value '0.21'. " 21% IVA
+    constants c_default_currency type /dmo/currency_code    value 'EUR'.
+    constants c_open_status      type /dmo/overall_status   value 'O'.
+    constants c_rejected_status  type /dmo/overall_status   value 'X'.
+
   private section.
+
     methods get_global_authorizations for global authorization
               importing
                  request requested_authorizations for ZrTravel03
@@ -769,8 +774,8 @@ class lhc_zr_travel_03 implementation.
                                   " Copiamos todo menos...
                                   " Usamos BASE para heredar todo y después asignar el campo OverallStatus
                                   %data     = value #( base corresponding #( ls except TravelUUID )
-                                                       OverallStatus = 'O'
-                                                       CurrencyCode  = 'EUR' ) ) ).
+                                                       OverallStatus = c_open_status
+                                                       CurrencyCode  = c_default_currency ) ) ).
 
     " 3. Ejecutamos la creación
     modify entities of zr_travel_03 in local mode
@@ -848,7 +853,7 @@ class lhc_zr_travel_03 implementation.
            update fields ( OverallStatus )
            with value #( for key in keys
                          ( %tky          = key-%tky
-                           OverallStatus = 'X' ) ) " Rechazado
+                           OverallStatus = c_rejected_status ) ) " Rechazado
            failed failed
            reported reported.
 
@@ -877,8 +882,8 @@ class lhc_zr_travel_03 implementation.
            update fields ( CurrencyCode OverallStatus )
            with value #( for travel in lt_travel
                          ( %tky          = travel-%tky
-                           CurrencyCode  = 'EUR'
-                           OverallStatus = 'O' ) ).
+                           CurrencyCode  = c_default_currency
+                           OverallStatus = c_open_status ) ).
   endmethod.
 endclass.
 ```
