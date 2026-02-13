@@ -555,14 +555,15 @@ authorization master ( global )
 3. Mantenibilidad: Cambios en la lógica se reflejan automáticamente
 4. Seguridad: Controlas qué expones en cada capa
 
-### Se exponen los botones: TerminarViaje, copiarViaje, reprogramarViaje
+### Se exponen los botones: `Rechazar` y `Copiar`
+
 ``` abap
-projection implementation in class ZBP_C_TRAVEL_03 unique;
+projection implementation in class ZBP_C_TRAVEL_04 unique;
 strict ( 2 );
 extensible;
 use draft;
 use side effects;
-define behavior for ZC_TRAVEL_03 alias ZcTravel03
+define behavior for ZC_TRAVEL_04 alias ZcTravel04
 extensible
 use etag
 {
@@ -570,16 +571,15 @@ use etag
   use update;
   use delete;
 
-// Se exponen los botones
-  use action setRejected;
-  use action copiarViaje;
-  use action reprogramarViaje;
-
   use action Edit;
   use action Activate;
   use action Discard;
   use action Resume;
   use action Prepare;
+
+// Proyectamos nuestras acciones personalizadas
+  use action setRejected;
+  use action copiarViaje;
 
 }
 ```
@@ -593,15 +593,15 @@ use etag
 
 ``` abap
 @EndUserText: {
-  label: 'Service Definition for ZC_TRAVEL_03'
+  label: 'Service Definition for ZC_TRAVEL_04'
 }
 @ObjectModel: {
   leadingEntity: {
-    name: 'ZC_TRAVEL_03'
+    name: 'ZC_TRAVEL_04'
   }
 }
-define service ZUI_TRAVEL_03_O4 provider contracts odata_v4_ui {
-  expose ZC_TRAVEL_03;
+define service ZUI_TRAVEL_04_O4 provider contracts odata_v4_ui {
+  expose ZC_TRAVEL_04;
 }
 ```
 
@@ -630,62 +630,71 @@ Visualizar
 ### 4.1 clases
 
 ``` abap
-class ZBP_R_TRAVEL_03 definition
+class ZBP_R_TRAVEL_04 definition
   public
   abstract
   final
-  for behavior of ZR_TRAVEL_03 .
+  for behavior of ZR_TRAVEL_04 .
 
 public section.
 protected section.
 private section.
 ENDCLASS.
 
-CLASS ZBP_R_TRAVEL_03 IMPLEMENTATION.
+CLASS ZBP_R_TRAVEL_04 IMPLEMENTATION.
 ENDCLASS.
 ```
 
 ``` abap
-class lhc_zr_travel_03 definition inheriting from cl_abap_behavior_handler.
+class lhc_zr_travel_04 definition inheriting from cl_abap_behavior_handler.
+
+  public section.
+    " ══════════════════════════════════════════════════════════
+    " CONSTANTES
+    " ══════════════════════════════════════════════════════════
+    constants c_tax_rate         type p length 5 decimals 2 value '0.21'. " 21% IVA
+    constants c_default_currency type /dmo/currency_code    value 'EUR'.
+    constants c_open_status      type /dmo/overall_status   value 'O'.
+    constants c_rejected_status  type /dmo/overall_status   value 'X'.
+
   private section.
     methods get_global_authorizations for global authorization
               importing
-                 request requested_authorizations for ZrTravel03
+                 request requested_authorizations for ZrTravel04
               result result.
 
-    methods get_instance_features for instance features
-                  importing keys request requested_features for ZrTravel03 result result.
-
     methods copiarViaje for modify
-      importing keys for action ZrTravel03~copiarViaje result result.
-
-    methods reprogramarViaje for modify
-      importing keys for action ZrTravel03~reprogramarViaje result result.
+                  importing keys for action ZrTravel04~copiarViaje result result.
 
     methods setRejected for modify
-      importing keys for action ZrTravel03~setRejected result result.
+      importing keys for action ZrTravel04~setRejected result result.
+
+    methods calculateDuration for determine on modify
+      importing keys for ZrTravel04~calculateDuration.
+
+    methods calculateTotalPrice for determine on modify
+      importing keys for ZrTravel04~calculateTotalPrice.
+
     methods setInitialValues for determine on modify
-      importing keys for ZrTravel03~setInitialValues.
+      importing keys for ZrTravel04~setInitialValues.
+
 endclass.
 
 
-class lhc_zr_travel_03 implementation.
+class lhc_zr_travel_04 implementation.
   method get_global_authorizations.
-  endmethod.
-
-  method get_instance_features.
   endmethod.
 
   method copiarViaje.
     " 1. Leemos los datos del viaje original que queremos copiar
-    read entities of zr_travel_03 in local mode
-         entity ZrTravel03
+    read entities of zr_travel_04 in local mode
+         entity ZrTravel04
          all fields with corresponding #( keys )
          result data(lt_travel_read).
 
     " 2. Preparamos la tabla para crear el nuevo registro
     " %is_draft: Si usás draft, esto decide si el nuevo nace como borrador
-    data lt_travel_create type table for create zr_travel_03\\ZrTravel03.
+    data lt_travel_create type table for create zr_travel_04\\ZrTravel04.
 
     lt_travel_create = value #( for ls in lt_travel_read index into i
                                 ( %is_draft = if_abap_behv=>mk-on
@@ -693,12 +702,12 @@ class lhc_zr_travel_03 implementation.
                                   " Copiamos todo menos...
                                   " Usamos BASE para heredar todo y después asignar el campo OverallStatus
                                   %data     = value #( base corresponding #( ls except TravelUUID )
-                                                       OverallStatus = 'O'
-                                                       CurrencyCode  = 'EUR' ) ) ).
+                                                       OverallStatus = c_open_status
+                                                       CurrencyCode  = c_default_currency ) ) ).
 
     " 3. Ejecutamos la creación
-    modify entities of zr_travel_03 in local mode
-           entity ZrTravel03
+    modify entities of zr_travel_04 in local mode
+           entity ZrTravel04
            create fields ( BeginDate
                            EndDate
                            AirportOriginID
@@ -717,92 +726,111 @@ class lhc_zr_travel_03 implementation.
 
     " 4. Devolvemos el nuevo registro creado para que Fiori lo muestre
     " Mapeamos primero el MAPPED para que el framework sepa qué se creó
-    mapped-zrtravel03 = mapped_create-zrtravel03.
+    mapped-zrtravel04 = mapped_create-zrtravel04.
 
     " Ahora llenamos el RESULT de forma que el compilador lo entienda
-    result = value #( for rel in mapped_create-zrtravel03 index into idx
+    result = value #( for rel in mapped_create-zrtravel04 index into idx
                       ( %tky   = keys[ idx ]-%tky  " La clave del original
                         %param = corresponding #( rel ) ) ).
   endmethod.
 
-  method reprogramarViaje.
-    " 1. Levantamos las fechas que el usuario escribió en el Popup (%param)
-    data(lv_nueva_fecha_inicio) = keys[ 1 ]-%param-begin_date.
-    data(lv_nueva_fecha_fin)    = keys[ 1 ]-%param-end_date.
+  method calculateDuration.
+    " Punto 1: Lógica para calcular la diferencia de días
+    read entities of zr_travel_04 in local mode
+         entity ZrTravel04
+         fields ( BeginDate EndDate ) with corresponding #( keys )
+         result data(travels).
 
-    " 2. Validamos rápido que no vengan vacías (opcional pero recomendado)
-    if lv_nueva_fecha_inicio is initial or lv_nueva_fecha_fin is initial.
-      " Aquí podrías llenar la estructura 'reported' con un mensaje de error
+    modify entities of zr_travel_04 in local mode
+           entity ZrTravel04
+           update fields ( DurationDays )
+           with value #( for travel in travels
+                         ( %tky         = travel-%tky
+                           DurationDays = travel-EndDate - travel-BeginDate ) )
+    " TODO: variable is assigned but never used (ABAP cleaner)
+           reported data(reported_calc).
+  endmethod.
+
+  method calculateTotalPrice.
+    " PREPARAMOS EL BUFFER
+
+    " 1. Variables locales para el cálculo
+    data lv_tax_amount    type ztravel_04-tax_amount.
+    data lv_total_price   type ztravel_04-total_price.
+    data lt_travel_update type table for update zr_travel_04.
+
+    " 2. Recuperar los datos actuales del Buffer
+    read entities of zr_travel_04 in local mode
+         entity ZrTravel04
+         fields ( BookingFee ) with corresponding #( keys )
+         result data(travels).
+
+    if travels is initial.
       return.
     endif.
 
-    " 3. Modificamos el viaje con las nuevas fechas
-    modify entities of zr_travel_03 in local mode
-           entity ZrTravel03
-           update fields ( BeginDate EndDate )
-           with value #( for key in keys
-                         ( %tky      = key-%tky
-                           BeginDate = lv_nueva_fecha_inicio
-                           EndDate   = lv_nueva_fecha_fin ) )
-           failed failed
-           reported reported.
+    " 3. Aplicar el cambio en ABAP (Procesamiento campo por campo)
+    loop at travels into data(ls_travel).
 
-    " 4. Leemos el resultado para refrescar la UI
-    read entities of zr_travel_03 in local mode
-         entity ZrTravel03
-         all fields with corresponding #( keys )
-         result data(lt_travel).
+      " Recuperamos/Calculamos los nuevos valores en variables ABAP
+      lv_tax_amount  = ls_travel-BookingFee * c_tax_rate.
+      lv_total_price = ls_travel-BookingFee + lv_tax_amount.
 
-    result = value #( for travel in lt_travel
-                      ( %tky   = travel-%tky
-                        %param = travel ) ).
+      " 4. Pasamos las variables modificadas a una estructura de actualización
+      append value #( %tky       = ls_travel-%tky
+                      TaxAmount  = lv_tax_amount
+                      TotalPrice = lv_total_price )
+             to lt_travel_update.
+    endloop.
+
+    " 5. Ejecutar el MODIFY una sola vez con todos los cambios recolectados
+    modify entities of zr_travel_04 in local mode
+           entity ZrTravel04
+           update fields ( TaxAmount TotalPrice )
+           with lt_travel_update
+           " TODO: variable is assigned but never used (ABAP cleaner)
+           reported data(reported_price).
   endmethod.
 
   method setRejected.
-    " ¿Qué acabamos de hacer?
-    " MODIFY ENTITIES: Es el comando que le dice a RAP: "Buscá este viaje y cambiale el campo OverallStatus".
-
-    " IN LOCAL MODE: Esto es clave, le dice al sistema que no chequee autorizaciones otra vez porque ya estamos adentro de la clase de confianza.
-
-    " READ ENTITIES: Después de cambiarlo, lo volvemos a leer para que el botón de Fiori sepa que terminó bien y refresque la fila automáticamente.
-
-    " 1. Modificamos el estatus de las entidades seleccionadas
-    modify entities of zr_travel_03 in local mode
-           entity ZrTravel03
+    " Punto 3: Cambiamos el estado a Rechazado ('X')
+    modify entities of zr_travel_04 in local mode
+           entity ZrTravel04
            update fields ( OverallStatus )
            with value #( for key in keys
                          ( %tky          = key-%tky
-                           OverallStatus = 'X' ) ) " Rechazado
+                           OverallStatus = c_rejected_status ) )
            failed failed
            reported reported.
 
-    " 2. Leemos el resultado para refrescar la pantalla
-    read entities of zr_travel_03 in local mode
-         entity ZrTravel03
+    " Devolvemos el resultado para que el Side Effect refresque la UI
+    read entities of zr_travel_04 in local mode
+         entity ZrTravel04
          all fields with corresponding #( keys )
-         result data(lt_travel).
+         result data(travels).
 
-    result = value #( for travel in lt_travel
+    result = value #( for travel in travels
                       ( %tky   = travel-%tky
                         %param = travel ) ).
   endmethod.
 
   method setInitialValues.
+
     " Leemos los registros que se están creando
-    read entities of zr_travel_03 in local mode
-         entity ZrTravel03
+    read entities of zr_travel_04 in local mode
+         entity ZrTravel04
          fields ( CurrencyCode ) with corresponding #( keys )
          result data(lt_travel).
 
     " Si el campo está vacío, le mandamos el EUR de una
     " Ya que estamos, lo dejamos en Open
-    modify entities of zr_travel_03 in local mode
-           entity ZrTravel03
+    modify entities of zr_travel_04 in local mode
+           entity ZrTravel04
            update fields ( CurrencyCode OverallStatus )
            with value #( for travel in lt_travel
                          ( %tky          = travel-%tky
-                           CurrencyCode  = 'EUR'
-                           OverallStatus = 'O' ) ).
+                           CurrencyCode  = c_default_currency
+                           OverallStatus = c_open_status ) ).
   endmethod.
 endclass.
 ```
@@ -814,38 +842,16 @@ endclass.
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
-### Rechazar (viaje)
+### SIDE EFFECTS: Actualizar IVA y Precio Total
 
-#### Seleccionar registro y click en `Rechazar`
-![Presentación](./img/RECHAZAR_01.png)
+![Presentación](./img/EDIT_PRECIO_01.png)
 
-#### En el listado aparece el registro con estado rechazado
-![Presentación](./img/RECHAZAR_02.png)
+![Presentación](./img/EDIT_PRECIO_02.png)
 
-### Reprogramar (viaje)
+### SIDE EFFECTS: Actualizar Duración de días
 
-#### Seleccionar registro y click en `Reprogramar`
-![Presentación](./img/REPROGRAMAR_01.png)
+![Presentación](./img/EDIT_FECHA_FIN_01.png)
 
-#### Sistema solicita fechas nuevas
-![Presentación](./img/REPROGRAMAR_02.png)
+![Presentación](./img/EDIT_FECHA_FIN_02.png)
 
-#### El usuario llena las fechas
-![Presentación](./img/REPROGRAMAR_03.png)
-
-#### En el listado aparece el registro con las fechas modificadas
-![Presentación](./img/REPROGRAMAR_04.png)
-
-### Copiar (viaje)
-
-#### Seleccionar registro y click en `Copiar`
-![Presentación](./img/COPIAR_01.png)
-
-#### Se presenta registro nuevo con información copiada
-![Presentación](./img/COPIAR_02.png)
-
-#### Se modifica aeropuerto destino y grabamos
-![Presentación](./img/COPIAR_03.png)
-
-#### Se muestra listado con registro nuevo
-![Presentación](./img/COPIAR_04.png)
+![Presentación](./img/EDIT_FECHA_FIN_03.png)
