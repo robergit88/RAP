@@ -46,12 +46,12 @@ Para el 3: usar action ... affects field ..., permissions ( self ).
 ### 1.1 Tabla BBDD
 
 ``` abap
-@EndUserText.label : 'Tabla turismo para acciones'
+@EndUserText.label : 'Tabla turismo para side effects'
 @AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
 @AbapCatalog.tableCategory : #TRANSPARENT
 @AbapCatalog.deliveryClass : #A
 @AbapCatalog.dataMaintenance : #RESTRICTED
-define table ztravel_03 {
+define table ztravel_04 {
 
   key client             : abap.clnt not null;
   key travel_uuid        : sysuuid_x16 not null;
@@ -59,11 +59,11 @@ define table ztravel_03 {
   end_date               : /dmo/end_date;
   airport_origin_id      : /dmo/airport_id;
   airport_destination_id : /dmo/airport_id;
-  @Semantics.amount.currencyCode : 'ztravel_03.currency_code'
+  @Semantics.amount.currencyCode : 'ztravel_04.currency_code'
   booking_fee            : /dmo/booking_fee;
-  @Semantics.amount.currencyCode : 'ztravel_03.currency_code'
+  @Semantics.amount.currencyCode : 'ztravel_04.currency_code'
   tax_amount             : /dmo/total_price;
-  @Semantics.amount.currencyCode : 'ztravel_03.currency_code'
+  @Semantics.amount.currencyCode : 'ztravel_04.currency_code'
   total_price            : /dmo/total_price;
   currency_code          : /dmo/currency_code;
   customer_id            : /dmo/customer_id;
@@ -81,12 +81,12 @@ define table ztravel_03 {
 ### 1.2 Tabla BBDD DRAFT
 
 ``` abap
-@EndUserText.label : 'Draft Database Table for ZTRAVEL_03_D'
+@EndUserText.label : 'Draft Database Table for ZTRAVEL_04_D'
 @AbapCatalog.enhancement.category : #EXTENSIBLE_ANY
 @AbapCatalog.tableCategory : #TRANSPARENT
 @AbapCatalog.deliveryClass : #A
 @AbapCatalog.dataMaintenance : #RESTRICTED
-define table ztravel_03_d {
+define table ztravel_04_d {
 
   key mandt            : mandt not null;
   key traveluuid       : sysuuid_x16 not null;
@@ -94,11 +94,11 @@ define table ztravel_03_d {
   enddate              : /dmo/end_date;
   airportoriginid      : /dmo/airport_id;
   airportdestinationid : /dmo/airport_id;
-  @Semantics.amount.currencyCode : 'ztravel_03_d.currencycode'
+  @Semantics.amount.currencyCode : 'ztravel_04_d.currencycode'
   bookingfee           : /dmo/booking_fee;
-  @Semantics.amount.currencyCode : 'ztravel_03_d.currencycode'
+  @Semantics.amount.currencyCode : 'ztravel_04_d.currencycode'
   taxamount            : /dmo/total_price;
-  @Semantics.amount.currencyCode : 'ztravel_03_d.currencycode'
+  @Semantics.amount.currencyCode : 'ztravel_04_d.currencycode'
   totalprice           : /dmo/total_price;
   currencycode         : /dmo/currency_code;
   customerid           : /dmo/customer_id;
@@ -124,10 +124,10 @@ define table ztravel_03_d {
 @AccessControl.authorizationCheck: #MANDATORY
 @EndUserText.label: '###GENERATED Core Data Service Entity'
 @Metadata.allowExtensions: true
-@ObjectModel.sapObjectNodeType.name: 'ZTRAVEL_03'
+@ObjectModel.sapObjectNodeType.name: 'ZTRAVEL_04'
 
-define root view entity ZR_TRAVEL_03
-  as select from ztravel_03
+define root view entity ZR_TRAVEL_04
+  as select from ztravel_04
 
 {
   key travel_uuid            as TravelUUID,
@@ -158,22 +158,23 @@ define root view entity ZR_TRAVEL_03
 
       last_changed_at        as LastChangedAt
 }
+
 ``` 
 
 #### 2.1.2 PROJECTION VIEW
 
 ``` abap
 @AccessControl.authorizationCheck: #MANDATORY
-@EndUserText.label: '!CUSTOM ACTIONS!'
+@EndUserText.label: '###GENERATED Core Data Service Entity'
 @Metadata.allowExtensions: true
 @Metadata.ignorePropagatedAnnotations: true
-@ObjectModel.sapObjectNodeType.name: 'ZTRAVEL_03'
+@ObjectModel.sapObjectNodeType.name: 'ZTRAVEL_04'
 
-define root view entity ZC_TRAVEL_03
+define root view entity ZC_TRAVEL_04
   provider contract transactional_query
-  as projection on ZR_TRAVEL_03
+  as projection on ZR_TRAVEL_04
 
-  association [1..1] to ZR_TRAVEL_03 as _BaseEntity on $projection.TravelUUID = _BaseEntity.TravelUUID
+  association [1..1] to ZR_TRAVEL_04 as _BaseEntity on $projection.TravelUUID = _BaseEntity.TravelUUID
 
 {
   key TravelUUID,
@@ -181,14 +182,10 @@ define root view entity ZC_TRAVEL_03
       BeginDate,
       EndDate,
 
-      @Consumption.valueHelpDefinition: [ { entity: 
-      { name: '/DMO/I_Airport_StdVH', 
-      element: 'AirportID' } } ]
+      @Consumption.valueHelpDefinition: [ { entity: { name: '/DMO/I_Airport_StdVH', element: 'AirportID' } } ]
       AirportOriginID,
 
-      @Consumption.valueHelpDefinition: [ { entity: 
-      { name: '/DMO/I_Airport_StdVH', 
-      element: 'AirportID' } } ]
+      @Consumption.valueHelpDefinition: [ { entity: { name: '/DMO/I_Airport_StdVH', element: 'AirportID' } } ]
       AirportDestinationID,
 
       @Semantics.amount.currencyCode: 'CurrencyCode'
@@ -203,14 +200,10 @@ define root view entity ZC_TRAVEL_03
      @UI.hidden: true
       CurrencyCode,
 
-      @Consumption.valueHelpDefinition: [ { entity: 
-      { name: '/DMO/I_Customer_StdVH', 
-      element: 'CustomerID' } } ]
+      @Consumption.valueHelpDefinition: [ { entity: { name: '/DMO/I_Customer_StdVH', element: 'CustomerID' } } ]
       CustomerID,
 
-      @Consumption.valueHelpDefinition: [ { entity: 
-      { name: '/DMO/I_Overall_Status_VH_Text', 
-      element: 'OverallStatus' } } ]
+      @Consumption.valueHelpDefinition: [ { entity: { name: '/DMO/I_Overall_Status_VH_Text', element: 'OverallStatus' } } ]
       OverallStatus,
 
       DurationDays,
@@ -237,20 +230,10 @@ define root view entity ZC_TRAVEL_03
 #### 2.1.3 ABSTRACT ENTITY
 
 Se comporta como la definicion de una estructura de datos para pasar parámetros
-``` abap
-@EndUserText.label: 'Seleccionar las nuevas fechas'
-define abstract entity Z_A_ReprogramarDates
-
-{
-  @EndUserText.label: 'Nueva Fecha Inicio'
-  begin_date : /dmo/begin_date;
-
-  @EndUserText.label: 'Nueva Fecha Fin'
-  end_date   : /dmo/end_date;
-}
-
+``` js
+no aplica
 ```
-Anotaciones clave:
+
 ```js
 no aplica
 ```
@@ -277,7 +260,7 @@ Define cómo se comportan los botones dentro de la página de detalles del objet
 
 Ubicación: Los botones aparecerán en la barra de herramientas de la sección donde se encuentre el campo.
 
-Acciones vinculadas: Se exponen tres botones críticos: `Rechazar`, `Reprogramar` y `Copiar`.
+Acciones vinculadas: Se exponen tres botones críticos: `Rechazar` y `Copiar`.
 
 Tipo: `#FOR_ACTION` vincula el botón directamente con el nombre de la acción definido en el Behavior Definition.
 
@@ -297,7 +280,6 @@ Beneficio: Permite al usuario segmentar la lista de viajes rápidamente (ej: ver
 | Acción Técnica | Etiqueta (Label) | Función Principal |
 | :--- | :--- | :--- |
 | `setRejected` | **Rechazar** | Cambia el estado del viaje a 'X' (Rechazado). |
-| `reprogramarViaje` | **Reprogramar** | POPUP de parámetros modificar fechas del viaje. |
 | `copiarViaje` | **Copiar** | Crea una nueva instancia tipo Draft basada en la actual. |
 
 ``` abap
@@ -306,7 +288,7 @@ Beneficio: Permite al usuario segmentar la lista de viajes rápidamente (ej: ver
 @UI.headerInfo: { title: { type: #STANDARD, value: 'TravelUUID' },
                   description: { type: #STANDARD, value: 'TravelUUID' } }
 
-annotate view ZC_TRAVEL_03 with
+annotate view ZC_TRAVEL_04 with
 
 {
   @EndUserText.label: 'TravelUUID'
@@ -315,10 +297,12 @@ annotate view ZC_TRAVEL_03 with
                  purpose: #STANDARD,
                  position: 10,
                  type: #IDENTIFICATION_REFERENCE } ]
+                 
   @UI.identification: [ { position: 10, label: 'TravelUUID' } ]
   @UI.lineItem: [ { position: 10, label: 'TravelUUID' } ]
   TravelUUID;
 
+  @EndUserText.label: 'Fecha Inicio'
   @UI.identification: [ { position: 20 } ]
   @UI.lineItem: [ { position: 20 } ]
   @UI.selectionField: [ { position: 20 } ]
@@ -346,10 +330,7 @@ annotate view ZC_TRAVEL_03 with
   @UI.lineItem: [ { position: 60 } ]
   BookingFee;
 
-//  @EndUserText.label: 'Moneda'
   @UI.identification: [ { position: 70 } ]
-//  @UI.lineItem: [ { position: 70 } ]
-//  @UI.hidden: true
   CurrencyCode;
 
   @EndUserText.label: 'IVA 21%'
@@ -372,11 +353,9 @@ annotate view ZC_TRAVEL_03 with
   // ---------------------------------------------------------
   @UI.identification: [ { position: 110 },
                         { type: #FOR_ACTION, dataAction: 'setRejected', label: 'Rechazar' },
-                        { type: #FOR_ACTION, dataAction: 'reprogramarViaje', label: 'Reprogramar' },
                         { type: #FOR_ACTION, dataAction: 'copiarViaje', label: 'Copiar' } ]
   @UI.lineItem: [ { position: 110 },
                   { type: #FOR_ACTION, dataAction: 'setRejected', label: 'Rechazar' },
-                  { type: #FOR_ACTION, dataAction: 'reprogramarViaje', label: 'Reprogramar' },
                   { type: #FOR_ACTION, dataAction: 'copiarViaje', label: 'Copiar' } ]
   @UI.selectionField: [ { position: 110 } ]
   OverallStatus;
