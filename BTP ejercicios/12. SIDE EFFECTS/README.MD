@@ -842,13 +842,15 @@ endclass.
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
-### SIDE EFFECTS: Actualizar IVA y Precio Total
+### Modificar `Precio`
+#### SIDE EFFECTS: Actualizar `IVA 21%` y `Total + Impuesto`
 
 ![Presentación](./img/EDIT_PRECIO_01.png)
 
 ![Presentación](./img/EDIT_PRECIO_02.png)
 
-### SIDE EFFECTS: Actualizar Duración de días
+### Modificar `End Date`
+#### SIDE EFFECTS: Actualizar `DurationDays` 
 
 ![Presentación](./img/EDIT_FECHA_FIN_01.png)
 
