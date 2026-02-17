@@ -756,13 +756,13 @@ endclass.
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
-### Modificar `Precio` -> Se puede
+### Modificar `Precio` o `Aprobar viaje` -> Se puede
 
 ![Presentación](./img/EDIT_PRECIO_01.png)
 
 ![Presentación](./img/EDIT_PRECIO_02.png)
 
-### Modificar `End Date` -> No se puede, Update y Aprobar viaje deshabilitado
+### Modificar registro o `Aprobar viaje` -> No se puede, Update y Aprobar viaje deshabilitado
 
 ![Presentación](./img/EDIT_FECHA_FIN_01.png)
 
