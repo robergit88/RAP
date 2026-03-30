@@ -215,6 +215,7 @@ ZPO_A_STREAM = Los "datos del archivo" que se envían al backend (el contenido, 
 
 Esto permite que desde Fiori UI puedas hacer clic en "Subir Excel" → seleccionar archivo → enviarlo al sistema SAP.
 
+
 ### 2.2 METADATA EXTENSIONS
 ¡Aquí se definen tres botones de interacción!
 
@@ -303,7 +304,7 @@ Ventas:
 
 ##### Se crea BDEF sobre CDS root o Interfaz
 <!-- ![pedo](./img/BDEF_01.png) -->
-![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
+![pedo](./img/BEHAVIOR_01.png)
 
 ``` abap
 managed implementation in class zbp_po_cl_master_list unique;
