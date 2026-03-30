@@ -139,45 +139,6 @@ define root view entity ZPO_C_MASTER_LIST
 
 #### 2.1.3 ABSTRACT ENTITY
 
-**¿Qué es?**
-
-* Es una entidad abstracta = Una estructura de datos que NO tiene tabla física detrás
-* Se usa para definir parámetros de entrada/salida en funciones o acciones
-* Similar a una estructura (TYPES) pero para RAP
-
-En este caso:
-
-* Tiene un campo dummy de tipo boolean
-* Tiene una asociación _Stream a ZPO_A_STREAM
-* Se usa probablemente para manejar la carga de archivos Excel
-
-``` abap
-@EndUserText.label: 'Abstract Entity for Excel Data File'
-define root abstract entity ZPO_A_FILE
-
-{
-  @UI.hidden: true
-  dummy   : abap_boolean;
-
-  _Stream : association [1] to ZPO_A_STREAM on 1 = 1;
-}
-
-```
-``` js
-define root abstract entity ZPO_A_STREAM
-```
-
-**¿Qué es?**
-
-* Otra entidad abstracta que representa el archivo Excel en sí
-* Define cómo se va a recibir/enviar el archivo
-
-Campos importantes:
-
-* **ExcelFile** (rawstring) = El contenido binario del archivo Excel
-* **MimeType** (char 128) = Tipo de archivo (ej: "application/vnd.ms-excel")
-* **FileName** (char 128) = Nombre del archivo (ej: "datos.xlsx")
-
 ``` abap
 @EndUserText.label: 'Abstract Entity for Excel Data File'
 define root abstract entity ZPO_A_STREAM
@@ -199,6 +160,35 @@ define root abstract entity ZPO_A_STREAM
 }
 
 ```
+
+``` abap
+@EndUserText.label: 'Abstract Entity for Excel Data File'
+define root abstract entity ZPO_A_FILE
+
+{
+  @UI.hidden: true
+  dummy   : abap_boolean;
+
+  _Stream : association [1] to ZPO_A_STREAM on 1 = 1;
+}
+
+```
+
+**¿Qué es?**
+
+* Es una entidad abstracta = Una estructura de datos que NO tiene tabla física detrás
+* Se usa para definir parámetros de entrada/salida en funciones o acciones
+* Similar a una estructura (TYPES) pero para RAP
+* Otra entidad abstracta que representa el archivo Excel en sí
+* Define cómo se va a recibir/enviar el archivo
+
+Campos importantes:
+
+* **ExcelFile** (rawstring) = El contenido binario del archivo Excel
+* **MimeType** (char 128) = Tipo de archivo (ej: "application/vnd.ms-excel")
+* **FileName** (char 128) = Nombre del archivo (ej: "datos.xlsx")
+
+
 Anotaciones clave:
 ```js
 @Semantics.largeObject: { mimeType: 'MimeType',
@@ -216,18 +206,12 @@ Esto significa:
 
 ✅ "El nombre y tipo del archivo vienen en los otros campos"
 
-
 Resumen en cristiano 🎯
 En una app Fiori donde el usuario puede subir un archivo Excel:
 
 ZPO_A_FILE = El "formulario" que el usuario ve (con un botón para adjuntar)
 
 ZPO_A_STREAM = Los "datos del archivo" que se envían al backend (el contenido, nombre, y tipo)
-
-Uso típico en una acción:
-```js
-action uploadExcel parameter ZPO_A_FILE result [1] ZPO_A_STREAM;
-```
 
 Esto permite que desde Fiori UI puedas hacer clic en "Subir Excel" → seleccionar archivo → enviarlo al sistema SAP.
 
