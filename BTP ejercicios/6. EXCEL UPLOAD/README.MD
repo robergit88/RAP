@@ -47,6 +47,9 @@ define table zpo_master_list {
   unit_of_measure : abap.char(3);
   site_id         : abap.char(16);
   header_text     : abap.char(40);
+  local_last_changed_by : abp_locinst_lastchange_user;
+  local_last_changed_at : abp_locinst_lastchange_tstmpl;
+  last_changed_at       : timestampl;  
 
 }
 ```
@@ -71,6 +74,9 @@ define table zpo_master_listd {
   unitofmeasure : abap.char(3);
   siteid        : abap.char(16);
   headertext    : abap.char(40);
+  locallastchangedby : abp_locinst_lastchange_user;
+  locallastchangedat : abp_locinst_lastchange_tstmpl;
+  lastchangedat      : timestampl;  
   "%admin"      : include sych_bdl_draft_admin_inc;
 }
 
