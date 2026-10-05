@@ -63,7 +63,13 @@ Las funciones son operaciones de solo lectura que se utilizan para recuperar o c
 | Capacidad de fábrica | Puede crear nuevas instancias | No puede crear instancias |
 | Impacto de los datos | Cambia datos en Buffer / BBDD | No cambia datos |
 
-Ambas operaciones se pueden mostrar en la interfaz de usuario mediante anotaciones como `@UI.selectionField` o `@UI.lineItem` con type: `#FOR_ACTION` o type: `#FOR_FUNCTION`. El control de funcionalidades (por ejemplo, habilitar/deshabilitar botones según los valores de los campos) se puede aplicar a ambas mediante la notación `features: instance`.
+Ambas operaciones se pueden mostrar en la interfaz de usuario mediante anotaciones como `@UI.selectionField` o 
+`@UI.lineItem` con 
+type: `#FOR_ACTION` o 
+type: `#FOR_FUNCTION`. 
+
+El control de funcionalidades (por ejemplo, habilitar/deshabilitar botones según los valores de los campos) se puede aplicar a ambas mediante la notación 
+`features: instance`.
 
 
 ## 🚀 1. Creación de Acciones (Botones Custom)
