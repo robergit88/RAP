@@ -28,8 +28,6 @@
 
 ## RESÚMEN 
 
-## 🚀 1. Creación de Acciones (Botones Custom)
-
 Las acciones `Actions` y las funciones `Functions` son dos operaciones no estándar definidas en la definición de comportamiento e implementadas en el grupo de comportamientos. Permiten ejecutar lógica de negocio personalizada más allá de las operaciones estándar de creación, actualización y eliminación.
 
 ## Actions
@@ -47,7 +45,7 @@ Las acciones son operaciones de modificación utilizadas para cambiar el estado 
 
 ## Functions
 
-Las funciones son operaciones de solo lectura que se utilizan para recuperar o calcular información sin modificar los datos del objeto de negocio. Son las "preguntas" de RAP (por ejemplo, ObtenerEstado, CalcularTotal).
+Las funciones son operaciones de solo lectura que se utilizan para recuperar o calcular información sin modificar los datos del objeto de negocio. Son las "consultas" de RAP (por ejemplo, ObtenerEstado, CalcularTotal).
 
 * Ejecución: Se activa mediante la instrucción `READ ENTITIES ... EXECUTE` en ABAP EML.
 
@@ -59,12 +57,16 @@ Las funciones son operaciones de solo lectura que se utilizan para recuperar o c
 
 | Características | Actions | Functions |
 |-----------------|---------|-----------|
-| Propósito principa | Modicar un BO | Leer / Calcular información |
+| Propósito | Modicar un BO | Leer / Calcular información |
 | Sentencia EML | `MODIFY...EXECUTE` | `READ...EXECUTE` | 
 | Analogía | Verbos (ejemplo Aprobar) | Solicitudes (ObtenerEstado) |
 | Capacidad de fábrica | Puede crear nuevas instancias | No puede crear instancias |
 | Impacto de los datos | Cambia datos en Buffer / BBDD | No cambia datos |
-|
+
+Ambas operaciones se pueden mostrar en la interfaz de usuario mediante anotaciones como `@UI.selectionField` o `@UI.lineItem` con type: `#FOR_ACTION` o type: `#FOR_FUNCTION`. El control de funcionalidades (por ejemplo, habilitar/deshabilitar botones según los valores de los campos) se puede aplicar a ambas mediante la notación `features: instance`.
+
+
+## 🚀 1. Creación de Acciones (Botones Custom)
 
 Para permitir que el usuario dispare una lógica específica (como copiar un viaje), definimos acciones en el **Behavior Definition (BDEF)**.
 
