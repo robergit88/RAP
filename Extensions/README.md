@@ -40,4 +40,7 @@ Recomendamos la asignación específica del contrato C0 para aquellos objetos de
 
 Por otro lado, el contrato C1 (uso interno del sistema) permite el uso del objeto de desarrollo para una interfaz de objeto de negocio, por ejemplo, que se pueda llamar a través del lenguaje de manipulación de entidades (EML).
 
-En ADT, puede mantener el contrato a través de la vista Propiedades del objeto de desarrollo en la pestaña API State tab.
+En ADT, puede mantener el contrato a través de la vista Propiedades del objeto de desarrollo en la pestaña `API State` tab.
+
+![Api](./img/API_STATE.png)
+
