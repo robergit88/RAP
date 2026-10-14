@@ -38,7 +38,7 @@ define table zrap_po {
 }
 ```
 
-Se recomienda crear un include de extensión separado como punto de extensión para mantener los campos adicionales separados.
+Se recomienda crear un include de extensión separado para mantener los campos adicionales separados.
 Para ello, debe agregar un campo auxiliar (en este caso, zrap_po_ext_dummy) para que la extensión incluya al menos un campo y pueda activarse.
 
 ``` js
@@ -61,9 +61,19 @@ Si hay varias extensiones (es decir, varias estructuras de apéndice) para un in
 
 Debe constar de exactamente tres dígitos. A continuación, una comprobación de sintaxis garantiza que los nombres de todos los campos añadidos tengan este sufijo.
 
-Se puede usar la anotacion `@AbapCatalog.enhancement.quotaMaximumFields` para especificar la cantidad de campos que se pueden añadir. La anotacion `@AbapCatalog.enhancement. quotaMaximumBytes` especifica el número de bytes reservados para el consumidor de la extensión include.
+Se puede usar la anotacion
 
-Puede agregar la tabla de base de datos correspondiente a la inclusión de la extensión utilizando la palabra clave `include`.
+ `@AbapCatalog.enhancement.quotaMaximumFields`
+
+ para especificar la cantidad de campos que se pueden añadir. 
+
+La anotacion 
+
+`@AbapCatalog.enhancement. quotaMaximumBytes` 
+
+especifica el número de bytes reservados para el consumidor de la extensión include.
+
+Puede agregar el include de extensión sobre la tabla de base de datos utilizando la palabra clave `include`.
 
 ``` js
 define table zrap_po {
@@ -75,7 +85,8 @@ define table zrap_po {
 }
 ```
 
-Si también hay una tabla de borradores, puede añdir el include de extensión usando la palabra clave `include`. De esta forma, se deja preparada la persistencia para las extensiones de campo. 
+Si también hay una tabla de borradores, puede añdir el include de extensión usando la palabra clave `include`. 
+De esta forma, se deja preparada la persistencia para las extensiones de campo. 
 
 Posteriormente, se debe prepara la CDS para que sea extensible.
 
@@ -106,9 +117,15 @@ as select from zrap_po as PurchaseOrder {
 }
 ```
 
-Se puede añadir la anotación `@AbapCatalog.extensibility.extensible: true` a la vista de extensión y marcarla como extensible.
+Se puede añadir la anotación
+
+ `@AbapCatalog.extensibility.extensible: true`
+
+a la vista de extensión y marcarla como extensible.
 Es esencial que configure la categoría de extensión de vista en la anotación.
+
 `@AbapCatalog.viewEnhancementCategory.`
+
 El valor por defecto es `#NONE` Cambia esto al valor `#PROJECTION_LIST` (Esta anotación es una matriz que permite múltiples valores). Este valor especifica que la lista de selección de la entidad CDS puede ampliarse con campos y asociaciones adicionales.
 
 En la sección `dataSources`, se debe ingresar nombres de alias de las fuentes de datos (en este caso, `PurchaseOrder`) para utilizar en las extensiones. El consumidor utiliza luego estos nombres de alias dentro de una extensión de vista de CDS para especificar el campo adicional. Esto significa que los nombres especificados en la anotación también forman parte de la interfaz pública de la aplicación en lo que respecta a la extensibilidad y, por lo tanto, deben permanecer estables.
