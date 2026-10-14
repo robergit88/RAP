@@ -1,4 +1,4 @@
-# Extensiones al modelo de datos
+# Ampliación del modelo de datos
 
 En esta sección, analizaremos las opciones disponibles para marcar el modelo de datos CDS de un objeto RAP como extensible.
 Mediante las anotaciones proporcionadas para este fin, se permite a los usuarios de un objeto de negocio RAP definir nuevos campos en el contexto del concepto de extensión.
