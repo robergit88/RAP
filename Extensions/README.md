@@ -58,16 +58,16 @@ En esta sección se analizan con mayor detalle las tres opciones de ampliación 
 
 Ampliar el modelo de datos incluye añadir campos a nivel de base de datos y a nivel de las entidades de CDS del árbol de composición de objetos de negocio. También incluye la adición de asociaciones.
 
-[Ampliación al modelo de datos](./data_model_ext.md)
+[Ampliación al modelo de datos](docs/data_model_ext.md)
 
 * **Ampliación del comportamiento**
 
 Ampliar el comportamiento incluye añadir determinaciones, validaciones u operaciones específicas adicionales.
 
-[Ampliación del comportamiento](./behavior_ext.md)
+[Ampliación del comportamiento](docs/behavior_ext.md)
 
 * **Ampliación con entidades CDS adicionales**
 
 Finalmente, es posible definir la extensibilidad de entidades CDS adicionales dentro del árbol de composición de objetos de negocio, lo que también incluye el comportamiento de estas entidades. Para este escenario, se ha establecido el término extensibilidad de nodo.
 
-[Ampliación con entidades CDS](./cds_ext.md)
+[Ampliación con entidades CDS](docs/cds_ext.md)
