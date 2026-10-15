@@ -1,16 +1,17 @@
-# Extensibilidad de los objetos de negocio
+# Ampliaciones en objetos comerciales ABAP RAP
 
 - [Introducción al concepto de extensibilidad](#introducción-al-concepto-de-extensibilidad)
     - [Opciones de Ampliación](#opciones-de-ampliación)
-        - [Ampliación del modelo de datos](docs/data_model_ext.md)
-        - [Ampliación del comportamiento](docs/behavior_ext.md)
-        - [Ampliación con entidades CDS](docs/cds_ext.md)
+        - [Ampliación del modelo de datos](#ampliación-del-modelo-de-datos)
+        - [Ampliación del comportamiento](#ampliación-del-comportamiento)
+        - [Ampliación con entidades CDS](#ampliación-con-entidades-cds)
+    - [Ampliación de un objeto de negocio estándar](#ampliación-de-un-objeto-de-negocio-estándar)
 
 # Introducción al concepto de extensibilidad
 
 El concepto de ampliación del modelo de programación de aplicaciones ABAP RESTful tiene las siguientes propiedades:
 
-* **Los objetos de negocio RAP no son extensibles por defecto**
+* **Los objetos de negocio RAP no son ampliables por defecto**
 
 Un objeto de negocio RAP no es extensible por defecto y, por lo tanto, debe marcarse explícitamente como extensible mediante las palabras clave adecuadas en los puntos previstos para tal fin. Solo entonces un consumidor podrá realizar extensiones.
 
@@ -20,7 +21,7 @@ Los campos con propiedades y asignación de campos, determinaciones, validacione
 
 * **Estabilidad del ciclo de vida**
 
-Si un objeto de negocio RAP ofrece extensibilidad, celebra un contrato público (contrato de lanzamiento C0) con los consumidores. Todas las extensiones potencialmente implementadas deben seguir funcionando incluso después de una actualización del objeto de negocio RAP del proveedor. Por este motivo, los puntos de ampliación forman parte de la interfaz pública de un objeto de negocio RAP y, una vez publicados, deben mantenerse compatibles con los consumidores de dichos puntos.
+Si un objeto de negocio RAP ofrece extensibilidad, celebra un contrato público (**`Release Contract C0`**) con los consumidores. Todas las extensiones potencialmente implementadas deben seguir funcionando incluso después de una actualización del objeto de negocio RAP del proveedor. Por este motivo, los puntos de ampliación forman parte de la interfaz pública de un objeto de negocio RAP y, una vez publicados, deben mantenerse compatibles con los consumidores de dichos puntos.
 
 * **extensiones aisladas**
 
@@ -34,7 +35,7 @@ La funcionalidad existente de un objeto de negocio RAP no se puede sobrescribir 
 
 Las extensiones pueden declararse como extensibles y formar una cascada de extensiones. De este modo, una nueva ampliación puede extender una ampliación existente. Por ejemplo, un producto de software de un socio de SAP podría extender significativamente un objeto de negocio RAP del sistema SAP estándar. La ampliación dentro del producto de software del socio podría, a su vez, ser extendida por los clientes del socio.
 
-* **Extensiones como parte del objeto de negocio RAP**
+* **Ampliaciones como parte del objeto de negocio RAP**
 
 Las extensiones a un objeto de negocio RAP se convierten en parte habitual del objeto de negocio RAP extendido en el diseño y en tiempo de ejecución. Las validaciones añadidas, por ejemplo, se convierten en parte habitual de la secuencia de guardado temprano.
 
@@ -44,7 +45,7 @@ Esto comprende un conjunto de liberación de contratos (o contratos, para abrevi
 
 Recomendamos la asignación específica del contrato C0 para aquellos objetos de desarrollo de un objeto de negocio RAP que deban ser extensibles.
 
-Por otro lado, el contrato C1 (uso interno del sistema) permite el uso del objeto de desarrollo para una interfaz de objeto de negocio, por ejemplo, que se pueda llamar a través del lenguaje de manipulación de entidades (EML).
+Por otro lado, el contrato **`C1`** (**`uso interno del sistema`**) permite el uso del objeto de desarrollo para una interfaz de objeto de negocio, por ejemplo, que se pueda llamar a través del lenguaje de manipulación de entidades (EML).
 
 En ADT, puede mantener el contrato a través de la vista Propiedades del objeto de desarrollo en la pestaña `API State` tab.
 
@@ -54,20 +55,26 @@ En ADT, puede mantener el contrato a través de la vista Propiedades del objeto 
 
 En esta sección se analizan con mayor detalle las tres opciones de ampliación para un objeto de negocio RAP. Comenzaremos con la perspectiva del proveedor antes de pasar a la perspectiva del consumidor.
 
-* **Ampliación del modelo de datos**
+* # Ampliación del modelo de datos
 
 Ampliar el modelo de datos incluye añadir campos a nivel de base de datos y a nivel de las entidades de CDS del árbol de composición de objetos de negocio. También incluye la adición de asociaciones.
 
-[Ampliación al modelo de datos](docs/data_model_ext.md)
+[Detalles ampliación en el modelo...](docs/data_model_ext.md)
 
-* **Ampliación del comportamiento**
+* # Ampliación del comportamiento
 
 Ampliar el comportamiento incluye añadir determinaciones, validaciones u operaciones específicas adicionales.
 
-[Ampliación del comportamiento](docs/behavior_ext.md)
+[Detalles ampliación en el comportamiento...](docs/behavior_ext.md)
 
-* **Ampliación con entidades CDS adicionales**
+* # Ampliación con entidades CDS
 
 Finalmente, es posible definir la extensibilidad de entidades CDS adicionales dentro del árbol de composición de objetos de negocio, lo que también incluye el comportamiento de estas entidades. Para este escenario, se ha establecido el término extensibilidad de nodo.
 
-[Ampliación con entidades CDS](docs/cds_ext.md)
+[Detalles ampliación en CDS...](docs/cds_ext.md)
+
+# Ampliación de un objeto de negocio estándar
+
+En esta sección, utilizaremos un caso de uso específico para mostrarte cómo implementar extensiones en un objeto de negocio estándar de SAP. Te guiaremos paso a paso a lo largo del proceso de implementación.
+
+[Ejemplo de ampliación...](docs/test_case_ext.md)
