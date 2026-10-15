@@ -2,9 +2,9 @@
 
 - [Introducción al concepto de extensibilidad](#introducción-al-concepto-de-extensibilidad)
     - [Opciones de Ampliación](#opciones-de-ampliación)
-        - [Ampliación del modelo de datos](./data_model_ext.md)
-        - [Ampliación del comportamiento](./behavior_ext.md)
-        - [Ampliación con entidades CDS](./cds_ext.md)
+        - [Ampliación del modelo de datos](docs/data_model_ext.md)
+        - [Ampliación del comportamiento](docs/behavior_ext.md)
+        - [Ampliación con entidades CDS](docs/cds_ext.md)
 
 # Introducción al concepto de extensibilidad
 
