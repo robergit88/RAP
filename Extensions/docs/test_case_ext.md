@@ -208,6 +208,76 @@ Continúa de la misma manera con la ampliación de las demás vistas CDS del mod
         }
     ```
 
+*   **Vista Interfaz**
+    *  CDS: `I_ReservationDocumentTP`
+    *  Nombre de ampliación: `ZZ_EXT_RAP_I_RKPF_F4839`
+    *  Código:
+    ```ABAP
+        extend view entity I_ReservationDocumentTP with
+        {   
+            ReservationDocument.zz_text_f4839
+        }
+    ```
+
+Ya se han implementado todas las extensiones necesarias para el campo adicional, y ya puedes probar la extensión del modelo de datos. Para ello, debes utilizar la interfaz del objeto de negocio `I_ReservationDocumentTP` para actualizar el contenido del campo adicional en instancias individuales del objeto de negocio mediante sentencias EML.
+
+Ejemplo EML para modificar el contenido del campo adicional
+
+```JS
+CLASS zcl_test_reservation DEFINITION  
+PUBLIC  
+FINAL  
+
+CREATE PUBLIC .   
+
+PUBLIC SECTION.     
+
+INTERFACES if_oo_adt_classrun .  
+PROTECTED SECTION.  
+PRIVATE SECTION.
+ENDCLASS. 
+
+CLASS zcl_test_reservation IMPLEMENTATION.
+
+METHOD if_oo_adt_classrun~main.     
+
+DATA rsnum TYPE rsnum VALUE '0000000101'.     
+
+MODIFY ENTITIES OF I_ReservationDocumentTP
+      ENTITY ReservationDocument      
+      UPDATE      
+      FIELDS ( zz_text_f4839 )      
+      WITH VALUE #( ( zz_text_f4839 = 'Test EML'                                       
+      %key-Reservation = rsnum ) )
+FAILED   DATA(failed)      
+REPORTED DATA(reported).     
+
+COMMIT ENTITIES.
+
+ENDMETHOD.
+
+ENDCLASS.
+```
+
+Como alternativa, puedes probar la extensión directamente en la aplicación “Administrar reservas manuales”. El campo adicional ahora forma parte de la lista de resultados y se puede seleccionar como un filtro adicional. 
+
+Figura 7.19
+
+APP con el campo Z añadido
+
+![Figura 7.19](/img/APPEND_07.png)
+
+El contenido del nuevo campo se puede actualizar en la página del objeto
+
+![Figura 7.20](/img/APPEND_08.png)
+
+También puedes usar la función de vista previa para el enlace de servicio en ADT para probar la extensión. Para ello, debes llamar al enlace de servicio **`UI_Reservation_HRD_MNG_V2`** y hacer clic en el botón `Preview` 
+
+Figura 7.21
+Vista previa para el servicio `UI_Reservation_HDR_MNG_V2`
+
+![Figura 7.21](/img/UI_RESERVATION_01.png)
+
 # Ampliación del comportamiento
 
 dsdwec svtgf
