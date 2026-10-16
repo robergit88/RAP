@@ -405,4 +405,18 @@ Ahora puedes administrar tu extensión directamente en la aplicación de Reserva
 
 # Eventos derivados
 
-cdcdsvrevrfe
+Con la ayuda de los eventos derivados, puedes derivar un evento del objeto de negocio estándar de SAP y redefinirlo.
+
+El desarrollo de un evento de este tipo incluye la definición de sus datos de usuario y su implementación. Si deseas utilizar un evento ya implementado con otros datos de usuario, puedes recurrir a los eventos derivados. Un evento derivado se define haciendo referencia a un evento ya implementado y te permite definir datos de usuario que difieren de los del evento al que se hace referencia. Esto significa que haces referencia a un evento existente y redefinís qué parámetros están disponibles como datos de usuario al manejar el evento. Cuando este evento al que se hace referencia...
+
+Los eventos derivados pueden definirse tanto en las definiciones de comportamiento como en las extensiones de dichas definiciones. Gracias a este enfoque declarativo, no se requiere ninguna implementación adicional en la implementación del comportamiento. Simplemente se agrega el evento derivado a la definición del objeto de negocio RAP. Al igual que con cualquier otro evento, puedes consumirlo de manera local o remota. La ventaja de la derivación frente a la definición de un nuevo evento como parte de la extensión del comportamiento es que no tienes que preocuparte por tr
+
+Si el evento derivado se define en una extensión de la definición de comportamiento, se aplican los siguientes requisitos previos al objeto de negocio RAP original:
+
+* El objeto de negocio que contiene el evento del que se derivará debe ser extensible.
+
+* El evento al que hará referencia el evento derivado debe estar expuesto en las interfaces de los objetos de negocio publicados con los contratos C0 y C1. Si el evento al que se hace referencia se agregó en una extensión de comportamiento, también se incluye implícitamente en la interfaz del objeto de negocio.
+
+* La entidad de vista CDS que sirve como fuente de datos para la carga útil del evento derivado debe publicarse con el contrato C1.
+
+En el siguiente ejemplo, utilizamos una extensión del objeto de negocio `I_SalesOrderTP` para mostrar cómo se puede derivar un evento del sistema SAP estándar. La extensión se puede probar en la aplicación `Manage Sales Orders – Version 2 app` (ID de aplicación F3893).
