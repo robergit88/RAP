@@ -281,7 +281,111 @@ Vista previa para el servicio `UI_Reservation_HDR_MNG_V2`
 
 # Ampliación del comportamiento
 
-dsdwec svtgf
+Ahora queremos agregar una validación adicional al objeto de negocio cuyo modelo de datos ampliamos en la sección anterior. Al guardar una reservación, el sistema debe verificar si existe una entrada en una tabla Z para el material que se va a reservar.
+Esta tabla Z contiene productos que son objeto de especial atención, por ejemplo, porque ya se está planeando un producto sucesor. Si se da este caso, se debe emitir un mensaje de advertencia.
+En las siguientes secciones, primero verificamos si se cumplen todos los requisitos previos para esta extensión (es decir, si el comportamiento puede ampliarse con una validación adicional según SAP) antes de proceder a implementar la extensión.
+
+**Verificación de la extensibilidad del comportamiento**
+
+La ampliación del comportamiento estándar del objeto de negocio (en nuestro caso, la incorporación de una validación adicional al guardar) requiere que esto se haya permitido en la definición de comportamiento básico `R_ReservationDocumentHeaderTP`
+
+Figura 7.22
+
+Extensibilidad general del comportamiento `R_ReservationDocumentHeaderTP`: 
+
+![Figura 7.22](../img/R_RESERVA_03.png)
+
+Otro requisito previo para la extensibilidad es el uso del `modo estricto (2)`. Llama a la definición de comportamiento `R_ReservationDocumentHeaderTP` en ADT. En el código fuente, puedes ver que se cumplen ambos requisitos.
+
+Figura 7.23
+
+![Figura 7.23](../img/R_RESERVA_04.png)
+
+En la gestión de borrador la determinación `Prepare` también está marcada como extensible y, por lo tanto, permite el manejo adecuado de los mensajes de estado.
+
+![Figura 7.24](../img/R_RESERVA_05.png)
+
+Unas líneas más abajo en el código fuente, la definición de comportamiento de la composición `R_ReservationDocumentItemTP` también se define como extensible
+
+![Figura 7.24](../img/R_RESERVA_06.png)
+
+La pestaña `Properties` del comportamiento `R_ReservationDocumentHeaderTP` para ver el estado de la API. El contrato C0 identifica el objeto de negocio como una API estable para extensiones.
+
+Otro requisito previo para ampliar el comportamiento es la existencia de una interfaz de objeto de negocio extensible. Este requisito también se cumple, como puedes ver en el código fuente y en la pestaña Propiedades de la interfaz del objeto de negocio.
+
+![Figura 7.25](../img/R_RESERVA_07.png)
+
+Además del contrato de liberación en `C0`, la interfaz del objeto comportamiento también cuenta con contrato de liberación `C1`, lo que la identifica como una fuente de datos estable para un consumidor.
+
+Código fuente y propiedades de la interfaz del objeto comercial **`I_ReservationDocumentTP`**
+
+![Figura 7.25](../img/R_RESERVA_08.png)
+
+No hay más requisitos. El objeto de negocio permite ampliar el comportamiento estándar; en nuestro caso, mediante una validación adicional durante el proceso de guardado. Esto significa que podemos comenzar a implementar nuestra validación adicional.
+
+**Ampliar el comportamiento con una validación adicional**
+
+Para agregar una validación, necesitamos un objeto de desarrollo que amplíe la definición del comportamiento estándar, en el que se define el nuevo comportamiento. También necesitamos un objeto de desarrollo para la implementación del comportamiento, en el que se implemente el comportamiento definido allí. Por lo tanto, el comportamiento de un objeto de negocio se amplía en dos pasos:
+
+* Ampliar la definición del comportamiento
+
+* Ampliar la implementación del comportamiento
+
+Pero comencemos con otra tarea preliminar: la creación del mensaje que se mostrará como advertencia. Para ello, debes crear una clase de mensaje, a la que puedes llamar, por ejemplo, `ZZ_RAP_RES_F4839`. Esta clase contiene el mensaje 001
+
+![Figura 7.25](../img/MESSAGE_01.png)
+
+Otro paso preparatorio para la generación del mensaje de advertencia consiste en crear la clase de excepción `ZZ_CX_RAP_RES_F4839`.
+
+Ahora se puede definir la ampliación del comportamiento:
+
+1. En el menú contextual del comportamiento `R_ReservationDocumentHeaderTP`, selecciona la opción **`New Behavior Extension`**.
+
+Creación de una definición de la extensión de comportamiento
+
+![Figura 7.29](../img/ENHANCE_01.png)
+
+2. En la pantalla siguiente, debes ingresar el nombre de la extensión, una descripción, el nombre de la definición de comportamiento que se va a extender y la interfaz del objeto de negocio. Selecciona el paquete en el que se guardará la extensión y haz clic en `Next`.
+
+![Figura 7.30](../img/ENHANCE_02.png)
+
+3. El sistema va a pedir una orden de transporte. Asignarla y finalizar.
+
+Código fuente generado para la ampliación `ZZ_X_RAP_R_RDHTP_F4839`
+
+![Figura 7.31](../img/ENHANCE_03.png)
+
+Agrega la validación adicional que desees a la definición del comportamiento de la extensión, tal como se muestra, y actívala.
+
+```ABAP
+extension using interface i_reservationdocumenttp
+implementation in class zbp_z_x_rap_r_rdhtp_f4839 unique; 
+
+extend behavior for ReservationDocument {
+    extend draft determine action Prepare {
+        validation ReservationDocumentItem~zzvalidateProduct;
+        }
+    }
+
+ extend behavior for ReservationDocumentItem
+ {
+    validation zzvalidateProduct on save { field Reservation; create;  update; }
+ }
+```
+
+Utiliza la función de corrección rápida que se proporciona para la implementación de la extensión en la clase `zbp_z_x_rap_r_rdhtp_f4839` para crear la clase de implementación del comportamiento correspondiente a la extensión de la definición del comportamiento.
+
+![Figura 7.32](../img/ENHANCE_04.png)
+
+Confirma la creación de la clase en la ventana emergente que aparecerá haciendo clic en el botón `Next`.
+
+Código fuente generado de la clase de implementación para la extensión `ZZ_X_RAP_R_RDHTP_F4839`
+
+![Figura 7.33](../img/ENHANCE_05.png)
+
+Agrega el método `zzvalidateproduct` a la clase `zbp_z_x_rap_r_rdhtp_f4839` en una clase local `lhc_reservationdocumentheader`. En este método, implementa la validación adicional.
+
+![Figura 7.34](../img/ENHANCE_06.png)
 
 # Eventos derivados
 
