@@ -9,8 +9,6 @@
 
 # Introducción al concepto de extensibilidad
 
-![I_ReservationDocumentTP](./img/I_RESERVATION_01.png)
-
 El concepto de ampliación del modelo de programación de aplicaciones ABAP RESTful tiene las siguientes propiedades:
 
 * **Los objetos de negocio RAP no son ampliables por defecto**
@@ -79,4 +77,4 @@ Finalmente, es posible definir la extensibilidad de entidades CDS adicionales de
 
 En esta sección, utilizaremos un caso de uso específico para mostrarte cómo implementar extensiones en un objeto de negocio estándar de SAP. Te guiaremos paso a paso a lo largo del proceso de implementación.
 
-[Ejemplo de ampliación...](docs/test_case_ext.md)
+[Detalles...](docs/test_case_ext.md)
