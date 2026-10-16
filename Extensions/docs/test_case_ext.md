@@ -18,9 +18,8 @@ Información sobre el objeto de negocio en el documento de transferencia de cono
 
 ![I_ReservationDocumentTP](../img/I_RESERVATION_01.png)
 
-
 La estructura del modelo de datos de este objeto de negocio se muestra en la
-[Figura 7.5](./img/C_RESERVATION_01.png).
+[Figura 7.5](../img/C_RESERVATION_01.png).
 
 **El comportamiento del objeto de negocio siempre se amplía a través de la interfaz del objeto de negocio.**
 
@@ -30,17 +29,17 @@ Como alternativa, también puedes ejecutar el servicio vinculado a `UI_RESERVATI
 
 Figura 7.5 - Estructura del modelo de datos `R_ReservationDocumentHeaderTP`
 
-![Figura 7.5](./img/C_RESERVATION_01.png)
+![Figura 7.5](../img/C_RESERVATION_01.png)
 
 Puedes ver la interfaz de usuario (UI) de la aplicación para probar. Allí puedes administrar las reservaciones de forma manual, es decir, crearlas, actualizarlas y eliminarlas.
 
 Ejecución de la función de vista previa para el enlace de servicio `UI_RESERVATION_HDR_MNG_V2`
 
-![Figura 7.7](./img/UI_RESERVATION_01.png)
+![Figura 7.7](../img/UI_RESERVATION_01.png)
 
 Aplicación de reservas manuales
 
-![Figura 7.8](./img/APP_01.png)
+![Figura 7.8](../img/APP_01.png)
 
 A continuación, ampliaremos el modelo de datos para incluir un campo adicional específico del cliente. Para ello, crearemos una estructura de anexo para la tabla RKPF (cabecera de documento de reservación), que sirve como almacenamiento persistente para el objeto de negocio. Agregaremos otra validación a las validaciones del objeto de negocio que ya existen en el estándar. La extensión descrita en la sección 7.3.4 se basará en un caso de uso diferente. Se implementó en SAP S/4HANA Cloud Public Edition 2402.
 
@@ -57,9 +56,9 @@ En primer lugar, queremos verificar si se cumplen los requisitos necesarios para
 
 Tablas de base de datos para el objeto comercial `R_ReservationDocumentHeaderTP`
 
-![Figura 7.9](./img/R_RESERVA_01.png)
+![Figura 7.9](../img/R_RESERVA_01.png)
 
-En ambas tablas, `RKPF` e `IMRS_D_DOC_HDR`, se integra la estructura de ampliación `RKPF_INCL_EEW_PS`, como se puede observar en la definición de la tabla. Al abrir la pestaña `Properties`  de esta estructura, verás que se puede ampliar con campos de tipo carácter y numéricos, y que se ha lanzado con el contrato `C0` [Figura 7.10](./img/RKPF_INCL_EEW_PS.png). Por lo tanto, a nivel de la base de datos se cumplen los requisitos previos para agregar un campo de texto adicional al objeto de negocio.
+En ambas tablas, `RKPF` e `IMRS_D_DOC_HDR`, se integra la estructura de ampliación `RKPF_INCL_EEW_PS`, como se puede observar en la definición de la tabla. Al abrir la pestaña `Properties`  de esta estructura, verás que se puede ampliar con campos de tipo carácter y numéricos, y que se ha lanzado con el contrato `C0` [Figura 7.10](../img/RKPF_INCL_EEW_PS.png). Por lo tanto, a nivel de la base de datos se cumplen los requisitos previos para agregar un campo de texto adicional al objeto de negocio.
 
 Ahora continuaremos con la revisión del modelo de datos de CDS. Para ello, debemos analizar más a fondo la entidad raíz de CDS, `R_ReservationDocumentHeaderTP`. 
 Esto no está permitido explícitamente para las extensiones mediante anotaciones, pero tampoco se prohíben explícitamente las extensiones. Dado que no se han establecido anotaciones relevantes a nivel del encabezado de la vista (véanse las anotaciones comentadas en la Figura 7.11), la entidad de vista del CDS se considera extensible por defecto. Además, el estado de liberación es `C0`, por lo que el objeto de desarrollo está concebido como una API estable para ampliaciones. Además la CDS `R_ReservationDocumentHeaderTP` tiene una asociación con la vista de ampliación `E_ReservationDocument`.
@@ -68,11 +67,11 @@ Figura 7.10
 
 Propiedades de la estructura de ampliación `RKPF_INCL_EEW_PS`
 
-![Figura 7.10](./img/RKPF_INCL_EEW_PS.png)
+![Figura 7.10](../img/RKPF_INCL_EEW_PS.png)
 
 Código fuente y propiedades de la CDS raíz `R_ReservationDocumentHeaderTP`
 
-![Figura 7.11](./img/R_RESERVA_02.png)
+![Figura 7.11](../img/R_RESERVA_02.png)
 
 A continuación, debemos revisar la vista de inclusión de la extensión asociada, E_ReservationDocument. Aquí encontrarás la misma situación. Es (implícitamente) extensible y también tiene el estado de lanzamiento C0
 
@@ -89,7 +88,7 @@ Estas otras vistas que se van a ampliar son las siguientes:
 
 Fragmento de código fuente y propiedades de la vista de ampliación `E_ReservationDocument`
 
-![Figura 7.12](./img/E_ReservationDocument.png)
+![Figura 7.12](../img/E_ReservationDocument.png)
 
 Los requisitos mencionados anteriormente también se cumplen de la misma manera para la ampliación de estas vistas de CDS. 
 
@@ -106,13 +105,13 @@ Primero, debes crear una estructura `append` sobre la estructura estándard:
     
     Creación de una estructura de anexión
 
-    ![Figura 7.13](./img/APPEND_01.png)
+    ![Figura 7.13](../img/APPEND_01.png)
 
 2. En la ventana emergente que se abre, debes ingresar un paquete y el nombre de la estructura de anexo (en este caso, es `ZZS_EXT_RAP_RKPF_F4839`) y una descripción.
 
     Mantenimiento de las propiedades de la estructura de anexo **`ZZS_EXT_RAP_RKPF_F4839`**
 
-    ![Figura 7.13](./img/APPEND_02.png)
+    ![Figura 7.13](../img/APPEND_02.png)
 
 3. Puede utilizar la instrucción `extend type ... with` para agregar el campo `ZZ_TEXT_F4839`, de tipo `TEXT25`, a la estructura (véase la Figura 7.15) y, a continuación, activar la estructura.
 
@@ -120,7 +119,7 @@ Primero, debes crear una estructura `append` sobre la estructura estándard:
     Figura 7.15. 
     Agregar la estructura «ZZS_EXT_RAP_RKPF_F4839» con el campo «ZZ_TEXT_F4839»
 
-    ![Figura 7.15](./img/APPEND_03.png)
+    ![Figura 7.15](../img/APPEND_03.png)
 
 Por lo tanto, el campo está disponible en ambas tablas (la tabla base `RKPF` y la tabla de borrador `IMRS_D_DOC_HDR`).
 
@@ -132,7 +131,7 @@ El primer paso consiste en ampliar la vista de inclusión de extensión
     
     Figura 7.16
 
-    ![Figura 7.16](./img/APPEND_04.png)
+    ![Figura 7.16](../img/APPEND_04.png)
 
 2. En la ventana emergente que se abre, ingresa un paquete, un nombre (en este caso, `ZZ_EXT_RAP_RKPF_F4839`) y una descripción; luego, haz clic en el botón `Next` (Figura 7.17).
 
@@ -140,11 +139,11 @@ El primer paso consiste en ampliar la vista de inclusión de extensión
 
     Figura 7.17
 
-    ![Figura 7.17](./img/APPEND_05.png)
+    ![Figura 7.17](../img/APPEND_05.png)
 
     Figura 7.18
 
-    ![Figura 7.18](./img/APPEND_06.png)
+    ![Figura 7.18](../img/APPEND_06.png)
 
 4. Completa el código generado por la plantilla tal como se muestra en el Listado 7.30. No olvides agregar la extensión `sqlViewAppendName` a la anotación `@AbapCatalog`.
 ```ABAP
@@ -267,18 +266,18 @@ Figura 7.19
 
 APP con el campo Z añadido
 
-![Figura 7.19](./img/APPEND_07.png)
+![Figura 7.19](../img/APPEND_07.png)
 
 El contenido del nuevo campo se puede actualizar en la página del objeto
 
-![Figura 7.20](./img/APPEND_08.png)
+![Figura 7.20](../img/APPEND_08.png)
 
 También puedes usar la función de vista previa para el enlace de servicio en ADT para probar la extensión. Para ello, debes llamar al enlace de servicio **`UI_Reservation_HRD_MNG_V2`** y hacer clic en el botón `Preview` 
 
 Figura 7.21
 Vista previa para el servicio `UI_Reservation_HDR_MNG_V2`
 
-![Figura 7.21](./img/UI_RESERVATION_01.png)
+![Figura 7.21](../img/UI_RESERVATION_01.png)
 
 # Ampliación del comportamiento
 
