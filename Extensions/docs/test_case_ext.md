@@ -335,7 +335,7 @@ Pero comencemos con otra tarea preliminar: la creación del mensaje que se mostr
 
 ![Figura 7.25](../img/MESSAGE_01.png)
 
-Otro paso preparatorio para la generación del mensaje de advertencia consiste en crear la clase de excepción `ZZ_CX_RAP_RES_F4839`.
+Otro paso preparatorio para la generación del mensaje de advertencia consiste en crear la clase de excepción [`ZZ_CX_RAP_RES_F4839`](/docs/zz_cx_rap_res_f4839.md).
 
 Ahora se puede definir la ampliación del comportamiento:
 
@@ -386,6 +386,22 @@ Código fuente generado de la clase de implementación para la extensión `ZZ_X_
 Agrega el método `zzvalidateproduct` a la clase `zbp_z_x_rap_r_rdhtp_f4839` en una clase local `lhc_reservationdocumentheader`. En este método, implementa la validación adicional.
 
 ![Figura 7.34](../img/ENHANCE_06.png)
+
+Puedes copiar el código del método **`zzvalidateproduct`** desde [aqui...](/docs/lhc_reservationdocumentheader.md)
+
+La implementación del comportamiento en una extensión de comportamiento sigue el mismo enfoque que la implementación del comportamiento definido para un objeto de negocio original. No se requiere ninguna sintaxis especial en la extensión.
+
+Ahora, utiliza la interfaz del objeto de negocio `i_reservationdocumenttp` para leer el campo `product` de todas las instancias del objeto de negocio que se van a verificar mediante una instrucción EML.
+
+> [»]  Nota: Uso de la interfaz de objetos de negocio
+
+    Una interfaz es el punto de consumo común de un objeto de negocio que deben utilizar todos los consumidores. Esto también se aplica a las extensiones en las que se accede al objeto de negocio original a través de EML.
+
+Si hay una entrada para el producto en la tabla de enfoque, debes transferir el mensaje de advertencia correspondiente a la estructura `reported`. Agrega la constante `validate_product` al componente `state_area` de la estructura `reported`.
+
+Ahora puedes administrar tu extensión directamente en la aplicación de Reservas manuales o probarla utilizando la función de vista previa del enlace de servicio `UI_RESERVATION_HDR_MNG_V2`. La Figura 7.35 muestra el mensaje de advertencia que aparece.
+
+![Figura 7.35](../img/ENHANCE_07.png)
 
 # Eventos derivados
 
