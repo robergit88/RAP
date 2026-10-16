@@ -18,6 +18,8 @@ Información sobre el objeto de negocio en el documento de transferencia de cono
 
 ![I_ReservationDocumentTP](./img/I_RESERVATION_01.png)
 
+![Api](./img/API_STATE.png)
+
 La estructura del modelo de datos de este objeto de negocio se muestra en la [Figura 7.5](./img/C_RESERVATION_01.png).
 
 **El comportamiento del objeto de negocio siempre se amplía a través de la interfaz del objeto de negocio.**
