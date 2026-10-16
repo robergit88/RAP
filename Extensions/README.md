@@ -9,6 +9,8 @@
 
 # Introducción al concepto de extensibilidad
 
+![I_ReservationDocumentTP](./img/I_RESERVATION_01.png)
+
 El concepto de ampliación del modelo de programación de aplicaciones ABAP RESTful tiene las siguientes propiedades:
 
 * **Los objetos de negocio RAP no son ampliables por defecto**
