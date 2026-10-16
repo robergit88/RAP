@@ -16,7 +16,7 @@ Para obtener información sobre el objeto de negocio, puedes consultar el Docume
 
 Información sobre el objeto de negocio en el documento de transferencia de conocimiento para la interfaz del objeto de negocio
 
-![I_ReservationDocumentTP](./img/I_RESERVATION_01.png)
+![I_ReservationDocumentTP](Extensions/img/I_RESERVATION_01.png)
 
 ![Api](./img/API_STATE.png)
 
