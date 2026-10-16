@@ -17,6 +17,7 @@ Para obtener información sobre el objeto de negocio, puedes consultar el Docume
 Información sobre el objeto de negocio en el documento de transferencia de conocimiento para la interfaz del objeto de negocio
 
 ![I_ReservationDocumentTP](/img/I_RESERVATION_01.png)
+![pedo](/RAP/Extensions/img/I_RESERVATION_01.png)
 
 La estructura del modelo de datos de este objeto de negocio se muestra en la
 [Figura 7.5](./img/C_RESERVATION_01.png).
