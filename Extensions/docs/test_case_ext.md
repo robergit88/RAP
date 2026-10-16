@@ -420,3 +420,4 @@ Si el evento derivado se define en una extensión de la definición de comportam
 * La entidad de vista CDS que sirve como fuente de datos para la carga útil del evento derivado debe publicarse con el contrato C1.
 
 En el siguiente ejemplo, utilizamos una extensión del objeto de negocio `I_SalesOrderTP` para mostrar cómo se puede derivar un evento del sistema SAP estándar. La extensión se puede probar en la aplicación `Manage Sales Orders – Version 2 app` (ID de aplicación F3893).
+En este caso, el evento «Changed», que se consumió localmente en el ejemplo del capítulo 5, sección 5.6, se debe derivar y consumir nuevamente. El ejemplo se implementó en SAP S/4HANA Cloud Public Edition 2402
