@@ -20,15 +20,20 @@
 
 [....detalle](./docs/UNMANAGED_APP.md)
 
+## Construcción
+
+![building_01](./img/building_01.png)
+
+## Orden de creación de los objetos
+
+![building_04](./img/building_04.png)
+
 ## UNDERSTANDING ENTITY MANIPULATION LANGUAGE (EML)
 
 [....detalle](./docs/EML.md)
 
-## List of Useful SAP Fiori TCodes
-
-[....detalle](./docs/transacciones.MD)
-
 ## STANDARD OBJECT /DMO/
+
 ### Paquetes:
 - /DMO/FLIGHT_UNMANAGED
 - /DMO/FLIGHT_MANAGED
@@ -49,8 +54,6 @@
 - /DMO/I_AGENCY
 - /DMO/I_CURRENCY
 
-## Construcción
-![building_01](./img/building_01.png)
+## List of Useful SAP Fiori TCodes
 
-## Orden de creación de los objetos
-![building_04](./img/building_04.png)
+[....detalle](./docs/transacciones.MD)
