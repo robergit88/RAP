@@ -1,4 +1,4 @@
-# UNDERSTANDING ENTITY MANIPULATION LANGUAGE (EML)
+# ENTITY MANIPULATION LANGUAGE (EML)
 
 ## ¿qué es EML?
 ## Es parte del lenguaje ABAP y significa que hay nuevas sintaxis disponibles en ABAP para:
@@ -56,7 +56,7 @@ read entities of ZI_RAP_Travel_1234
 
     out->write( travels ).
 ```
-Ahora se llen los campos AgencyID y el CustomerID
+Ahora se leen los campos `TravelID` `AgencyID` y `CustomerID`
 
 ## READ ENTITIES ALL FIELDS
 ```abap
@@ -68,7 +68,7 @@ read entities of ZI_RAP_Travel_1234
 
     out->write( travels ).
 ```
-utilizando ALL FIELDS se leen todos los campos de la entidad
+utilizando `ALL FIELDS` se leen todos los campos de la entidad
 
 ## READ ENTITIES BY ASSOCIATION
 ``` abap
@@ -79,7 +79,7 @@ utilizando ALL FIELDS se leen todos los campos de la entidad
 
     out->write( bookings ).
 ```
-Lectura por asociación siguiendo la asociación definida en la definición de comportamiento.
+Lectura por `asociación` siguiendo la relación definida en la definición de `comportamiento`.
 
 ## READ ENTITIES UNSUCCESSFUL
 ```abap
@@ -91,13 +91,14 @@ Lectura por asociación siguiendo la asociación definida en la definición de c
          reported data(reported).
 
     out->write( travels ).
-    out->write( failed ).    " complex structures not supported by the console output
-    out->write( reported ).  " complex structures not supported by the console output
+    out->write( failed ). 
+    out->write( reported ).
 ```
 Al realizar operaciones de lectura de EML, no solo debe considerar la tabla de resultados,
 sino también las tablas de errores y las tablas de informes.
-- failed: se utiliza para indicar operaciones fallidas.
-- reported: se utiliza opcionalmente para proporcionar mensajes T100 relacionados.
+- `result`: se utiliza para almacenar entidades leidas.
+- `failed`: se utiliza para indicar operaciones fallidas.
+- `reported`: se utiliza opcionalmente para proporcionar mensajes T100 relacionados.
 
 ## MODIFY ENTITIES - CREATE
 ```abap
@@ -125,7 +126,7 @@ sino también las tablas de errores y las tablas de informes.
 
     out->write( 'Create done' ).
 ```
-la instrucción MODIFY con la cláusula CREATE creará entidades nuevas.
+la instrucción `MODIFY` con la cláusula `CREATE` creará entidades nuevas.
 Al finalizar se devuelve una tabla mapeada que asigna la instancia creada al ID de contenido proporcionado.
 
 ## MODIFY ENTITIES - UPDATE
@@ -147,7 +148,8 @@ modify entities of ZI_RAP_Travel_1234
 
     out->write( 'Update done' ).
 ```
-modificar una entidad existente.
+
+`MODIFY ENTITIES` con la cláusula `UPDATE` modifica una entidad.
 
 ## MODIFY ENTITIES - DELETE FROM
 ```abap
@@ -166,7 +168,7 @@ modify entities of ZI_RAP_Travel_1234
 
     out->write( 'Delete done' ).
 ```
-El borrado de entidades se realiza con la instrucción MODIFY ENTITIES con la cláusula DELETE.
+`MODIFY ENTITIES` con la cláusula `DELETE` borra/elimina una entidad. 
 
 ## MODIFY ENTITIES - ACTION
 ```abap
