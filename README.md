@@ -1,9 +1,11 @@
 # Building Apps with the ABAP RESTful Application Programming Model 
 
 ## The big picture
+
 ![building_02](./img/building_02.png)
 
-## Developement flow
+## Development flow
+
 ![building_03](./img/building_03.png)
 
 ## Vocabulario
@@ -40,10 +42,6 @@
 - /DMO/FLIGHT
 - /DMO/FLIGHT_DRAFT
 
-### Tablas:
-- /DMO/A_TRAVEL_D
-- /DMO/A_BOOKING_D
-
 ### CDS:
 - /DMO/I_TRAVEL
 - /DMO/I_AGENCY
@@ -53,6 +51,10 @@
 - /DMO/I_FLIGHT
 - /DMO/I_AGENCY
 - /DMO/I_CURRENCY
+
+### Tablas:
+- /DMO/A_TRAVEL_D
+- /DMO/A_BOOKING_D
 
 ## List of Useful SAP Fiori TCodes
 
