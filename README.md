@@ -8,9 +8,17 @@
 
 ![building_03](./img/building_03.png)
 
-## Vocabulario
+## Construcción
 
-[vocabulario](./docs/vocabulario.md)
+![building_01](./img/building_01.png)
+
+## Orden de creación de los objetos
+
+![building_04](./img/building_04.png)
+
+## ENTITY MANIPULATION LANGUAGE (EML)
+
+[....detalle](./docs/EML.md)
 
 ## MANAGED APP
 
@@ -20,23 +28,14 @@
 
 ## UNMANAGED APP
 
+>   ### manually implement CRUD operations and is primarily used for brownfield developments where existing legacy code like BAPI
+
 [....detalle](./docs/UNMANAGED_APP.md)
-
-## Construcción
-
-![building_01](./img/building_01.png)
-
-## Orden de creación de los objetos
-
-![building_04](./img/building_04.png)
-
-## UNDERSTANDING ENTITY MANIPULATION LANGUAGE (EML)
-
-[....detalle](./docs/EML.md)
 
 ## STANDARD OBJECT /DMO/
 
 ### Paquetes:
+
 - /DMO/FLIGHT_UNMANAGED
 - /DMO/FLIGHT_MANAGED
 - /DMO/FLIGHT
@@ -55,6 +54,10 @@
 ### Tablas:
 - /DMO/A_TRAVEL_D
 - /DMO/A_BOOKING_D
+
+## Vocabulario
+
+[vocabulario](./docs/vocabulario.md)
 
 ## List of Useful SAP Fiori TCodes
 
