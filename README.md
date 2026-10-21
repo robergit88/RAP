@@ -36,24 +36,23 @@
 
 ### Paquetes:
 
-- /DMO/FLIGHT_UNMANAGED
-- /DMO/FLIGHT_MANAGED
-- /DMO/FLIGHT
-- /DMO/FLIGHT_DRAFT
+- **`/DMO/FLIGHT_READONLY`**
+represents a read-only list reporting app
 
-### CDS:
-- /DMO/I_TRAVEL
-- /DMO/I_AGENCY
-- /DMO/I_CUSTOMER
-- /DMO/I_CARRIER
-- /DMO/I_CONNECTION
-- /DMO/I_FLIGHT
-- /DMO/I_AGENCY
-- /DMO/I_CURRENCY
+- **`/DMO/FLIGHT_MANAGED`**
+represents the transactional app with implementation type managed
 
-### Tablas:
-- /DMO/A_TRAVEL_D
-- /DMO/A_BOOKING_D
+- **`/DMO/FLIGHT_UNMANAGED`**
+represents the transactional app with implementation type unmanaged 
+
+- **`/DMO/FLIGHT_DRAFT`**
+epresents the transactional app with draft
+
+- **`/DMO/FLIGHT_HIERARCHY`** 
+contains the development objects showcasing hierarchies in a read-only and an editable treeview scenario
+
+- **`/DMO/FLIGHT_LEGACY`**
+contains objects that are used for the unmanaged scenario to implement a brownfield scenario, for which the business logic is already implemented in legacy objects
 
 ## Vocabulario
 
