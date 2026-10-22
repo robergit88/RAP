@@ -29,8 +29,7 @@
 ## 3. Esquema Gráfico de Tablas
 
 ```mermaid
-graph LR
-
+graph TD
     HEADER[ZEXPENSE_REPORT_HEADER ROOT]
     ITEM[ZEXPENSE_REPORT_ITEM]
     ATTACH[ZEXPENSE_REPORT_ATTACHMENT]
@@ -40,14 +39,15 @@ graph LR
     AUX_IS[ZEXPENSE_AUX_ITEM_STATUS]
     AUX_MIME[ZEXPENSE_AUX_MIME]
 
-    ITEM -- "◆" --- HEADER
-    ATTACH -- "◆" --- ITEM
+    HEADER -- "◆" --- ITEM
+    ITEM -- "◆" --- ATTACH
 
     HEADER -.- CUSTOMER
     HEADER -.- AUX_HS
     ITEM -.- AUX_TYPE
     ITEM -.- AUX_IS
     ATTACH -.- AUX_MIME
+
 ```
 
 ## 4. Plan Didáctico - 10 Funcionalidades RAP
