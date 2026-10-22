@@ -219,5 +219,5 @@ ENDCLASS.
 | `ZI_EXP_ITEM` | `ZEXPENSE_ITEM` | Child - Líneas de gasto (hotel, taxi, etc.) |
 | `ZI_EXP_ATTACH` | `ZITEM_ATTACHMENT` | Grandchild - Adjuntos y justificantes del gasto |
 | `ZVH_EXPENSE_TYPE` | `ZEXPENSE_TYPE` | Value Help - Tipos de gasto |
-| `ZVH_MIME_TYPE` | `ZMEDIA_TYPE` | Value Help - Tipos MIME para upload |
-| `ZVH_ITEM_STATUS` | `ZMEDIA_TYPE` | Value Help - Estados de ticket individual |
+| `ZVH_MIME_TYPE` | `ZMIME_TYPE` | Value Help - Tipos MIME para upload |
+| `ZVH_ITEM_STATUS` | `ZITEM_STATUS` | Value Help - Estados de ticket individual |
