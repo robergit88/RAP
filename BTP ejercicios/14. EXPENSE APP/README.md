@@ -218,5 +218,6 @@ ENDCLASS.
 | `ZI_EXP_HEADER` | `ZEXPENSE_HEADER` | Root - Cabecera de la liquidación de gastos |
 | `ZI_EXP_ITEM` | `ZEXPENSE_ITEM` | Child - Líneas de gasto (hotel, taxi, etc.) |
 | `ZI_EXP_ATTACH` | `ZITEM_ATTACHMENT` | Grandchild - Adjuntos y justificantes del gasto |
-| `ZI_ITEM_TYPE` | `ZEXPENSE_TYPE` | Value Help - Tipos de gasto |
-| `ZI_MEDIA_TYPE` | `ZMEDIA_TYPE` | Value Help - Tipos MIME para upload |
+| `ZVH_EXPENSE_TYPE` | `ZEXPENSE_TYPE` | Value Help - Tipos de gasto |
+| `ZVH_MIME_TYPE` | `ZMEDIA_TYPE` | Value Help - Tipos MIME para upload |
+| `ZVH_ITEM_STATUS` | `ZMEDIA_TYPE` | Value Help - Estados de ticket individual |
