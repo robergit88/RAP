@@ -30,10 +30,10 @@ La app requiere crear cabecera + ítems + adjuntos con upload en la misma transa
 ### Tablas Auxiliares (Maestras)
 | Tabla | Descripción Auto-explicativa |
 | :--- | :--- |
-| **ZITEM_TYPE** | Catálogo de tipos de gasto. Define límites y si requiere factura. |
+| **ZEXPENSE_TYPE** | Catálogo de tipos de gasto. Define límites y si requiere factura. |
 | **ZHEADER_STATUS** | Catálogo de estados de la carpeta/cabecera. Controla edición y semáforos. |
 | **ZITEM_STATUS** | Catálogo de estados del ticket individual. |
-| **ZATTACH_MIME** | Catálogo de tipos de archivo permitidos para upload. |
+| **ZMIME_TYPE** | Catálogo de tipos de archivo permitidos para upload. |
 
 ### Tablas Transaccionales
 | Tabla | Descripción Auto-explicativa |
@@ -51,9 +51,9 @@ classDiagram
 
     ZEXPENSE_HEADER ..> DMO_Customer
     ZEXPENSE_HEADER ..> ZHEADER_STATUS
-    ZEXPENSE_ITEM ..> ZITEM_TYPE
+    ZEXPENSE_ITEM ..> ZEXPENSE_TYPE
     ZEXPENSE_ITEM ..> ZITEM_STATUS
-    ZITEM_ATTACHMENT ..> ZATTACH_MIME
+    ZITEM_ATTACHMENT ..> ZMIME_TYPE
 ```
 
 ## 4. Plan Didáctico - 10 Funcionalidades RAP
@@ -71,13 +71,13 @@ classDiagram
 
 ## 5. Valores Didácticos
 
-**ZITEM_TYPE:** HOTEL (300,X), TAXI (100,''), MEAL (60,X), KM (0,'')
+**ZEXPENSE_TYPE:** HOTEL (300,X), TAXI (100,''), MEAL (60,X), KM (0,'')
 
 **ZHEADER_STATUS:** OPEN (X), SENT (''), APPROVED (''), REJECTED (X)
 
 **ZITEM_STATUS:** VALID, PENDING, OBSERVED
 
-**ZATTACH_MIME:** application/pdf, image/jpeg
+**ZMIME_TYPE:** application/pdf, image/jpeg
 
 ## 6. I18N - Internacionalización
 - CDS Labels: Data Elements ZEXPENSE_DE_* traducidos con SE63
@@ -86,13 +86,13 @@ classDiagram
 
 ## 7. DDL - Código de Creación
 
-### ZITEM_TYPE
+### ZEXPENSE_TYPE
 ```abap
-define table ZITEM_TYPE {
+define table ZEXPENSE_TYPE {
   key client : abap.clnt not null;
   key type_id : abap.char(10) not null;
   description : abap.char(40);
-  @Semantics.amount.currencyCode : 'zitem_type.currency_code'
+  @Semantics.amount.currencyCode : 'ZEXPENSE_TYPE.currency_code'
   limit_amount : abap.curr(10,2);
   requires_invoice : abap.char(1);
   currency_code : abap.cuky(5);
@@ -119,9 +119,9 @@ define table ZITEM_STATUS {
 }
 ```
 
-### ZATTACH_MIME
+### ZMIME_TYPE
 ```abap
-define table ZATTACH_MIME {
+define table ZMIME_TYPE {
   key client : abap.clnt not null;
   key mime_type : abap.char(30) not null;
   extension : abap.char(10);
@@ -181,8 +181,8 @@ CLASS zcl_expense_aux_data_load DEFINITION PUBLIC FINAL CREATE PUBLIC.
 ENDCLASS.
 CLASS zcl_expense_aux_data_load IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
-    DELETE FROM ZITEM_TYPE.
-    INSERT ZITEM_TYPE FROM TABLE @( VALUE #(
+    DELETE FROM ZEXPENSE_TYPE.
+    INSERT ZEXPENSE_TYPE FROM TABLE @( VALUE #(
       ( client = '100' type_id = 'HOTEL' description = 'Hotel' limit_amount = '300' requires_invoice = 'X' currency_code = 'EUR' )
       ( client = '100' type_id = 'TAXI' description = 'Taxi / Uber' limit_amount = '100' requires_invoice = '' currency_code = 'EUR' )
       ( client = '100' type_id = 'MEAL' description = 'Comida' limit_amount = '60' requires_invoice = 'X' currency_code = 'EUR' )
@@ -201,8 +201,8 @@ CLASS zcl_expense_aux_data_load IMPLEMENTATION.
       ( client = '100' status_id = 'PENDING' description = 'Pendiente Factura' )
       ( client = '100' status_id = 'OBSERVED' description = 'Observado' )
     ) ).
-    DELETE FROM ZATTACH_MIME.
-    INSERT ZATTACH_MIME FROM TABLE @( VALUE #(
+    DELETE FROM ZMIME_TYPE.
+    INSERT ZMIME_TYPE FROM TABLE @( VALUE #(
       ( client = '100' mime_type = 'application/pdf' extension = 'PDF' description = 'PDF Document' )
       ( client = '100' mime_type = 'image/jpeg' extension = 'JPG' description = 'JPEG Image' )
     ) ).
@@ -210,3 +210,13 @@ CLASS zcl_expense_aux_data_load IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ```
+
+## 9. CDS Interfaces - Modelo de Datos
+
+| Nombre CDS | Origen | Descripción |
+| :--- | :--- | :--- |
+| `ZI_EXP_HEADER` | `ZEXPENSE_HEADER` | Root - Cabecera de la liquidación de gastos |
+| `ZI_EXP_ITEM` | `ZEXPENSE_ITEM` | Child - Líneas de gasto (hotel, taxi, etc.) |
+| `ZI_EXP_ATTACH` | `ZITEM_ATTACHMENT` | Grandchild - Adjuntos y justificantes del gasto |
+| `ZI_ITEM_TYPE` | `ZEXPENSE_TYPE` | Value Help - Tipos de gasto |
+| `ZI_MEDIA_TYPE` | `ZMEDIA_TYPE` | Value Help - Tipos MIME para upload |
