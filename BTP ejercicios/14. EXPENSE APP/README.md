@@ -14,33 +14,31 @@
 ### Tablas Auxiliares (Maestras)
 | Tabla | Descripción Auto-explicativa |
 | :--- | :--- |
-| **ZEXPENSE_AUX_TYPE** | Catálogo de tipos de gasto. Define límites y si requiere factura. |
-| **ZEXPENSE_AUX_HEADER_STATUS** | Catálogo de estados de la carpeta/cabecera. Controla edición y semáforos. |
-| **ZEXPENSE_AUX_ITEM_STATUS** | Catálogo de estados del ticket individual. |
-| **ZEXPENSE_AUX_MIME** | Catálogo de tipos de archivo permitidos para upload. |
+| **ZEXPENSE_ITEM_TYPE** | Catálogo de tipos de gasto. Define límites y si requiere factura. |
+| **ZEXPENSE_HEADER_STATUS** | Catálogo de estados de la carpeta/cabecera. Controla edición y semáforos. |
+| **ZEXPENSE_ITEM_STATUS** | Catálogo de estados del ticket individual. |
+| **ZEXPENSE_ATTACH_MIME** | Catálogo de tipos de archivo permitidos para upload. |
 
 ### Tablas Transaccionales
 | Tabla | Descripción Auto-explicativa |
 | :--- | :--- |
-| **ZEXPENSE_REPORT_HEADER** | Cabecera del reporte de gastos. ROOT. Reusa /DMO/CUSTOMER como solicitante. |
-| **ZEXPENSE_REPORT_ITEM** | Item / línea del reporte. CHILD de HEADER. |
-| **ZEXPENSE_REPORT_ATTACHMENT** | Adjunto binario del ticket. CHILD de ITEM. |
+| **ZEXPENSE_HEADER** | Cabecera del reporte de gastos. ROOT. Reusa /DMO/CUSTOMER como solicitante. |
+| **ZEXPENSE_ITEM** | Item / línea del reporte. CHILD de HEADER. |
+| **ZEXPENSE_ITEM_ATTACHMENT** | Adjunto binario del ticket. CHILD de ITEM. |
 
 ## 3. Esquema Gráfico de Tablas
 
 ```mermaid
 classDiagram
-    ZEXPENSE_REPORT_HEADER *-- ZEXPENSE_REPORT_ITEM
-    ZEXPENSE_REPORT_ITEM *-- ZEXPENSE_REPORT_ATTACHMENT
+    ZEXPENSE_HEADER *-- ZEXPENSE_ITEM
+    ZEXPENSE_ITEM *-- ZEXPENSE_ITEM_ATTACHMENT
 
-    ZEXPENSE_REPORT_HEADER ..> DMO_Customer
-    ZEXPENSE_REPORT_HEADER ..> ZEXPENSE_AUX_HEADER_STATUS
-    ZEXPENSE_REPORT_ITEM ..> ZEXPENSE_AUX_TYPE
-    ZEXPENSE_REPORT_ITEM ..> ZEXPENSE_AUX_ITEM_STATUS
-    ZEXPENSE_REPORT_ATTACHMENT ..> ZEXPENSE_AUX_MIME
+    ZEXPENSE_HEADER ..> DMO_Customer
+    ZEXPENSE_HEADER ..> ZEXPENSE_HEADER_STATUS
+    ZEXPENSE_ITEM ..> ZEXPENSE_ITEM_TYPE
+    ZEXPENSE_ITEM ..> ZEXPENSE_ITEM_STATUS
+    ZEXPENSE_ITEM_ATTACHMENT ..> ZEXPENSE_ATTACH_MIME
 ```
-
-
 
 ## 4. Plan Didáctico - 10 Funcionalidades RAP
 
@@ -57,13 +55,13 @@ classDiagram
 
 ## 5. Valores Didácticos
 
-**ZEXPENSE_AUX_TYPE:** HOTEL (300,X), TAXI (100,''), MEAL (60,X), KM (0,'')
+**ZEXPENSE_ITEM_TYPE:** HOTEL (300,X), TAXI (100,''), MEAL (60,X), KM (0,'')
 
-**ZEXPENSE_AUX_HEADER_STATUS:** OPEN (X), SENT (''), APPROVED (''), REJECTED (X)
+**ZEXPENSE_HEADER_STATUS:** OPEN (X), SENT (''), APPROVED (''), REJECTED (X)
 
-**ZEXPENSE_AUX_ITEM_STATUS:** VALID, PENDING, OBSERVED
+**ZEXPENSE_ITEM_STATUS:** VALID, PENDING, OBSERVED
 
-**ZEXPENSE_AUX_MIME:** application/pdf, image/jpeg
+**ZEXPENSE_ATTACH_MIME:** application/pdf, image/jpeg
 
 ## 6. I18N - Internacionalización
 - CDS Labels: Data Elements ZEXPENSE_DE_* traducidos con SE63
@@ -72,9 +70,9 @@ classDiagram
 
 ## 7. DDL - Código de Creación
 
-### ZEXPENSE_AUX_TYPE
+### ZEXPENSE_ITEM_TYPE
 ```abap
-define table zexpense_aux_type {
+define table ZEXPENSE_ITEM_TYPE {
   key client : abap.clnt not null;
   key type_id : abap.char(10) not null;
   description : abap.char(40);
@@ -84,9 +82,9 @@ define table zexpense_aux_type {
 }
 ```
 
-### ZEXPENSE_AUX_HEADER_STATUS
+### ZEXPENSE_HEADER_STATUS
 ```abap
-define table zexpense_aux_header_status {
+define table ZEXPENSE_HEADER_STATUS {
   key client : abap.clnt not null;
   key status_id : abap.char(10) not null;
   description : abap.char(40);
@@ -95,18 +93,18 @@ define table zexpense_aux_header_status {
 }
 ```
 
-### ZEXPENSE_AUX_ITEM_STATUS
+### ZEXPENSE_ITEM_STATUS
 ```abap
-define table zexpense_aux_item_status {
+define table ZEXPENSE_ITEM_STATUS {
   key client : abap.clnt not null;
   key status_id : abap.char(10) not null;
   description : abap.char(40);
 }
 ```
 
-### ZEXPENSE_AUX_MIME
+### ZEXPENSE_ATTACH_MIME
 ```abap
-define table zexpense_aux_mime {
+define table ZEXPENSE_ATTACH_MIME {
   key client : abap.clnt not null;
   key mime_type : abap.char(30) not null;
   extension : abap.char(10);
@@ -114,9 +112,9 @@ define table zexpense_aux_mime {
 }
 ```
 
-### ZEXPENSE_REPORT_HEADER
+### ZEXPENSE_HEADER
 ```abap
-define table zexpense_report_header {
+define table ZEXPENSE_HEADER {
   key client : abap.clnt not null;
   key report_id : abap.char(10) not null;
   customer_id : abap.char(10) not null;
@@ -128,9 +126,9 @@ define table zexpense_report_header {
 }
 ```
 
-### ZEXPENSE_REPORT_ITEM
+### ZEXPENSE_ITEM
 ```abap
-define table zexpense_report_item {
+define table ZEXPENSE_ITEM {
   key client : abap.clnt not null;
   key report_id : abap.char(10) not null;
   key item_id : abap.char(6) not null;
@@ -143,9 +141,9 @@ define table zexpense_report_item {
 }
 ```
 
-### ZEXPENSE_REPORT_ATTACHMENT
+### ZEXPENSE_ITEM_ATTACHMENT
 ```abap
-define table zexpense_report_attachment {
+define table ZEXPENSE_ITEM_ATTACHMENT {
   key client : abap.clnt not null;
   key report_id : abap.char(10) not null;
   key item_id : abap.char(6) not null;
@@ -164,28 +162,28 @@ CLASS zcl_expense_aux_data_load DEFINITION PUBLIC FINAL CREATE PUBLIC.
 ENDCLASS.
 CLASS zcl_expense_aux_data_load IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
-    DELETE FROM zexpense_aux_type.
-    INSERT zexpense_aux_type FROM TABLE @( VALUE #(
+    DELETE FROM ZEXPENSE_ITEM_TYPE.
+    INSERT ZEXPENSE_ITEM_TYPE FROM TABLE @( VALUE #(
       ( client = '100' type_id = 'HOTEL' description = 'Hotel' limit_amount = '300' requires_invoice = 'X' currency_code = 'EUR' )
       ( client = '100' type_id = 'TAXI' description = 'Taxi / Uber' limit_amount = '100' requires_invoice = '' currency_code = 'EUR' )
       ( client = '100' type_id = 'MEAL' description = 'Comida' limit_amount = '60' requires_invoice = 'X' currency_code = 'EUR' )
       ( client = '100' type_id = 'KM' description = 'Kilometraje' limit_amount = '0' requires_invoice = '' currency_code = 'EUR' )
     ) ).
-    DELETE FROM zexpense_aux_header_status.
-    INSERT zexpense_aux_header_status FROM TABLE @( VALUE #(
+    DELETE FROM ZEXPENSE_HEADER_STATUS.
+    INSERT ZEXPENSE_HEADER_STATUS FROM TABLE @( VALUE #(
       ( client = '100' status_id = 'OPEN' description = 'Abierta' allow_edit = 'X' criticality = 0 )
       ( client = '100' status_id = 'SENT' description = 'Enviada' allow_edit = '' criticality = 2 )
       ( client = '100' status_id = 'APPROVED' description = 'Aprobada' allow_edit = '' criticality = 3 )
       ( client = '100' status_id = 'REJECTED' description = 'Rechazada' allow_edit = 'X' criticality = 1 )
     ) ).
-    DELETE FROM zexpense_aux_item_status.
-    INSERT zexpense_aux_item_status FROM TABLE @( VALUE #(
+    DELETE FROM ZEXPENSE_ITEM_STATUS.
+    INSERT ZEXPENSE_ITEM_STATUS FROM TABLE @( VALUE #(
       ( client = '100' status_id = 'VALID' description = 'Valido' )
       ( client = '100' status_id = 'PENDING' description = 'Pendiente Factura' )
       ( client = '100' status_id = 'OBSERVED' description = 'Observado' )
     ) ).
-    DELETE FROM zexpense_aux_mime.
-    INSERT zexpense_aux_mime FROM TABLE @( VALUE #(
+    DELETE FROM ZEXPENSE_ATTACH_MIME.
+    INSERT ZEXPENSE_ATTACH_MIME FROM TABLE @( VALUE #(
       ( client = '100' mime_type = 'application/pdf' extension = 'PDF' description = 'PDF Document' )
       ( client = '100' mime_type = 'image/jpeg' extension = 'JPG' description = 'JPEG Image' )
     ) ).
