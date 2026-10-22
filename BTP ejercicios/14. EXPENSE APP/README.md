@@ -398,3 +398,19 @@ as select from zitem_status
 }
 
 ```
+## 10. CDS Consumo - Modelo de Datos
+
+| Nombre CDS | Origen | Descripción |
+| :--- | :--- | :--- |
+| [`ZC_EXP_HEADER`](#zc_exp_header) | `ZI_EXP_HEADER` | Root - Cabecera de la liquidación de gastos |
+| [`ZC_EXP_ITEMM`](#zc_exp_itemm)| `ZI_EXP_ITEMM` | Child - Líneas de gasto (hotel, taxi, etc.) |
+| [`ZC_EXP_ATTACH`](#zc_exp_attach) | `ZI_EXP_ATTACH` | Grandchild - Adjuntos y justificantes del gasto |
+
+
+## 11. Metadata Extensions - Consumptions CDS Based
+
+| Nombre CDS | Origen | Descripción |
+| :--- | :--- | :--- |
+| [`ZC_EXP_HEADER`](#zc_exp_header) | `ZC_EXP_HEADER` | Root - Cabecera de la liquidación de gastos |
+| [`ZC_EXP_ITEMM`](#zc_exp_itemm)| `ZC_EXP_ITEMM` | Child - Líneas de gasto (hotel, taxi, etc.) |
+| [`ZC_EXP_ATTACH`](#zc_exp_attach) | `ZC_EXP_ATTACH` | Grandchild - Adjuntos y justificantes del gasto |
