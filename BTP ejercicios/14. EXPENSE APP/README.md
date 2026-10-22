@@ -1,4 +1,20 @@
-# ZEXPENSE - Modelo de Liquidación de Gastos - RAP Managed OData V4
+# ZEXPENSE - Aplicación de Liquidación de Gastos - RAP Managed OData V4
+
+### ¿Por qué Managed con Draft?
+
+Para la Expense App elegimos **RAP Managed con Draft** frente a Unmanaged por 3 motivos:
+
+1.  **Numeración automática sin inventar claves:**
+
+Nuestra clave `report_id (CHAR 10)` no es UUID. Con Managed implementamos `early_numbering` con lógica `MAX + 1`, de forma que el sistema propone `0000000001`, `0000000002`... sin que el desarrollador tenga que inventar la clave en el UI. Sin `Number Range Object`, ideal para entorno BTP didáctico.
+
+2.  **Menos código, más framework:** 
+
+En Unmanaged tendríamos que programar a mano todos los `INSERT/UPDATE/DELETE` de `ZEXPENSE_HEADER`, `ZEXPENSE_ITEM` y `ZITEM_ATTACHMENT`. Con Managed RAP gestiona la persistencia, el bloqueo y las tablas DRAFT automáticamente al poner `with draft`.
+
+3.  **UX Fiori Elements:** 
+
+La app requiere crear cabecera + ítems + adjuntos con upload en la misma transacción antes de hacer SAVE. Solo con Draft se puede mantener todo en borrador y validar el flujo `OPEN -> SENT` antes de grabar.
 
 ## 1. Resumen Caso de Uso
 **Actor:** Empleado viajero.
@@ -14,30 +30,30 @@
 ### Tablas Auxiliares (Maestras)
 | Tabla | Descripción Auto-explicativa |
 | :--- | :--- |
-| **ZEXPENSE_ITEM_TYPE** | Catálogo de tipos de gasto. Define límites y si requiere factura. |
-| **ZEXPENSE_HEADER_STATUS** | Catálogo de estados de la carpeta/cabecera. Controla edición y semáforos. |
-| **ZEXPENSE_ITEM_STATUS** | Catálogo de estados del ticket individual. |
-| **ZEXPENSE_ATTACH_MIME** | Catálogo de tipos de archivo permitidos para upload. |
+| **ZITEM_TYPE** | Catálogo de tipos de gasto. Define límites y si requiere factura. |
+| **ZHEADER_STATUS** | Catálogo de estados de la carpeta/cabecera. Controla edición y semáforos. |
+| **ZITEM_STATUS** | Catálogo de estados del ticket individual. |
+| **ZATTACH_MIME** | Catálogo de tipos de archivo permitidos para upload. |
 
 ### Tablas Transaccionales
 | Tabla | Descripción Auto-explicativa |
 | :--- | :--- |
 | **ZEXPENSE_HEADER** | Cabecera del reporte de gastos. ROOT. Reusa /DMO/CUSTOMER como solicitante. |
 | **ZEXPENSE_ITEM** | Item / línea del reporte. CHILD de HEADER. |
-| **ZEXPENSE_ITEM_ATTACHMENT** | Adjunto binario del ticket. CHILD de ITEM. |
+| **ZITEM_ATTACHMENT** | Adjunto binario del ticket. CHILD de ITEM. |
 
 ## 3. Esquema Gráfico de Tablas
 
 ```mermaid
 classDiagram
     ZEXPENSE_HEADER *-- ZEXPENSE_ITEM
-    ZEXPENSE_ITEM *-- ZEXPENSE_ITEM_ATTACHMENT
+    ZEXPENSE_ITEM *-- ZITEM_ATTACHMENT
 
     ZEXPENSE_HEADER ..> DMO_Customer
-    ZEXPENSE_HEADER ..> ZEXPENSE_HEADER_STATUS
-    ZEXPENSE_ITEM ..> ZEXPENSE_ITEM_TYPE
-    ZEXPENSE_ITEM ..> ZEXPENSE_ITEM_STATUS
-    ZEXPENSE_ITEM_ATTACHMENT ..> ZEXPENSE_ATTACH_MIME
+    ZEXPENSE_HEADER ..> ZHEADER_STATUS
+    ZEXPENSE_ITEM ..> ZITEM_TYPE
+    ZEXPENSE_ITEM ..> ZITEM_STATUS
+    ZITEM_ATTACHMENT ..> ZATTACH_MIME
 ```
 
 ## 4. Plan Didáctico - 10 Funcionalidades RAP
@@ -55,13 +71,13 @@ classDiagram
 
 ## 5. Valores Didácticos
 
-**ZEXPENSE_ITEM_TYPE:** HOTEL (300,X), TAXI (100,''), MEAL (60,X), KM (0,'')
+**ZITEM_TYPE:** HOTEL (300,X), TAXI (100,''), MEAL (60,X), KM (0,'')
 
-**ZEXPENSE_HEADER_STATUS:** OPEN (X), SENT (''), APPROVED (''), REJECTED (X)
+**ZHEADER_STATUS:** OPEN (X), SENT (''), APPROVED (''), REJECTED (X)
 
-**ZEXPENSE_ITEM_STATUS:** VALID, PENDING, OBSERVED
+**ZITEM_STATUS:** VALID, PENDING, OBSERVED
 
-**ZEXPENSE_ATTACH_MIME:** application/pdf, image/jpeg
+**ZATTACH_MIME:** application/pdf, image/jpeg
 
 ## 6. I18N - Internacionalización
 - CDS Labels: Data Elements ZEXPENSE_DE_* traducidos con SE63
@@ -70,21 +86,22 @@ classDiagram
 
 ## 7. DDL - Código de Creación
 
-### ZEXPENSE_ITEM_TYPE
+### ZITEM_TYPE
 ```abap
-define table ZEXPENSE_ITEM_TYPE {
+define table ZITEM_TYPE {
   key client : abap.clnt not null;
   key type_id : abap.char(10) not null;
   description : abap.char(40);
+  @Semantics.amount.currencyCode : 'zitem_type.currency_code'
   limit_amount : abap.curr(10,2);
   requires_invoice : abap.char(1);
   currency_code : abap.cuky(5);
 }
 ```
 
-### ZEXPENSE_HEADER_STATUS
+### ZHEADER_STATUS
 ```abap
-define table ZEXPENSE_HEADER_STATUS {
+define table ZHEADER_STATUS {
   key client : abap.clnt not null;
   key status_id : abap.char(10) not null;
   description : abap.char(40);
@@ -93,18 +110,18 @@ define table ZEXPENSE_HEADER_STATUS {
 }
 ```
 
-### ZEXPENSE_ITEM_STATUS
+### ZITEM_STATUS
 ```abap
-define table ZEXPENSE_ITEM_STATUS {
+define table ZITEM_STATUS {
   key client : abap.clnt not null;
   key status_id : abap.char(10) not null;
   description : abap.char(40);
 }
 ```
 
-### ZEXPENSE_ATTACH_MIME
+### ZATTACH_MIME
 ```abap
-define table ZEXPENSE_ATTACH_MIME {
+define table ZATTACH_MIME {
   key client : abap.clnt not null;
   key mime_type : abap.char(30) not null;
   extension : abap.char(10);
@@ -120,6 +137,7 @@ define table ZEXPENSE_HEADER {
   customer_id : abap.char(10) not null;
   report_date : abap.dats;
   reason : abap.char(100);
+  @Semantics.amount.currencyCode : 'zexpense_header.currency_code'
   total_amount : abap.curr(15,2);
   currency_code : abap.cuky(5);
   header_status : abap.char(10) not null;
@@ -135,15 +153,16 @@ define table ZEXPENSE_ITEM {
   expense_type : abap.char(10) not null;
   item_status : abap.char(10) not null;
   expense_date : abap.dats;
+  @Semantics.amount.currencyCode : 'zexpense_item.currency_code'
   amount : abap.curr(10,2);
   currency_code : abap.cuky(5);
   vendor : abap.char(40);
 }
 ```
 
-### ZEXPENSE_ITEM_ATTACHMENT
+### ZITEM_ATTACHMENT
 ```abap
-define table ZEXPENSE_ITEM_ATTACHMENT {
+define table ZITEM_ATTACHMENT {
   key client : abap.clnt not null;
   key report_id : abap.char(10) not null;
   key item_id : abap.char(6) not null;
@@ -162,28 +181,28 @@ CLASS zcl_expense_aux_data_load DEFINITION PUBLIC FINAL CREATE PUBLIC.
 ENDCLASS.
 CLASS zcl_expense_aux_data_load IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
-    DELETE FROM ZEXPENSE_ITEM_TYPE.
-    INSERT ZEXPENSE_ITEM_TYPE FROM TABLE @( VALUE #(
+    DELETE FROM ZITEM_TYPE.
+    INSERT ZITEM_TYPE FROM TABLE @( VALUE #(
       ( client = '100' type_id = 'HOTEL' description = 'Hotel' limit_amount = '300' requires_invoice = 'X' currency_code = 'EUR' )
       ( client = '100' type_id = 'TAXI' description = 'Taxi / Uber' limit_amount = '100' requires_invoice = '' currency_code = 'EUR' )
       ( client = '100' type_id = 'MEAL' description = 'Comida' limit_amount = '60' requires_invoice = 'X' currency_code = 'EUR' )
       ( client = '100' type_id = 'KM' description = 'Kilometraje' limit_amount = '0' requires_invoice = '' currency_code = 'EUR' )
     ) ).
-    DELETE FROM ZEXPENSE_HEADER_STATUS.
-    INSERT ZEXPENSE_HEADER_STATUS FROM TABLE @( VALUE #(
+    DELETE FROM ZHEADER_STATUS.
+    INSERT ZHEADER_STATUS FROM TABLE @( VALUE #(
       ( client = '100' status_id = 'OPEN' description = 'Abierta' allow_edit = 'X' criticality = 0 )
       ( client = '100' status_id = 'SENT' description = 'Enviada' allow_edit = '' criticality = 2 )
       ( client = '100' status_id = 'APPROVED' description = 'Aprobada' allow_edit = '' criticality = 3 )
       ( client = '100' status_id = 'REJECTED' description = 'Rechazada' allow_edit = 'X' criticality = 1 )
     ) ).
-    DELETE FROM ZEXPENSE_ITEM_STATUS.
-    INSERT ZEXPENSE_ITEM_STATUS FROM TABLE @( VALUE #(
+    DELETE FROM ZITEM_STATUS.
+    INSERT ZITEM_STATUS FROM TABLE @( VALUE #(
       ( client = '100' status_id = 'VALID' description = 'Valido' )
       ( client = '100' status_id = 'PENDING' description = 'Pendiente Factura' )
       ( client = '100' status_id = 'OBSERVED' description = 'Observado' )
     ) ).
-    DELETE FROM ZEXPENSE_ATTACH_MIME.
-    INSERT ZEXPENSE_ATTACH_MIME FROM TABLE @( VALUE #(
+    DELETE FROM ZATTACH_MIME.
+    INSERT ZATTACH_MIME FROM TABLE @( VALUE #(
       ( client = '100' mime_type = 'application/pdf' extension = 'PDF' description = 'PDF Document' )
       ( client = '100' mime_type = 'image/jpeg' extension = 'JPG' description = 'JPEG Image' )
     ) ).
