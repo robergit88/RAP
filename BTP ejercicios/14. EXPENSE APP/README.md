@@ -87,15 +87,16 @@ classDiagram
 ## 7. DDL - Código de Creación
 
 ### ZEXPENSE_TYPE
+Tipos de gasto. Define límites y si requiere factura
 ```abap
 define table ZEXPENSE_TYPE {
-  key client : abap.clnt not null;
-  key type_id : abap.char(10) not null;
-  description : abap.char(40);
-  @Semantics.amount.currencyCode : 'ZEXPENSE_TYPE.currency_code'
-  limit_amount : abap.curr(10,2);
+  key client       : abap.clnt not null;
+  key type_id      : abap.char(10) not null;
+  description      : abap.char(40);
+  @Semantics.amount.currencyCode : 'zexpense_type.currency_code'
+  limit_amount     : abap.curr(10,2);
   requires_invoice : abap.char(1);
-  currency_code : abap.cuky(5);
+  currency_code    : abap.cuky;
 }
 ```
 
@@ -132,44 +133,50 @@ define table ZMIME_TYPE {
 ### ZEXPENSE_HEADER
 ```abap
 define table ZEXPENSE_HEADER {
-  key client : abap.clnt not null;
-  key report_id : abap.char(10) not null;
-  customer_id : abap.char(10) not null;
-  report_date : abap.dats;
-  reason : abap.char(100);
+  key client      : abap.clnt not null;
+  key report_id   : abap.char(10) not null;
+  customer_id     : abap.char(10) not null;
+  report_date     : abap.dats;
+  reason          : abap.char(100);
   @Semantics.amount.currencyCode : 'zexpense_header.currency_code'
-  total_amount : abap.curr(15,2);
-  currency_code : abap.cuky(5);
-  header_status : abap.char(10) not null;
+  total_amount    : abap.curr(15,2);
+  currency_code   : abap.cuky;
+  header_status   : abap.char(10) not null;
+  created_by      : abp_creation_user;
+  created_at      : abp_creation_tstmpl;
+  last_changed_by : abp_locinst_lastchange_user;
+  last_changed_at : abp_locinst_lastchange_tstmpl;
 }
 ```
 
 ### ZEXPENSE_ITEM
 ```abap
 define table ZEXPENSE_ITEM {
-  key client : abap.clnt not null;
-  key report_id : abap.char(10) not null;
-  key item_id : abap.char(6) not null;
-  expense_type : abap.char(10) not null;
-  item_status : abap.char(10) not null;
-  expense_date : abap.dats;
+  key client      : abap.clnt not null;
+  key report_id   : abap.char(10) not null;
+  key item_id     : abap.char(6) not null;
+  expense_type    : abap.char(10) not null;
+  item_status     : abap.char(10) not null;
+  expense_date    : abap.dats;
   @Semantics.amount.currencyCode : 'zexpense_item.currency_code'
-  amount : abap.curr(10,2);
-  currency_code : abap.cuky(5);
-  vendor : abap.char(40);
+  amount          : abap.curr(10,2);
+  currency_code   : abap.cuky;
+  vendor          : abap.char(40);
+  last_changed_at : abp_locinst_lastchange_tstmpl;
 }
 ```
 
 ### ZITEM_ATTACHMENT
 ```abap
 define table ZITEM_ATTACHMENT {
-  key client : abap.clnt not null;
-  key report_id : abap.char(10) not null;
-  key item_id : abap.char(6) not null;
-  key attach_id : abap.char(6) not null;
-  file_name : abap.char(100);
-  mime_type : abap.char(30);
-  file_content : abap.rawstring(0);
+  key client      : abap.clnt not null;
+  key report_id   : abap.char(10) not null;
+  key item_id     : abap.char(6) not null;
+  key attach_id   : abap.char(6) not null;
+  file_name       : abap.char(100);
+  mime_type       : abap.char(30);
+  file_content    : abap.rawstring(0);
+  last_changed_at : abp_locinst_lastchange_tstmpl;
 }
 ```
 
@@ -215,9 +222,179 @@ ENDCLASS.
 
 | Nombre CDS | Origen | Descripción |
 | :--- | :--- | :--- |
-| `ZI_EXP_HEADER` | `ZEXPENSE_HEADER` | Root - Cabecera de la liquidación de gastos |
-| `ZI_EXP_ITEM` | `ZEXPENSE_ITEM` | Child - Líneas de gasto (hotel, taxi, etc.) |
-| `ZI_EXP_ATTACH` | `ZITEM_ATTACHMENT` | Grandchild - Adjuntos y justificantes del gasto |
-| `ZVH_EXPENSE_TYPE` | `ZEXPENSE_TYPE` | Value Help - Tipos de gasto |
-| `ZVH_MIME_TYPE` | `ZMIME_TYPE` | Value Help - Tipos MIME para upload |
-| `ZVH_ITEM_STATUS` | `ZITEM_STATUS` | Value Help - Estados de ticket individual |
+| [`ZI_EXP_HEADER`](#zi_exp_header) | `ZEXPENSE_HEADER` | Root - Cabecera de la liquidación de gastos |
+| [`ZI_EXP_ITEM`](#zi_exp_item)| `ZEXPENSE_ITEM` | Child - Líneas de gasto (hotel, taxi, etc.) |
+| [`ZI_EXP_ATTACH`](#zi_exp_attach) | `ZITEM_ATTACHMENT` | Grandchild - Adjuntos y justificantes del gasto |
+| [`ZVH_EXPENSE_TYPE`](#zvh_expense_type) | `ZEXPENSE_TYPE` | Value Help - Tipos de gasto |
+| [`ZVH_HEADER_STATUS`](#zvh_header_status) | `ZHEADER_STATUS` | Value Help - Estados de carpeta de gastos |
+| [`ZVH_MIME_TYPE`](#zvh_mime_type) | `ZMIME_TYPE` | Value Help - Tipos MIME para upload |
+| [`ZVH_ITEM_STATUS`](#zvh_item_status) | `ZITEM_STATUS` | Value Help - Estados de ticket individual |
+
+# ZI_EXP_HEADER
+```ABAP
+@AbapCatalog.viewEnhancementCategory: [ #NONE ]
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Interface - Expense Header'
+@Metadata.ignorePropagatedAnnotations: true
+
+define root view entity ZI_EXP_HEADER
+  as select from zexpense_header as Header
+
+  composition [0..*] of ZI_EXP_ITEMM    as _Items
+  association [0..1] to /DMO/I_Customer as _Customer on $projection.customer_id = _Customer.CustomerID
+  association [0..1] to I_Currency      as _Currency on $projection.currency_code = _Currency.Currency
+
+{
+  key Header.report_id,
+      Header.customer_id,
+
+      Header.report_date,
+      Header.reason,
+      Header.header_status,
+      @Semantics.amount.currencyCode: 'currency_code'
+      Header.total_amount,
+      Header.currency_code,
+
+      @Semantics.user.createdBy: true
+      Header.created_by,
+
+      @Semantics.systemDateTime.createdAt: true
+      Header.created_at,
+      
+      @Semantics.user.lastChangedBy: true
+      Header.last_changed_by,
+
+      @Semantics.systemDateTime.lastChangedAt: true
+      Header.last_changed_at,
+
+      /* Associations */
+      _Items,
+      _Customer,
+      _Currency
+
+}
+
+```
+
+# ZI_EXP_ITEM
+```ABAP
+//@AbapCatalog.viewEnhancementCategory: [#NONE]
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+
+@EndUserText.label: 'Interface - Expense Item'
+
+@Metadata.ignorePropagatedAnnotations: true
+
+define view entity ZI_EXP_ITEMM
+  as select from zexpense_item as Item
+
+  association to parent ZI_EXP_HEADER as _Header on $projection.report_id = _Header.report_id
+  association [0..1]    to        ZVH_ITEM_STATUS  as _ItemStatus  on $projection.item_status = _ItemStatus.StatusId
+  association [0..1]    to        ZVH_EXPENSE_TYPE as _ExpenseType on $projection.expense_type = _ExpenseType.type_id
+  composition [0..*] of ZI_EXP_ATTACH as _Attachments
+
+{
+  key Item.report_id,
+  key Item.item_id,
+
+      Item.expense_type,
+      Item.item_status,
+      Item.vendor,
+      Item.expense_date,
+
+      @Semantics.amount.currencyCode: 'currency_code'
+      Item.amount,
+      Item.currency_code,
+
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      Item.last_changed_at,
+
+      /* Associations */
+      _Header,
+      _ItemStatus,
+      _ExpenseType,
+      _Attachments
+}
+
+```
+
+# ZI_EXP_ATTACH
+```ABAP
+//@AbapCatalog.viewEnhancementCategory: [#NONE]
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Interface - Expense Attachment'
+@Metadata.ignorePropagatedAnnotations: true
+define view entity ZI_EXP_ATTACH
+  as select from zitem_attachment as Attach
+  association to parent ZI_EXP_ITEMM as _Item  on $projection.report_id = _Item.report_id
+                                              and $projection.item_id   = _Item.item_id
+
+{
+  key Attach.report_id,
+  key Attach.item_id,
+  key Attach.attach_id,
+      Attach.file_name,
+      Attach.mime_type,
+      @Semantics.largeObject: { mimeType: 'mime_type', fileName: 'file_name', contentDispositionPreference: #INLINE }
+      Attach.file_content as AttachmentContent,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      Attach.last_changed_at,
+      _Item
+}
+
+```
+
+# ZVH_EXPENSE_TYPE
+```ABAP
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Value Help - Tipos de gasto'
+@Metadata.ignorePropagatedAnnotations: true
+
+define root view entity ZVH_EXPENSE_TYPE
+  as select from zexpense_type
+{
+  key type_id,
+      description
+}
+```
+# ZVH_HEADER_STATUS
+```ABAP
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Value Help - Estados de carpeta de gastos'
+@Metadata.ignorePropagatedAnnotations: true
+define root view entity ZVH_HEADER_STATUS
+ as select from zheader_status
+{
+    key status_id as StatusId,
+    description as Description
+}
+
+```
+
+# ZVH_MIME_TYPE
+```ABAP
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Value Help - Tipos MIME para upload'
+@Metadata.ignorePropagatedAnnotations: true
+define root view entity ZVH_MIME_TYPE
+ as select from zmime_type
+{
+    key mime_type as MimeType,
+    description as Description
+}
+
+```
+
+# ZVH_ITEM_STATUS
+```ABAP
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Value Help - Estados del ticket de individual'
+@Metadata.ignorePropagatedAnnotations: true
+define root view entity ZVH_ITEM_STATUS 
+as select from zitem_status
+{
+    key status_id as StatusId,
+    description as Description
+}
+
+```
