@@ -326,9 +326,9 @@ define view entity ZI_EXP_ITEMM
 @Metadata.ignorePropagatedAnnotations: true
 define view entity ZI_EXP_ATTACH
   as select from zitem_attachment as Attach
-  association to parent ZI_EXP_ITEMM as _Item  on $projection.report_id = _Item.report_id
-                                              and $projection.item_id   = _Item.item_id
-
+  association        to parent ZI_EXP_ITEMM as _Item   on  $projection.report_id = _Item.report_id
+                                                       and $projection.item_id   = _Item.item_id
+  association [1..1] to ZI_EXP_HEADER       as _Header on  $projection.report_id = _Header.report_id
 {
   key Attach.report_id,
   key Attach.item_id,
@@ -336,12 +336,14 @@ define view entity ZI_EXP_ATTACH
       Attach.file_name,
       Attach.mime_type,
       @Semantics.largeObject: { mimeType: 'mime_type', fileName: 'file_name', contentDispositionPreference: #INLINE }
-      Attach.file_content as AttachmentContent,
+      Attach.file_content,
       @Semantics.systemDateTime.localInstanceLastChangedAt: true
       Attach.last_changed_at,
+
+      /* Associations */
+      _Header,
       _Item
 }
-
 ```
 
 # ZVH_EXPENSE_TYPE
@@ -409,8 +411,173 @@ as select from zitem_status
 
 ## 11. Metadata Extensions - Consumptions CDS Based
 
+* **`@UI.lineItem`** -> **List Report** (la tabla de entrada de la app)
+  Es lo que define las columnas que ves en la tabla principal. Su label es el header de la columna.
+
+* **`@UI.fieldGroup`** -> **Object Page** (cuando entras a un registro)
+  Aplica para creación, edición y visualización a nivel de registro. Su label es el label que sale encima del campo en el formulario.
+
+
 | Nombre CDS | Origen | Descripción |
 | :--- | :--- | :--- |
 | [`ZC_EXP_HEADER`](#zc_exp_header) | `ZC_EXP_HEADER` | Root - Cabecera de la liquidación de gastos |
 | [`ZC_EXP_ITEMM`](#zc_exp_itemm)| `ZC_EXP_ITEMM` | Child - Líneas de gasto (hotel, taxi, etc.) |
 | [`ZC_EXP_ATTACH`](#zc_exp_attach) | `ZC_EXP_ATTACH` | Grandchild - Adjuntos y justificantes del gasto |
+
+## 12. Behavior Definitions Interface - CDS Interfaz based
+
+```ABAP
+managed implementation in class zbp_zi_exp_header unique;
+strict ( 2 );
+
+define behavior for ZI_EXP_HEADER alias Header
+persistent table zexpense_header
+lock master
+authorization master ( global )
+etag master last_changed_at
+early numbering
+{
+
+  // administrative fields: read only
+  field ( readonly ) last_changed_at, last_changed_by, created_at, created_by;
+
+  // mandatory fields that are required to create a Expense folder
+  field ( mandatory ) customer_id, report_date, reason, header_status, currency_code;
+
+  // Semantic Key field, which is readonly for the consumer, value is assigned in early numbering
+  field ( readonly ) report_id;
+
+  // mapping entity's field types with table field types
+  mapping for zexpense_header corresponding;
+
+  // standard operations for entity
+  create;
+  update;
+  delete;
+
+  // create expense items by association
+  association _Items { create ( features : instance ); }
+
+}
+
+define behavior for ZI_EXP_ITEMM alias item
+implementation in class zbp_zi_exp_itemm unique
+persistent table zexpense_item
+etag master last_changed_at
+lock dependent by _Header
+early numbering
+authorization dependent by _Header
+
+{
+  // administrative fields: read only
+  field ( readonly ) last_changed_at;
+
+  field ( mandatory ) expense_type, expense_date, amount;
+
+  // static field control
+  field ( readonly ) report_id, item_id;
+
+  // mapping entity's field types with table field types
+  mapping for zexpense_item corresponding;
+
+
+  // standard operations for expense item entity
+  update;
+
+  association _Header { }
+
+  // create attachment by association
+  association _Attachments { create ( features : instance ); }
+
+}
+
+define behavior for ZI_EXP_ATTACH alias attach
+implementation in class zbp_zi_exp_attach unique
+with unmanaged save
+etag master last_changed_at
+lock dependent by _Header
+early numbering
+authorization dependent by _Header
+
+{
+  // administrative fields: read only
+  field ( readonly ) last_changed_at;
+
+  // static field control
+  field ( readonly ) report_id, item_id, attach_id;
+
+  // mapping entity's field types with table field types
+  mapping for zitem_attachment corresponding;
+
+  // standard operations for attachment entity
+  update;
+
+  association _Header { }
+  association _Item { }
+}
+```
+
+Se crean las clases:
+
+* zbp_zi_exp_header
+* zbp_zi_exp_itemm 
+* zbp_zi_exp_attach
+
+## 13. Behavior Definitions Consumption - CDS Consumption based
+
+```ABAP
+projection;
+strict ( 2 );
+
+define behavior for ZC_EXP_HEADER alias Header
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _Items { create; }
+}
+
+define behavior for ZC_EXP_ITEMM alias item
+{
+  use update;
+
+  use association _Header;
+  use association _Attachments { create; }
+}
+
+define behavior for ZC_EXP_ATTACH alias attach
+{
+  use update;
+
+  use association _Header;
+  use association _Item;
+}
+```
+## 14. Service Definition - CDS Consumption Header (root) based
+
+```ABAP
+@EndUserText.label: 'Service Definition on Expenses App'
+define service ZSD_EXPENSES {
+  expose ZC_EXP_HEADER as ExpenseReport;
+  expose ZC_EXP_ITEMM  as ExpenseItem;
+  expose ZC_EXP_ATTACH as ExpenseAttachment;
+}
+```
+
+## 15. Service Binding: ZUI_EXPENSES_O4 - Service Definition based
+
+## 16. Prueba
+
+Managed sin draft + OData V2 - UI = botón **`Crear`** en List Report.
+
+
+
+| Campo | ANTES (tu versión) - Object Page sin etiqueta | DESPUÉS (corregido) - Object Page con etiqueta |
+| --- | --- | --- |
+| `ReportId` | `@UI.fieldGroup: [{ qualifier: 'General', position: 10, importance: #HIGH }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 10, **label: 'Id'**, importance: #HIGH }]` |
+| `CustomerId` | `@UI.fieldGroup: [{ qualifier: 'General', position: 20 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 20, **label: 'Customer'** }]` |
+| `ReportDate` | `@UI.fieldGroup: [{ qualifier: 'General', position: 30 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 30, **label: 'Open Date'** }]` |
+| `HeaderStatus` | `@UI.fieldGroup: [{ qualifier: 'General', position: 40 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 40, **label: 'Status'** }]` |
+| `TotalAmount` | `@UI.fieldGroup: [{ qualifier: 'General', position: 50 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 50, **label: 'Total Amount'** }]` |
+| `Reason` | `@UI.fieldGroup: [{ qualifier: 'General', position: 60 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 60, **label: 'Reason'** }]` |
