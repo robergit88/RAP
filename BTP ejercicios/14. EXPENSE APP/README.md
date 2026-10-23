@@ -581,3 +581,21 @@ Managed sin draft + OData V2 - UI = botón **`Crear`** en List Report.
 | `HeaderStatus` | `@UI.fieldGroup: [{ qualifier: 'General', position: 40 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 40, **label: 'Status'** }]` |
 | `TotalAmount` | `@UI.fieldGroup: [{ qualifier: 'General', position: 50 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 50, **label: 'Total Amount'** }]` |
 | `Reason` | `@UI.fieldGroup: [{ qualifier: 'General', position: 60 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 60, **label: 'Reason'** }]` |
+
+
+**La regla de oro de SAP es: separar datos de anotaciones UI.**
+
+1. **Interface CDS** = modelo reutilizable, sin UI. 
+> "Interface CDS is used to abstract raw data into a reusable and meaningful structure [...]
+
+  **Consumption CDS** = procesa los datos para hacerlo user-friendly para Fiori/API. 
+ > Consumption CDS, on the other hand, processes this data to make it user-friendly and tailored for specific use cases, such as reporting, Fiori UI
+
+2. **Metadata Extension** = para no tocar la definición original y mejorar el UI de forma desacoplada:
+> "metadata extensions are used to enhance the metadata of existing CDS views or entities without modifying the original CDS definition. This is especially useful for tailoring application behavior or UI representations in a decoupled and non-intrusive manner"
+
+3. **Best practice oficial**: No metas todo el UI en la CDS, externalízalo:
+> "Instead of embedding all your UI annotations directly in the consumption view, you can externalize them into a separate metadata extension object." Y "keep your view DDL clean and focused on data concerns, while annotation concerns live separately"
+
+4. **Dónde va cada cosa según SAP Help**:
+> "Metadata Extension Adds UI annotations like labels, positions, and facets to CDS projection views. Used to define how data appears in Fiori Elements apps." Y "It is generally good practice to follow this structure" de Interface -> Consumption -> Metadata
