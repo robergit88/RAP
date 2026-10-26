@@ -1,4 +1,4 @@
-# MANAGED APP
+# MANAGED APP Side Effects
 
 0. [RESÚMEN](#resúmen)
 1. [DICTIONARY](#dictionary)
