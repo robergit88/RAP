@@ -29,7 +29,7 @@ use etag
   use delete;
   use action acceptTravel;
   use action rejectTravel;
-
+ 
   use association _Booking { create; with draft;}
 }
 
