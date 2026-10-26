@@ -1,4 +1,4 @@
-# ZEXPENSE - Aplicación de Liquidación de Gastos - RAP Managed OData V4
+# ZEXPENSE - Aplicación de Liquidación de Gastos - RAP Managed OData V2
 
 ### ¿Por qué Managed con Draft?
 
