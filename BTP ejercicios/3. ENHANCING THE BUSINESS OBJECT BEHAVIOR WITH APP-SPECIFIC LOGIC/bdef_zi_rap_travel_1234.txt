@@ -1,7 +1,7 @@
 //Escenario GESTIONADO SAP SE ENCARGADA DE TODO EL CICLO DE VIDA DE LOS REGISTROS
 
 managed;
-
+ 
 define behavior for zi_rap_travel_1234 alias Travel
 implementation in class zcl_rap_travel_1234 unique
 persistent table zrap_atrav_1234
