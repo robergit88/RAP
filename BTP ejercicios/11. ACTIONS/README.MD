@@ -1,4 +1,4 @@
-# MANAGED APP
+# MANAGED APP Actions
 
 0. [RESÚMEN](#resúmen)
 1. [DICTIONARY](#dictionary)
