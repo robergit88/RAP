@@ -825,9 +825,9 @@ authorization dependent by _Header
 
 Se crean las clases:
 
-* zbp_zi_exp_header
-* zbp_zi_exp_itemm 
-* zbp_zi_exp_attach
+* [zbp_zi_exp_header](./others/zbp_zi_exp_header.md)
+* [zbp_zi_exp_itemm](./others/zbp_zi_exp_itemm.md) 
+* [zbp_zi_exp_attach](./others/zbp_zi_exp_attach.md)
 
 ## 13. Behavior Definitions Consumption - CDS Consumption based
 
@@ -878,14 +878,3 @@ define service ZSD_EXPENSES {
 ## 16. Prueba
 
 Managed sin draft + OData V2 - UI = botón **`Crear`** en List Report.
-
-
-
-| Campo | ANTES (tu versión) - Object Page sin etiqueta | DESPUÉS (corregido) - Object Page con etiqueta |
-| --- | --- | --- |
-| `ReportId` | `@UI.fieldGroup: [{ qualifier: 'General', position: 10, importance: #HIGH }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 10, **label: 'Id'**, importance: #HIGH }]` |
-| `CustomerId` | `@UI.fieldGroup: [{ qualifier: 'General', position: 20 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 20, **label: 'Customer'** }]` |
-| `ReportDate` | `@UI.fieldGroup: [{ qualifier: 'General', position: 30 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 30, **label: 'Open Date'** }]` |
-| `HeaderStatus` | `@UI.fieldGroup: [{ qualifier: 'General', position: 40 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 40, **label: 'Status'** }]` |
-| `TotalAmount` | `@UI.fieldGroup: [{ qualifier: 'General', position: 50 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 50, **label: 'Total Amount'** }]` |
-| `Reason` | `@UI.fieldGroup: [{ qualifier: 'General', position: 60 }]` | `@UI.fieldGroup: [{ qualifier: 'General', position: 60, **label: 'Reason'** }]` |
