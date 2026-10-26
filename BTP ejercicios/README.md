@@ -42,7 +42,8 @@ Sin BDEF no hay create, update, delete, draft ni acciones. En solo lectura, la C
 
 ## Paso 1: Tabla de base de datos 🟢
 
-**Regla:** solo almacena datos. Sin integridad referencial, pero con la semántica técnica de importes y cantidades.
+<span style="color:gold">**Regla:** solo almacena datos. Sin integridad referencial, pero con la semántica técnica de importes y cantidades.</span>
+
 
 - 🟢 Campo `client` como primera clave (`abap.clnt`)
 - 🟢 Campos de negocio, **tabla rasa**: sin foreign keys ni check tables. La integridad la garantiza el BO.
@@ -79,7 +80,7 @@ define table zbooking {
 
 ## Paso 2: CDS interfaz, capa R 🟢
 
-**Regla:** define el modelo de negocio. Estructura, navegación y anotaciones que cambian el comportamiento del runtime. Nada de presentación. Es la capa de la que depende el BDEF.
+<span style="color:gold">**Regla:** define el modelo de negocio. Estructura, navegación y anotaciones que cambian el comportamiento del runtime. Nada de presentación. Es la capa de la que depende el BDEF.</span>
 
 **Qué va aquí**
 
@@ -164,7 +165,7 @@ define view entity ZR_BookingItem
 
 ## Paso 3: CDS consumption, capa C 🟢
 
-**Regla:** renombra, enriquece con semántica y redirige. No calcula ni agrega.
+<span style="color:gold">**Regla:** renombra, enriquece con semántica y redirige. No calcula ni agrega.</span>
 
 **Qué va aquí**
 
@@ -252,7 +253,7 @@ define root view entity ZC_Booking
 
 ## Paso 4: BDEF R 🟡
 
-**Regla:** define qué puede hacer el BO y qué lógica ejecuta. Aquí nacen las acciones, validaciones y determinaciones; la UI solo enlaza las acciones.
+<span style="color:gold">**Regla:** define qué puede hacer el BO y qué lógica ejecuta. Aquí nacen las acciones, validaciones y determinaciones; la UI solo enlaza las acciones.</span>
 
 - 🟢 (dentro del paso) Cabecera: `managed`, `strict ( 2 )`, `persistent table`, `lock master`, `authorization master`, `etag master`
 - 🟡 `create`, `update`, `delete`: solo las operaciones que se permitan
@@ -266,7 +267,7 @@ define root view entity ZC_Booking
 | Acción | A petición del usuario | Operación de negocio (aprobar) |
 | Feature control | Al leer | Habilitar o deshabilitar botones y campos |
 
-**Regla de oro:** las determinaciones rellenan, las validaciones comprueban. Nunca mezclar.
+<span style="color:gold">**Regla de oro:** las determinaciones rellenan, las validaciones comprueban. Nunca mezclar.</span>
 
 **BDEF R:**
 
@@ -383,7 +384,7 @@ ENDCLASS.
 
 ## Paso 5: BDEF projection 🟡
 
-**Regla:** expone solo la parte del comportamiento que este servicio necesita.
+<span style="color:gold">**Regla:** expone solo la parte del comportamiento que este servicio necesita.</span>
 
 - 🟢 (dentro del paso) `projection;` y `strict ( 2 )`
 - 🟡 `use create / update / delete`: solo lo que se exponga (puede ser menos que el BDEF R)
@@ -410,7 +411,7 @@ Lo que no se declara con `use`, no se expone. Así un mismo BO sirve a una app q
 
 ## Paso 6: Metadata extension 🟢
 
-**Regla:** define cómo se dibuja la pantalla. Solo `@UI`.
+<span style="color:gold">**Regla:** define cómo se dibuja la pantalla. Solo `@UI`.</span>
 
 - 🟢 `@UI.headerInfo`, `@UI.facet`, `@UI.lineItem`, `@UI.identification`
 - 🔵 `@UI.selectionField`: campos de la barra de filtros
@@ -486,7 +487,7 @@ El nombre `approve` debe ser idéntico en las 4 piezas. Como el BDEF ya está ce
 
 ## Paso 7: Service definition y binding 🟢
 
-**Regla:** publica la projection como servicio OData.
+<span style="color:gold">**Regla:** publica la projection como servicio OData.</span>
 
 - 🟢 Service definition: qué entidades se exponen
 - 🟢 Service binding: protocolo (OData V4 - UI) y publicación
