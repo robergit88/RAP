@@ -1,5 +1,5 @@
 # MANAGED APP
-
+ 
 1. [DICTIONARY](#dictionary)
    - 1.1 [Tabla BBDD](#11-tabla-bbdd)
    - 1.2 [Tabla BBDD DRAFT](#12-tabla-bbdd-draft)
