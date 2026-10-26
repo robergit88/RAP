@@ -19,7 +19,7 @@
 //*&                                                                     *
 //*&---------------------------------------------------------------------*
 @Metadata.layer: #CORE
-
+ 
 @UI.headerInfo: { typeName: 'Booking',
                   typeNamePlural: 'Bookings',
                   title: { type: #STANDARD, value: 'BookingID' } }
