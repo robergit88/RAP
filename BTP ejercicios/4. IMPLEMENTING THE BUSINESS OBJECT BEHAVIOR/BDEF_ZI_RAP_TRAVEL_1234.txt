@@ -20,7 +20,7 @@
 //& DD.MM.AAAA  XXXXXXX      001                                        *
 //&                                                                     *
 //&---------------------------------------------------------------------*
-
+ 
 managed;
 
 define behavior for zi_rap_travel_1234 alias Travel
