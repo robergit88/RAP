@@ -878,3 +878,9 @@ define service ZSD_EXPENSES {
 ## 16. Prueba
 
 Managed sin draft + OData V2 - UI = botón **`Crear`** en List Report.
+
+¿porque el uploader aparece luego de crear un registro de fichero sin el contenido del mismo?
+
+Fiori Elements funciona así: primero crea el registro (te da la clave), y después sube el contenido apuntando a esa clave.
+
+Con draft sería como si el sistema te diera un número de seguimiento provisional nada más acercarte al mostrador. Con ese número ya puedes entregar la caja mientras terminas de rellenar la etiqueta. Por eso con draft el botón aparece desde el principio.
