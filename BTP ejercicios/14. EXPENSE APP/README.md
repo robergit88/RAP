@@ -2,21 +2,18 @@
 
 ### ¿Por qué Managed?
 
-Para la Expense App elegimos **RAP Managed sin Draft** frente a Unmanaged por 3 motivos:
+Para la Expense App elegimos **RAP `Managed` sin Draft** frente a `Unmanaged` por 2 motivos:
 
-1.  **Numeración automática sin inventar claves:**
+1.  **Menos código, más framework:** 
 
-Nuestra clave `report_id (CHAR 10)` no es UUID. Con Managed implementamos `early_numbering` con lógica `MAX + 1`, de forma que el sistema propone `0000000001`, `0000000002`... sin que el desarrollador tenga que inventar la clave en el UI. Sin `Number Range Object`, ideal para entorno BTP didáctico.
+En `Unmanaged` tendríamos que programar a mano todos los `INSERT/UPDATE/DELETE` de `ZEXPENSE_HEADER`, `ZEXPENSE_ITEM` y `ZITEM_ATTACHMENT`. Con `Managed` RAP gestiona la persistencia, el bloqueo.
 
-2.  **Menos código, más framework:** 
+2.  **Numeración automática sin inventar claves:**
 
-En Unmanaged tendríamos que programar a mano todos los `INSERT/UPDATE/DELETE` de `ZEXPENSE_HEADER`, `ZEXPENSE_ITEM` y `ZITEM_ATTACHMENT`. Con Managed RAP gestiona la persistencia, el bloqueo y las tablas DRAFT automáticamente al poner `with draft`.
-
-3.  **UX Fiori Elements:** 
-
-La app requiere crear cabecera + ítems + adjuntos con upload en la misma transacción antes de hacer SAVE. Solo con Draft se puede mantener todo en borrador y validar el flujo `OPEN -> SENT` antes de grabar.
+Nuestra clave `report_id` (CHAR 10) no es UUID. Con `Managed` implementamos `early_numbering` con lógica `MAX + 1`, de forma que el sistema propone `0000000001`, `0000000002`... sin que el desarrollador tenga que inventar la clave en el UI. Sin `Number Range Object`, ideal para entorno BTP didáctico.
 
 ## 1. Resumen Caso de Uso
+
 **Actor:** Empleado viajero.
 
 **Flujo:** Crea carpeta (HEADER) -> carga tickets (ITEM) -> adjunta foto (ATTACHMENT) -> Envía -> Manager Aprueba/Rechaza.
@@ -25,7 +22,21 @@ La app requiere crear cabecera + ítems + adjuntos con upload en la misma transa
 
 **Arquitectura:** Fiori Elements sobre OData V2 RAP Managed (NO Web API manual). Stack: Tablas Z -> CDS Interface ZI_ -> CDS Projection ZC_ -> Behavior -> Service Definition -> Service Binding.
 
-## 2. Diccionario de Objetos - Nombres Auto-explicativos
+## 2. Esquema Gráfico de Tablas
+
+```mermaid
+classDiagram
+    ZEXPENSE_HEADER *-- ZEXPENSE_ITEM
+    ZEXPENSE_ITEM *-- ZITEM_ATTACHMENT
+
+    ZEXPENSE_HEADER ..> DMO_Customer
+    ZEXPENSE_HEADER ..> ZHEADER_STATUS
+    ZEXPENSE_ITEM ..> ZEXPENSE_TYPE
+    ZEXPENSE_ITEM ..> ZITEM_STATUS
+    ZITEM_ATTACHMENT ..> ZMIME_TYPE
+```
+
+## 3. Diccionario de Objetos - Nombres Auto-explicativos
 
 ### Tablas Auxiliares (Maestras)
 | Tabla | Descripción Auto-explicativa |
@@ -41,20 +52,6 @@ La app requiere crear cabecera + ítems + adjuntos con upload en la misma transa
 | **ZEXPENSE_HEADER** | Cabecera del reporte de gastos. ROOT. Reusa /DMO/CUSTOMER como solicitante. |
 | **ZEXPENSE_ITEM** | Item / línea del reporte. CHILD de HEADER. |
 | **ZITEM_ATTACHMENT** | Adjunto binario del ticket. CHILD de ITEM. |
-
-## 3. Esquema Gráfico de Tablas
-
-```mermaid
-classDiagram
-    ZEXPENSE_HEADER *-- ZEXPENSE_ITEM
-    ZEXPENSE_ITEM *-- ZITEM_ATTACHMENT
-
-    ZEXPENSE_HEADER ..> DMO_Customer
-    ZEXPENSE_HEADER ..> ZHEADER_STATUS
-    ZEXPENSE_ITEM ..> ZEXPENSE_TYPE
-    ZEXPENSE_ITEM ..> ZITEM_STATUS
-    ZITEM_ATTACHMENT ..> ZMIME_TYPE
-```
 
 ## 4. Plan Didáctico - 10 Funcionalidades RAP
 
@@ -877,7 +874,7 @@ define service ZSD_EXPENSES {
 
 ## 16. Prueba
 
-Managed sin draft + OData V2 - UI = botón **`Crear`** en List Report.
+`Managed sin draft + OData V2` = `UI` botón **`Crear`** en `List Report`.
 
 ¿porque el uploader aparece luego de crear un registro de fichero sin el contenido del mismo?
 
