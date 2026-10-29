@@ -1,6 +1,7 @@
 # App RAP en ABAP Environment (trial): configuración y despliegue
 
 Documento de estado a **28 de octubre de 2026**.
+
 App: **Expense Report** (List Report sobre un servicio RAP, OData V2).
 
 ---
@@ -18,6 +19,7 @@ App: **Expense Report** (List Report sobre un servicio RAP, OData V2).
 | App visible dentro de SAP Build Work Zone | ❌ pendiente |
 
 **Lo logrado:** la app funciona, está desplegada y su autorización está construida.
+
 **Lo pendiente:** verla desde Work Zone. Es una limitación del trial, y no un fallo de configuración.
 
 ---

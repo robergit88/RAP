@@ -884,4 +884,6 @@ Con draft sería como si el sistema te diera un número de seguimiento provision
 
 ## 17. Deployment en ABAP
 
-* [zbp_zi_exp_attach](../OTHERS/despliegue_app_rap_abap_trial.md)
+Se realiza un trabajo adicional para realizar un deploy de la app en el entorno `ABAP Environment` y para una cuenta `Trial`
+
+* [Desplegando la App...](../OTHERS/despliegue_app_rap_abap_trial.md)
