@@ -746,6 +746,8 @@ early numbering
   // Semantic Key field, which is readonly for the consumer, value is assigned in early numbering
   field ( readonly ) report_id;
 
+  field ( readonly ) total_amount;
+
   // mapping entity's field types with table field types
   mapping for zexpense_header corresponding;
 
@@ -782,6 +784,15 @@ authorization dependent by _Header
 
   // standard operations for expense item entity
   update;
+  delete;
+
+  determination updateHeaderTotal on save { create; update; delete; }
+
+  side effects
+  {
+    //Con esto, al cambiar amount, la UI relee total_amount del Header
+    field amount affects field _Header.total_amount;
+  }
 
   association _Header { }
 
@@ -792,7 +803,6 @@ authorization dependent by _Header
 
 define behavior for ZI_EXP_ATTACH alias attach
 implementation in class zbp_zi_exp_attach unique
-//with unmanaged save
 persistent table zitem_attachment
 etag master last_changed_at
 lock dependent by _Header
@@ -814,6 +824,7 @@ authorization dependent by _Header
 
   // standard operations for attachment entity
   update;
+  delete;
 
   association _Header { }
   association _Item { }
@@ -831,7 +842,7 @@ Se crean las clases:
 ```ABAP
 projection;
 strict ( 2 );
-
+use side effects;
 define behavior for ZC_EXP_HEADER alias Header
 {
   use create;
@@ -844,6 +855,7 @@ define behavior for ZC_EXP_HEADER alias Header
 define behavior for ZC_EXP_ITEMM alias item
 {
   use update;
+  use delete;
 
   use association _Header;
   use association _Attachments { create; }
@@ -852,6 +864,7 @@ define behavior for ZC_EXP_ITEMM alias item
 define behavior for ZC_EXP_ATTACH alias attach
 {
   use update;
+  use delete;
 
   use association _Header;
   use association _Item;
