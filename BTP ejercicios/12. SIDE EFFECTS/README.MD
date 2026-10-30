@@ -37,9 +37,9 @@
 | **2** | **Cálculo de Costos** | `booking_fee`, `tax_amount` | `total_price` |
 | **3** | **Gestión de Estado** | Acción `rejectTravel` | `overall_status` y **Permissions** (Field Control) |
 
-Para el 1 y 2: Se necesita usar field ... affects field ....
+Para el 1 y 2: Se necesita usar `field` ... `affects field` ....
 
-Para el 3: usar action ... affects field ..., permissions ( self ).
+Para el 3: usar `action` ... `affects field` ..., `permissions ( self )`.
 
 ## DICTIONARY
 
@@ -249,7 +249,7 @@ Estas anotaciones se publican automáticamente en el servicio **OData** y son in
 
 Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de datos ni frontend.
 
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
 
 🔘 Documentación de Interfaz: Acciones Custom (Botones)
 En SAP Fiori Elements, las acciones definidas en el Backend (BDEF) se exponen en la interfaz mediante anotaciones en la Metadata Extension (MDE). En este caso, se utilizan sobre el campo OverallStatus.
@@ -260,7 +260,7 @@ Define cómo se comportan los botones dentro de la página de detalles del objet
 
 Ubicación: Los botones aparecerán en la barra de herramientas de la sección donde se encuentre el campo.
 
-Acciones vinculadas: Se exponen tres botones críticos: `Rechazar` y `Copiar`.
+Acciones vinculadas: Se exponen botones críticos: `Rechazar` y `Copiar`.
 
 Tipo: `#FOR_ACTION` vincula el botón directamente con el nombre de la acción definido en el Behavior Definition.
 
@@ -394,7 +394,7 @@ annotate view ZC_TRAVEL_04 with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
 
 Ventas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
@@ -407,13 +407,13 @@ Ventas:
 
 ##### Se crea BDEF sobre CDS root o Interfaz
 
-![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
+![pedo](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
 
-permissions ( update ): Es la forma de decirle a Fiori "volvé a fijarte si los campos ahora son solo lectura o no".
+`permissions ( update )`: Es la forma de decirle a Fiori "volvé a fijarte si los campos ahora son solo lectura o no".
 
 Nombres de campos: Fijate que puse BeginDate y no begin_date, porque como tenés un mapping, la BDEF prefiere los nombres de los campos de la entidad (los que están a la izquierda en tu mapping).
 
-La Llave: Asegurate de que el bloque side effects { ... } esté bien cerradito con su llave antes de que empiecen las determinations.
+La Llave: Asegurate de que el bloque `side effects { ... }` esté bien cerradito con su llave antes de que empiecen las determinations.
 
 ---
 
@@ -432,7 +432,7 @@ Target (Refrescar): duration_days.
 2. El "Efecto Billetera" 💰
 Trigger (Si cambias): booking_fee.
 
-Target (Refrescar): total_price y tax_amount.
+Target (Refrescar): `total_price` y `tax_amount`.
 
 ¿Por qué? Para que el usuario vea cuánto le duele el bolsillo en tiempo real sin tener que sacar la calculadora.
 
@@ -607,23 +607,7 @@ define service ZUI_TRAVEL_04_O4 provider contracts odata_v4_ui {
 
 ### 3.2 services-binding
 
-Pasos para la creación una nueva vinculación.
-
-![Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_01.png)
-<!-- ![Crear](./img/NEW_SERVICE_BINDING_01.png) -->
-
-
-Selección del tipo de vinculación
-<!-- ![Binding Type](./img/NEW_SERVICE_BINDING_02.png) -->
-![Binding Type](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_02.png)
-
-Publicar el servicio
-<!-- ![Publish](./img/NEW_SERVICE_BINDING_03.png) -->
-![Publish](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_03.png)
-
-Visualizar
-<!-- ![Preview](./img/NEW_SERVICE_BINDING_04.png) -->
-![Preview](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
+Pasos para la creación una nueva vinculación. Mirar post anterior.
 
 ## source-code
 
@@ -836,9 +820,6 @@ endclass.
 ```
 
 ## Pruebas
-![Presentación](./img/SCREEN_01.png)
-
-![Presentación](./img/SCREEN_06_GO.png)
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
