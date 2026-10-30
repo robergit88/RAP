@@ -209,14 +209,15 @@ Esto significa:
 Resumen en cristiano 🎯
 En una app Fiori donde el usuario puede subir un archivo Excel:
 
-ZPO_A_FILE = El "formulario" que el usuario ve (con un botón para adjuntar)
+`ZPO_A_FILE` = El "formulario" que el usuario ve (con un botón para adjuntar)
 
-ZPO_A_STREAM = Los "datos del archivo" que se envían al backend (el contenido, nombre, y tipo)
+`ZPO_A_STREAM` = Los "datos del archivo" que se envían al backend (el contenido, nombre, y tipo)
 
 Esto permite que desde Fiori UI puedas hacer clic en "Subir Excel" → seleccionar archivo → enviarlo al sistema SAP.
 
 
 ### 2.2 METADATA EXTENSIONS
+
 ¡Aquí se definen tres botones de interacción!
 
 Los Metadata Extensions sirven para definir la configuración de la UI (interfaz de usuario) de forma declarativa, permitiendo la separación entre:
@@ -228,8 +229,7 @@ Estas anotaciones se publican automáticamente en el servicio **OData** y son in
 
 Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de datos ni frontend.
 
-<!-- [...detalle](md_docs/metadata_extensions.md) -->
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
 
 ``` abap
 @Metadata.layer: #CORE
@@ -302,7 +302,7 @@ Ventas:
 #### 2.3.1 BEHAVIOR DEFINITIONS
 
 ##### Se crea BDEF sobre CDS root o Interfaz
-<!-- ![pedo](./img/BDEF_01.png) -->
+
 ![pedo](./img/BEHAVIOR_01.png)
 
 ``` abap
