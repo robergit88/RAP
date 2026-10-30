@@ -219,9 +219,9 @@ Esto significa:
 Resumen en cristiano 🎯
 En una app Fiori donde el usuario puede subir un archivo Excel:
 
-ZA_UPLOAD_PDF_FILE = El "formulario" que el usuario ve (con un botón para adjuntar)
+`ZA_UPLOAD_PDF_FILE` = El "formulario" que el usuario ve (con un botón para adjuntar)
 
-ZA_UPLOAD_STREAM = Los "datos del archivo" que se envían al backend (el contenido, nombre, y tipo)
+`ZA_UPLOAD_STREAM` = Los "datos del archivo" que se envían al backend (el contenido, nombre, y tipo)
 
 Esto permite que desde Fiori UI puedas hacer clic en "Subir fichero" → seleccionar archivo → enviarlo al sistema SAP.
 
@@ -237,8 +237,7 @@ Estas anotaciones se publican automáticamente en el servicio **OData** y son in
 
 Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de datos ni frontend.
 
-<!-- [...detalle](md_docs/metadata_extensions.md) -->
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
 
 ``` abap
 @Metadata.layer: #CORE
@@ -312,8 +311,7 @@ annotate entity ZC_PDF_DOCUMENTS with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-<!-- [...detalle](./md_docs/BDEF.MD) -->
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
 
 Ventas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
@@ -325,8 +323,8 @@ Ventas:
 #### 2.3.1 BEHAVIOR DEFINITIONS
 
 ##### Se crea BDEF sobre CDS root o Interfaz
-<!-- ![pedo](./img/BDEF_01.png) -->
-![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
+
+![pedo](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
 
 ``` abap
 managed implementation in class zbp_i_pdf_documents unique;
@@ -448,21 +446,17 @@ define service ZSD_PDF_DOC {
 
 Pasos para la creación una nueva vinculación.
 
-![Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_01.png)
-<!-- ![Crear](./img/NEW_SERVICE_BINDING_01.png) -->
+![Crear](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_01.png)
 
 
 Selección del tipo de vinculación
-<!-- ![Binding Type](./img/NEW_SERVICE_BINDING_02.png) -->
-![Binding Type](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_02.png)
+![Binding Type](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_02.png)
 
 Publicar el servicio
-<!-- ![Publish](./img/NEW_SERVICE_BINDING_03.png) -->
-![Publish](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_03.png)
+![Publish](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_03.png)
 
 Visualizar
-<!-- ![Preview](./img/NEW_SERVICE_BINDING_04.png) -->
-![Preview](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
+![Preview](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
 
 ## source-code
 
@@ -566,25 +560,6 @@ class lhc_PdfDocument implementation.
     endif.
   endmethod.
 
-
-*  method viewpdf.
-*    " Leer el documento de la base de datos
-*    read entities of zi_pdf_documents in local mode
-*         entity PdfDocument
-*         fields ( DocumentId FileName MimeType Attachment )
-*         with corresponding #( keys )
-*         result data(lt_documents).
-*
-*    " Leer el primer documento
-*    read table lt_documents index 1 into data(ls_document).
-*
-*    if sy-subrc = 0.
-*      " Construir el resultado
-*      result = value #( ( %param-pdf_content = ls_document-Attachment
-*                          %param-FileName    = ls_document-FileName
-*                          %param-MimeType    = ls_document-MimeType ) ).
-*    endif.
-*  endmethod.
 endclass.
 ```
 
