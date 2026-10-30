@@ -343,7 +343,7 @@ y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Upda
 
 [...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
 
-Ventas:
+Ventajas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
 * ✓ Reutilización: Mismo comportamiento para múltiples interfaces (Fiori, API, etc.)
 * ✓ Mantenibilidad: Cambios centralizados en un solo lugar
