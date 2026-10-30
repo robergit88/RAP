@@ -18,13 +18,13 @@
 
 ## MANAGED APP
 
->   ### Managed Behavior + Draft = STANDARD INSERT
+> framework handles CRUD operations automatically and is primarily used for greenfield developments where you build new apps from scratch using CDS and BDEF
 
-[...detalle](./BTP%20ejercicios/0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/README.MD)
+[...detalle](./docs/MANAGED_APP.md)
 
 ## UNMANAGED APP
 
->   ### manually implement CRUD operations and is primarily used for brownfield developments where existing legacy code like BAPI
+> Manually implement CRUD operations and is primarily used for brownfield developments where existing legacy code like BAPI
 
 [....detalle](./docs/UNMANAGED_APP.md)
 
