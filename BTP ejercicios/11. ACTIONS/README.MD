@@ -32,20 +32,20 @@ Las acciones `Actions` y las funciones `Functions` son dos operaciones no están
 
 ## Actions
 
-Las acciones son operaciones de modificación utilizadas para cambiar el estado de una entidad de objeto comercial. Son los "verbos" de RAP (por ejemplo, Aprobar, Cancelar, Copiar).
+Las acciones son operaciones de modificación utilizadas para cambiar el estado de una entidad de objeto comercial. Son los **`verbos` de RAP** (por ejemplo, `Aprobar`, `Cancelar`, `Copiar`).
 
 * Ejecución: Se activan mediante la instrucción `MODIFY ENTITIES ... EXECUTE` en ABAP EML.
 
 * Tipos
-  * Instance Actions: Operar sobre registros seleccionados específicos (por ejemplo, establecer estado).
-  * Static Actions: Operar sobre toda la entidad o colección sin necesidad de una clave específica (por ejemplo, Borrar todo).
-  * Factory Actions: Se utiliza específicamente para crear nuevas instancias, ya sea basándose en una instancia existente (`factory action copy`) o con valores predeterminados (`static factory action new`). 
+  * `Instance Actions`: Operar sobre registros seleccionados específicos (por ejemplo, establecer estado).
+  * `Static Actions`: Operar sobre toda la entidad o colección sin necesidad de una clave específica (por ejemplo, Borrar todo).
+  * `Factory Actions`: Se utiliza específicamente para crear nuevas instancias, ya sea basándose en una instancia existente (`factory action copy`) o con valores predeterminados (`static factory action new`). 
 
-* Parámetros: Puede aceptar parámetros de entrada (planos o profundos) y devolver resultados.
+* `Parámetros`: Puede aceptar parámetros de entrada (planos o profundos) y devolver resultados.
 
 ## Functions
 
-Las funciones son operaciones de solo lectura que se utilizan para recuperar o calcular información sin modificar los datos del objeto de negocio. Son las "consultas" de RAP (por ejemplo, ObtenerEstado, CalcularTotal).
+Las funciones son operaciones de solo lectura que se utilizan para recuperar o calcular información sin modificar los datos del objeto de negocio. Son las **`consultas` de RAP** (por ejemplo, `ObtenerEstado`, etc).
 
 * Ejecución: Se activa mediante la instrucción `READ ENTITIES ... EXECUTE` en ABAP EML.
 
@@ -63,7 +63,9 @@ Las funciones son operaciones de solo lectura que se utilizan para recuperar o c
 | Capacidad de fábrica | Puede crear nuevas instancias | No puede crear instancias |
 | Impacto de los datos | Cambia datos en Buffer / BBDD | No cambia datos |
 
-Ambas operaciones se pueden mostrar en la interfaz de usuario mediante anotaciones como `@UI.selectionField` o 
+Ambas operaciones se pueden mostrar en la interfaz de usuario mediante anotaciones como
+
+`@UI.selectionField` o 
 `@UI.lineItem` con 
 type: `#FOR_ACTION` o 
 type: `#FOR_FUNCTION`. 
@@ -347,12 +349,13 @@ Estas anotaciones se publican automáticamente en el servicio **OData** y son in
 
 Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de datos ni frontend.
 
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
 
 🔘 Documentación de Interfaz: Acciones Custom (Botones)
 En SAP Fiori Elements, las acciones definidas en el Backend (BDEF) se exponen en la interfaz mediante anotaciones en la Metadata Extension (MDE). En este caso, se utilizan sobre el campo OverallStatus.
 
 🛠️ Desglose de Anotaciones
+
 1. `@UI.identification` (Object Page)
 Define cómo se comportan los botones dentro de la página de detalles del objeto.
 
@@ -493,7 +496,7 @@ annotate view ZC_TRAVEL_03 with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
 
 Ventas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
@@ -506,7 +509,7 @@ Ventas:
 
 ##### Se crea BDEF sobre CDS root o Interfaz
 
-![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
+![pedo](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
 
 
 Markdown
@@ -518,7 +521,7 @@ Define cómo se comporta el objeto de negocio, sus restricciones y las acciones 
 
 ## 🏗️ Cabecera y Configuración Global
 
-* **Implementation Type:** `managed`. El framework SAP RAP gestiona automáticamente las operaciones de base de datos (Insert, Update, Delete).
+* **Implementation Type:** `managed`. El framework SAP RAP gestiona automáticamente las operaciones de base de datos (`Insert`, `Update`, `Delete`).
 
 * **Protocolo:** `strict ( 2 )`. Obliga al uso de las mejores prácticas y validaciones más recientes del modelo RAP.
 
@@ -702,7 +705,6 @@ use etag
 }
 ```
 
-
 ## business-services
 
 ### 3.1 services-definition
@@ -723,23 +725,7 @@ define service ZUI_TRAVEL_03_O4 provider contracts odata_v4_ui {
 
 ### 3.2 services-binding
 
-Pasos para la creación una nueva vinculación.
-
-![Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_01.png)
-<!-- ![Crear](./img/NEW_SERVICE_BINDING_01.png) -->
-
-
-Selección del tipo de vinculación
-<!-- ![Binding Type](./img/NEW_SERVICE_BINDING_02.png) -->
-![Binding Type](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_02.png)
-
-Publicar el servicio
-<!-- ![Publish](./img/NEW_SERVICE_BINDING_03.png) -->
-![Publish](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_03.png)
-
-Visualizar
-<!-- ![Preview](./img/NEW_SERVICE_BINDING_04.png) -->
-![Preview](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
+Pasos para la creación una nueva vinculación. Ver el post anterior.
 
 ## source-code
 
@@ -934,9 +920,6 @@ endclass.
 ```
 
 ## Pruebas
-![Presentación](./img/SCREEN_01.png)
-
-![Presentación](./img/SCREEN_06_GO.png)
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
