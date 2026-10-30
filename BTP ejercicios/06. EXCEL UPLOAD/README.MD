@@ -290,8 +290,7 @@ annotate entity ZPO_C_MASTER_LIST with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-<!-- [...detalle](./md_docs/BDEF.MD) -->
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
 
 Ventas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
@@ -413,29 +412,18 @@ define service ZSD_PO_C_MASTER_LIST {
 
 Pasos para la creación una nueva vinculación.
 
-![Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_01.png)
-<!-- ![Crear](./img/NEW_SERVICE_BINDING_01.png) -->
-
+![Crear](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_01.png)
 
 Selección del tipo de vinculación
-<!-- ![Binding Type](./img/NEW_SERVICE_BINDING_02.png) -->
-![Binding Type](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_02.png)
+
+![Binding Type](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_02.png)
 
 Publicar el servicio
-<!-- ![Publish](./img/NEW_SERVICE_BINDING_03.png) -->
-![Publish](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_03.png)
+
+![Publish](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_03.png)
 
 Visualizar
-<!-- ![Preview](./img/NEW_SERVICE_BINDING_04.png) -->
-![Preview](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
-
-<!-- Prueba 1 - Crear o alta de registro.
-<!-- ![Botón Crear](./img/NEW_SERVICE_BINDING_05.png) -->
-<!-- ![Botón Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_05.png) -->
-
-<!-- guardar -->
-<!-- ![Guardar](./img/NEW_SERVICE_BINDING_06.png) -->
-<!-- ![Guardar](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_06.png) --> -->
+![Preview](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
 
 ## source-code
 
