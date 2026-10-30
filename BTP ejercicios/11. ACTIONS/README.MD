@@ -32,7 +32,9 @@ Las acciones `Actions` y las funciones `Functions` son dos operaciones no están
 
 ## Actions
 
-Las acciones son operaciones de modificación utilizadas para cambiar el estado de una entidad de objeto comercial. Son los **`verbos` de RAP** (por ejemplo, `Aprobar`, `Cancelar`, `Copiar`).
+Las acciones son operaciones de modificación utilizadas para cambiar el estado de una entidad de objeto comercial. 
+
+Son los **`verbos` de RAP** (por ejemplo, `Aprobar`, `Cancelar`, `Copiar`).
 
 * Ejecución: Se activan mediante la instrucción `MODIFY ENTITIES ... EXECUTE` en ABAP EML.
 
