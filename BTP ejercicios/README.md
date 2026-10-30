@@ -2,9 +2,7 @@
 
 ## Orden de creación
 
-
 ![building_04](../../RAP/img/building_04.png)
-
 
 Buenas prácticas paso a paso, de la tabla al servicio OData.
 
