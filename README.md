@@ -12,10 +12,6 @@
 
 ![building_01](./img/building_01.png)
 
-## Orden de creación de los objetos
-
-![building_04](./img/building_04.png)
-
 ## ENTITY MANIPULATION LANGUAGE (EML)
 
 [....detalle](./docs/EML.md)
