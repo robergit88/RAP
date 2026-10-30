@@ -12,10 +12,6 @@
 
 ![building_01](./img/building_01.png)
 
-## ENTITY MANIPULATION LANGUAGE (EML)
-
-[....detalle](./docs/EML.md)
-
 ## MANAGED APP
 
 > framework handles CRUD operations automatically and is primarily used for greenfield developments where you build new apps from scratch using CDS and BDEF
@@ -28,9 +24,11 @@
 
 [....detalle](./docs/UNMANAGED_APP.md)
 
-## STANDARD OBJECT /DMO/
+## ENTITY MANIPULATION LANGUAGE (EML)
 
-### Paquetes:
+[....detalle](./docs/EML.md)
+
+## STANDARD PACKAGE TO LEARN
 
 - **`/DMO/FLIGHT_READONLY`**
 represents a read-only list reporting app
