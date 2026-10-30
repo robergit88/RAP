@@ -1,7 +1,8 @@
-# ENTITY MANIPULATION LANGUAGE (EML)
+# ENTITY MANIPULATION LANGUAGE (EML) en ABAP RESTful Application Programming Model
 
-## ¿qué es EML?
-## Es parte del lenguaje ABAP y significa que hay nuevas sintaxis disponibles en ABAP para:
+**¿qué es EML?**
+
+Es parte del lenguaje ABAP y significa que hay nuevas sintaxis disponibles en ABAP para:
 
 * Controlar el comportamiento del objeto de negocio en el ABAP SAP, utilizando el código ABAP el usuario puede manipular el objeto de negocio creado utilizando el modelo ABAP RAP
 
@@ -29,8 +30,9 @@ graph
     C --> B
 ```
 
-## ¿Cómo se ve las sintaxis de EML?
-### EML contiene sintaxis para LEER, MODIFICAR (Crear, Actualizar, Eliminar, Ejecutar acciones) y CONFIRMAR. Veamos cada sintaxis paso a paso.
+EML contiene sintaxis para LEER, MODIFICAR (Crear, Actualizar, Eliminar, Ejecutar acciones) y CONFIRMAR. 
+
+Veamos cada sintaxis paso a paso.
 
 ## READ ENTITIES FROM VALUE
 ``` abap

@@ -1,4 +1,4 @@
-# Funciones Importantes de Metadata Extensions en Fiori Elements con RAP
+# Metadata Extensions en ABAP RESTful Application Programming Model
 
 ## 🎯 Propósito Principal
 
@@ -8,10 +8,10 @@ Las Metadata Extensions permiten enriquecer las definiciones CDS con anotaciones
 
 ### 1. Personalización de la UI
 
-- **`@UI.lineItem`**: Define las columnas en las listas
+- **`@UI.facet`**: Organiza la información en diferentes secciones
+- **`@UI.lineItem`**: Define las columnas en `Report List`
 - **`@UI.selectionField`**: Configura campos de filtrado
 - **`@UI.headerInfo`**: Personaliza el encabezado de la aplicación
-- **`@UI.facet`**: Organiza la información en diferentes secciones
 
 ### 2. Comportamiento de Campos
 
@@ -23,7 +23,7 @@ Las Metadata Extensions permiten enriquecer las definiciones CDS con anotaciones
 ### 3. Validaciones y Formateo
 
 - **`@Consumption.valueHelpDefinition`**: Configura ayudas de búsqueda
-- **`@UI.fieldGroup`**: Agrupa campos relacionados
+- **`@UI.fieldGroup`**: Agrupa campos relacionados en `Object Page`
 - **`@UI.dataPoint`**: Define puntos de datos para KPIs
 - **`@UI.identification`**: Configura campos de identificación
 
