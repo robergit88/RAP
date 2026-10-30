@@ -651,9 +651,6 @@ endclass.
 ```
 
 ## pruebas
-![Presentación](./img/SCREEN_01.png)
-
-![Presentación](./img/SCREEN_06_GO.png)
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
