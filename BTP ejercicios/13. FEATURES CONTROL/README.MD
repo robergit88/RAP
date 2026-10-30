@@ -31,7 +31,8 @@
 ## 🚀 1. Creación de FEATURES CONTROL
 
 ### 1. ¿Qué es en pocas palabras?
-Es la capacidad de ABAP RAP para decidir, en tiempo real, qué se puede hacer y qué no con los datos. No es una validación de error (eso es otra cosa), es habilitar o deshabilitar opciones en la pantalla de Fiori antes de que el usuario las toque.
+
+Es la capacidad de ABAP RAP para decidir, en tiempo real, qué se puede hacer y qué no con los datos. No es una validación de error (eso es otra cosa), es habilitar o deshabilitar opciones en la pantalla antes de que el usuario las toque.
 
 ### 2. 🛡️ Los dos "Modos" del Seguridad (Feature Control)
 
@@ -291,7 +292,7 @@ Estas anotaciones se publican automáticamente en el servicio **OData** y son in
 
 Configuran cómo se ve y comporta la aplicación Fiori sin tocar código de datos ni frontend.
 
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/metadata_extensions.md)
 
 ### 🔘 Anotaciones UI: Acción de Botón (OverallStatus)
 
@@ -418,7 +419,7 @@ annotate view ZC_TRAVEL_05 with
 Es un artefacto que especifica QUÉ operaciones están permitidas sobre una entidad 
 y CÓMO se comporta esa entidad durante las operaciones CRUD (Create, Read, Update, Delete).
 
-[...detalle](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
+[...detalle](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/md_docs/BDEF.MD)
 
 Ventas:
 * ✓ Separación de responsabilidades: Lógica de negocio separada de la UI
@@ -431,7 +432,7 @@ Ventas:
 
 ##### Se crea BDEF sobre CDS root o Interfaz
 
-![pedo](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
+![pedo](../00.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/BDEF_01.png)
 
 ### 🚀 Puntos Clave: BDEF Managed con Draft y Feature Control
 
@@ -578,23 +579,7 @@ define service ZUI_TRAVEL_05_O4 provider contracts odata_v4_ui {
 
 ### 3.2 services-binding
 
-Pasos para la creación una nueva vinculación.
-
-![Crear](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_01.png)
-<!-- ![Crear](./img/NEW_SERVICE_BINDING_01.png) -->
-
-
-Selección del tipo de vinculación
-<!-- ![Binding Type](./img/NEW_SERVICE_BINDING_02.png) -->
-![Binding Type](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_02.png)
-
-Publicar el servicio
-<!-- ![Publish](./img/NEW_SERVICE_BINDING_03.png) -->
-![Publish](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_03.png)
-
-Visualizar
-<!-- ![Preview](./img/NEW_SERVICE_BINDING_04.png) -->
-![Preview](../0.%20Developing%20LIST%20REPORT%20APP%20FOR%20CREATE/img/NEW_SERVICE_BINDING_04.png)
+Pasos para la creación una nueva vinculación. Ver post anterior.
 
 ## source-code
 
@@ -640,31 +625,6 @@ class lhc_zr_travel_05 implementation.
   endmethod.
 
   method get_instance_features.
-*    " 1. Leemos el estado (overall_status) de las instancias solicitadas
-*    read entities of zr_travel_05 in local mode
-*         entity ZrTravel05
-*         fields ( OverallStatus )
-*         with corresponding #( keys )
-*         result data(lt_travels).
-*
-*    " 2. Construimos el resultado evaluando la condición
-*    result = value #( for travel in lt_travels
-*                      ( %tky                 = travel-%tky
-*
-*                        " Control de UPDATE (Editar)
-*                        %update              = cond #( when travel-OverallStatus = 'A' " A = Aceptado
-*                                                       then if_abap_behv=>fc-o-disabled
-*                                                       else if_abap_behv=>fc-o-enabled )
-*
-*                        " Control de DELETE (Borrar)
-*                        %delete              = cond #( when travel-OverallStatus = 'A'
-*                                                       then if_abap_behv=>fc-o-disabled
-*                                                       else if_abap_behv=>fc-o-enabled )
-*
-*                        " Control de tu acción personalizada (si la declaraste en el paso 1)
-*                        %action-acceptTravel = cond #( when travel-OverallStatus = 'A'
-*                                                       then if_abap_behv=>fc-o-disabled
-*                                                       else if_abap_behv=>fc-o-enabled ) ) ).
 
     " --- 1. LENGUAJE EML: Lectura de datos ---
     " Leemos el estado de las instancias que el framework nos solicita en 'keys'
@@ -750,9 +710,6 @@ endclass.
 ```
 
 ## Pruebas
-![Presentación](./img/SCREEN_01.png)
-
-![Presentación](./img/SCREEN_06_GO.png)
 
 ![Presentación](./img/SCREEN_07_DISPLAY_DATA.png)
 
