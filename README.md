@@ -24,7 +24,15 @@
 
 [....detalle](./docs/UNMANAGED_APP.md)
 
+## Metadata Extensions
+
+> provides UI-specific annotations separately from the data model and is primarily used to control Fiori Elements presentation, like field labels, visibility and layout, without modifying the core CDS view
+
+[....detalle](./docs/metadata_extensions.md)
+
 ## ENTITY MANIPULATION LANGUAGE (EML)
+
+> is the RAP-specific ABAP syntax to manipulate business objects and is primarily used to perform CRUD operations like READ, CREATE, MODIFY and DELETE on RAP entities while automatically handling transactional consistency, validations and authorizations.
 
 [....detalle](./docs/EML.md)
 
