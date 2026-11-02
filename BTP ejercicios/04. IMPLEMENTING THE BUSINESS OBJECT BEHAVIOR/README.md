@@ -1,3 +1,165 @@
+# Implementing the business object behavior
+
+## Behavior definition Travel
+
+```ABAP
+//&---------------------------------------------------------------------*
+//& ID_PROGRAMA: ZI_RAP_TRAVEL_1234                                     *
+//&                                                                     *
+//& TIPO DE PROGRAMA: BEHAVIOR DEFINITION EN ROOT                       *
+//&                                                                     *
+//& DESCRIPCION: DEFINE las operaciones en ROOT BDEF                    *
+//&              Escensario gestionado define todo el ciclo de vida     *
+//&              de los registros.                                      *
+//&                                                                     *
+//& AUTOR: CB9980000068 - Roberto Puma                                  *
+//&                                                                     *
+//& FECHA DE CREACIÓN: 07.10.2025                                       *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+//&                                                                     *
+//& HISTORIAL DE CAMBIOS                                                *
+//&                                                                     *
+//&  FECHA      AUTOR        DESC.                                      *
+//&  ------     ----------   -------------                              *
+//& DD.MM.AAAA  XXXXXXX      001                                        *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+ 
+managed;
+
+define behavior for zi_rap_travel_1234 alias Travel
+implementation in class zcl_rap_travel_1234 unique
+persistent table zrap_atrav_1234
+lock master
+authorization master ( instance ) // Si desmarco hay dump
+etag master LocalLastChangedAt
+{
+
+  // OPERACIONES CRUD
+  create;
+  update;
+  delete;
+  association _Booking { create; }
+
+  // CAMPOS Y PROPIEDADES
+  field ( numbering : managed, readonly ) TravelUUID;
+  field ( readonly ) TravelID, TotalPrice, TravelStatus;
+  field ( readonly ) LastChangedAt, LastChangedBy, CreatedAt, CreatedBy, LocalLastChangedAt;
+  field ( mandatory ) AgencyID, CustomerID;
+
+  // ACCIONES
+  // Acción (función) para aprobar viajes.
+  action ( features : instance ) acceptTravel result [1] $self;
+  
+  // Acción (función) para rechaza viajes.
+  action ( features : instance ) rejectTravel result [1] $self;
+  
+  // Ambas devuelven $self con cardinalidad 1 como resultado.
+  // $self significa que se devuelve la instancia del mismo tipo en la que se realizó la operación.
+
+  internal action recalcTotalPrice;
+
+  //DETERMINACIONES
+  
+  //Se utiliza para predecir el estado a N cada vez que se crea/modifica una nueva instancia.
+  determination setInitialStatus on modify { create; }
+  
+  //se utiliza para actualizar el precio total cada vez que se cambia el código de reserva o el código de moneda. determination calculateTotalPrice on modify { field BookingFee, CurrencyCode; }
+  
+  //se usa para determinar el TravelID cuando se crea una nueva instancia.
+  determination calculateTravelID on save { create; }
+
+  //VALIDACIONES
+  validation validateAgency on save { field AgencyID; create; }
+  validation validateCustomer on save { field CustomerID; create; }
+  validation validateDates on save { field BeginDate, EndDate; create; }
+
+  mapping for zrap_atrav_1234
+    {
+      TravelUUID         = travel_uuid;
+      TravelID           = travel_id;
+      AgencyID           = agency_id;
+      CustomerID         = customer_id;
+      BeginDate          = begin_date;
+      EndDate            = end_date;
+      BookingFee         = booking_fee;
+      TotalPrice         = total_price;
+      CurrencyCode       = currency_code;
+      Description        = description;
+      TravelStatus       = overall_status;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+
+}
+
+//&---------------------------------------------------------------------*
+//& ID_PROGRAMA: ZI_RAP_BOOKING_1234                                    *
+//&                                                                     *
+//& TIPO DE PROGRAMA: BEHAVIOR DEFINITION RESERVAS                      *
+//&                                                                     *
+//& DESCRIPCION: DEFINE las operaciones en CHILD                        *
+//&                                                                     *
+//& AUTOR: CB9980000068 - Roberto Puma                                  *
+//&                                                                     *
+//& FECHA DE CREACIÓN: 07.10.2025                                       *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+//&                                                                     *
+//& HISTORIAL DE CAMBIOS                                                *
+//&                                                                     *
+//&  FECHA      AUTOR        DESC.                                      *
+//&  ------     ----------   -------------                              *
+//& DD.MM.AAAA  XXXXXXX      001                                        *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+
+define behavior for zi_rap_booking_1234 alias Booking
+implementation in class zcl_rap_booking_1234 unique
+persistent table zrap_abook_1234
+lock dependent by _Travel
+authorization dependent by _Travel // Si desmarco hay dump
+etag master LocalLastChangedAt
+{
+  update;
+  delete;
+
+  association _Travel;
+
+  field ( numbering : managed, readonly ) BookingUUID;
+  field ( readonly ) TravelUUID, BookingID;
+  field ( readonly ) CreatedBy, LastChangedBy, LocalLastChangedAt;
+
+  determination calculateBookingID on modify { create; }
+  determination calculateTotalPrice on modify { field FlightPrice, CurrencyCode; }
+
+  mapping for zrap_abook_1234
+    {
+      BookingUUID        = booking_uuid;
+      TravelUUID         = travel_uuid;
+      BookingID          = booking_id;
+      BookingDate        = booking_date;
+      CustomerID         = customer_id;
+      CarrierID          = carrier_id;
+      ConnectionID       = connection_id;
+      FlightDate         = flight_date;
+      FlightPrice        = flight_price;
+      CurrencyCode       = currency_code;
+      CreatedBy          = created_by;
+      LastChangedBy      = last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+
+}
+```
+
+## Clase que gestiona Travel
+
+```ABAP
 *&---------------------------------------------------------------------*
 *& ID_PROGRAMA: Clase local                                            *
 *&                                                                     *
@@ -557,3 +719,88 @@ class lhc_Travel implementation.
            with corresponding #( travels ).
   endmethod.
 endclass.
+```
+
+## Clase que gestiona Book
+```ABAP
+class lhc_Booking definition inheriting from cl_abap_behavior_handler.
+  private section.
+    methods calculateBookingID for determine on modify
+      importing keys for Booking~calculateBookingID.
+
+    methods calculateTotalPrice for determine on modify
+      importing keys for Booking~calculateTotalPrice.
+
+endclass.
+
+
+class lhc_Booking implementation.
+  method calculateBookingID.
+    data max_bookingid type /dmo/booking_id.
+    data update        type table for update ZI_RAP_Travel_1234\\Booking.
+
+    " Read all travels for the requested bookings.
+    " If multiple bookings of the same travel are requested,
+    " the travel is returned only once.
+    read entities of ZI_RAP_Travel_1234 in local mode
+         entity Booking by \_Travel
+         fields ( TravelUUID )
+         with corresponding #( keys )
+         result data(travels).
+
+    " Process all affected Travels. Read respective bookings, determine the max-id and update the bookings without ID.
+    loop at travels into data(travel).
+      read entities of ZI_RAP_Travel_1234 in local mode
+           entity Travel by \_Booking
+           fields ( BookingID )
+           with value #( ( %tky = travel-%tky ) )
+           result data(bookings).
+
+      " Find max used BookingID in all bookings of this travel
+      max_bookingid = '0000'.
+      loop at bookings into data(booking).
+        if booking-BookingID > max_bookingid.
+          max_bookingid = booking-BookingID.
+        endif.
+      endloop.
+
+      " Provide a booking ID for all bookings that have none.
+      loop at bookings into booking where BookingID is initial.
+        max_bookingid += 10.
+        append value #( %tky      = booking-%tky
+                        BookingID = max_bookingid )
+               to update.
+      endloop.
+    endloop.
+
+    " Update the Booking ID of all relevant bookings
+    modify entities of ZI_RAP_Travel_1234 in local mode
+           entity Booking
+           update fields ( BookingID ) with update
+           reported data(update_reported).
+
+    reported = corresponding #( deep update_reported ).
+  endmethod.
+
+  method calculateTotalPrice.
+    " Read all travels for the requested bookings.
+    " If multiple bookings of the same travel are requested, the travel is returned only once.
+    read entities of ZI_RAP_Travel_1234 in local mode
+         entity Booking by \_Travel
+         fields ( TravelUUID )
+         with corresponding #( keys )
+         result data(travels)
+         " TODO: variable is assigned but never used (ABAP cleaner)
+         failed data(read_failed).
+
+    " Trigger calculation of the total price
+    modify entities of ZI_RAP_Travel_1234 in local mode
+           entity Travel
+           execute recalcTotalPrice
+           from corresponding #( travels )
+           reported data(execute_reported).
+
+    reported = corresponding #( deep execute_reported ).
+  endmethod.
+endclass.
+```
