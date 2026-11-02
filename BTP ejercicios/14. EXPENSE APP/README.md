@@ -616,7 +616,7 @@ annotate view ZC_EXP_HEADER with
                  position: 10 },
                
                { id: 'Items',
-                 label: 'Items',
+                 label: 'Expense Items',
                  type: #LINEITEM_REFERENCE,
                  targetElement: '_Items',
                  position: 20 } ]
@@ -625,30 +625,28 @@ annotate view ZC_EXP_HEADER with
   @UI.fieldGroup: [ { qualifier: 'General', position: 10, label: 'Id', importance: #HIGH } ]
   ReportId;
 
-  @UI.lineItem: [ { position: 20, label: 'Customer'  } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 20, label: 'Customer' } ]
-  CustomerID;
-
-  @UI.lineItem: [ { position: 30, label: 'Open Date' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 30, label: 'Open Date' } ]
-  ReportDate;
-
-  @UI.lineItem: [ { position: 40, label: 'Status' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 40, label: 'Status' } ]
-  HeaderStatus;
-
-  @UI.lineItem: [ { position: 50, label: 'Reason' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 50, label: 'Reason' } ]
+  @UI.lineItem: [ { position: 20, label: 'Reason' } ]
+  @UI.fieldGroup: [ { qualifier: 'General', position: 20, label: 'Reason' } ]
   Reason;
   
+  @UI.lineItem: [ { position: 30, label: 'Customer'  } ]
+  @UI.fieldGroup: [ { qualifier: 'General', position: 30, label: 'Customer' } ]
+  CustomerID;
+  
+  @UI.lineItem: [ { position: 40, label: 'Open Date' } ]
+  @UI.fieldGroup: [ { qualifier: 'General', position: 40, label: 'Open Date' } ]
+  ReportDate;
+  
+  @UI.lineItem: [ { position: 50, label: 'Status' } ]
+  @UI.fieldGroup: [ { qualifier: 'General', position: 50, label: 'Status' } ]
+  HeaderStatus;
+
   @UI.lineItem: [ { position: 60, label: 'Total Amount' } ]
   @UI.fieldGroup: [ { qualifier: 'General', position: 60, label: 'Total Amount' } ]
   TotalAmount;
 
-  @UI.lineItem: [ { position: 70, label: 'Currency' } ]
-//  @UI.fieldGroup: [ { qualifier: 'General', position: 70, label: 'Currency' } ]
-  CurrencyCode;
-  
+  @UI.fieldGroup: [ { qualifier: 'General', position: 70, label: 'Currency' } ]
+  CurrencyCode; 
 }
 ```
 
@@ -741,12 +739,12 @@ early numbering
   field ( readonly ) last_changed_at, last_changed_by, created_at, created_by;
 
   // mandatory fields that are required to create a Expense folder
-  field ( mandatory ) customer_id, report_date, reason, header_status, currency_code;
+  field ( mandatory ) customer_id, report_date, reason, header_status;
 
   // Semantic Key field, which is readonly for the consumer, value is assigned in early numbering
   field ( readonly ) report_id;
-
   field ( readonly ) total_amount;
+  field ( readonly ) currency_code;
 
   // mapping entity's field types with table field types
   mapping for zexpense_header corresponding;
@@ -755,6 +753,8 @@ early numbering
   create;
   update;
   delete;
+
+//  determination setCurrency on modify { create; }
 
   // create expense items by association
   association _Items { create ( features : instance ); }
@@ -773,18 +773,19 @@ authorization dependent by _Header
   // administrative fields: read only
   field ( readonly ) last_changed_at;
 
-  field ( mandatory ) expense_type, expense_date, amount;
-
   // static field control
-  field ( readonly ) report_id, item_id;
+  field ( readonly ) report_id, item_id, currency_code;
+
+  field ( mandatory ) expense_type, expense_date, amount;
 
   // mapping entity's field types with table field types
   mapping for zexpense_item corresponding;
 
-
   // standard operations for expense item entity
   update;
   delete;
+
+  determination setCurrency on modify { create; }
 
   determination updateHeaderTotal on save { create; update; delete; }
 
@@ -828,47 +829,7 @@ authorization dependent by _Header
 
   association _Header { }
   association _Item { }
-}
-```
-
-Se crean las clases:
-
-* [zbp_zi_exp_header](./others/zbp_zi_exp_header.md)
-* [zbp_zi_exp_itemm](./others/zbp_zi_exp_itemm.md) 
-* [zbp_zi_exp_attach](./others/zbp_zi_exp_attach.md)
-
-## 13. Behavior Definitions Consumption - CDS Consumption based
-
-```ABAP
-projection;
-strict ( 2 );
-use side effects;
-define behavior for ZC_EXP_HEADER alias Header
-{
-  use create;
-  use update;
-  use delete;
-
-  use association _Items { create; }
-}
-
-define behavior for ZC_EXP_ITEMM alias item
-{
-  use update;
-  use delete;
-
-  use association _Header;
-  use association _Attachments { create; }
-}
-
-define behavior for ZC_EXP_ATTACH alias attach
-{
-  use update;
-  use delete;
-
-  use association _Header;
-  use association _Item;
-}
+}}
 ```
 ## 14. Service Definition - CDS Consumption Header (root) based
 

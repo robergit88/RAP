@@ -17,6 +17,8 @@ CLASS lhc_item DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS updateheadertotal FOR DETERMINE ON SAVE
       keys FOR item~updateheadertotal.
+    METHODS setcurrency FOR DETERMINE ON MODIFY
+      keys FOR item~setcurrency.
 
     METHODS earlynumbering_cba_Attachments FOR NUMBERING
        entities FOR CREATE item\_Attachments.
@@ -91,6 +93,28 @@ CLASS lhc_item IMPLEMENTATION.
 *Una determination no puede rechazar la operación,
 *a diferencia de una validation, que sí tiene failed para bloquear el guardado.
 *failed-header   = CORRESPONDING #( DEEP lt_failed-header ).
+  ENDMETHOD.
+
+  METHOD setCurrency.
+    READ ENTITIES OF zi_exp_header IN LOCAL MODE
+         ENTITY item
+         FIELDS ( currency_code )
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(items).
+
+    " Solo actualizar las que no estén ya en EUR
+    DELETE items WHERE currency_code = 'EUR'.
+
+    IF items IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    MODIFY ENTITIES OF zi_exp_header IN LOCAL MODE
+           ENTITY item
+           UPDATE FIELDS ( currency_code )
+           WITH VALUE #( FOR i IN items
+                         ( %tky          = i-%tky
+                           currency_code = 'EUR' ) ).
   ENDMETHOD.
 
 ENDCLASS.
