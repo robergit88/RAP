@@ -1,3 +1,297 @@
+# Enabling the Draft Handling
+
+## Tablas
+
+## Tabla Draft zrap_atrav_1234d
+```ABAP
+@EndUserText.label : ''
+@AbapCatalog.enhancement.category : #EXTENSIBLE_ANY
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zrap_atrav_1234d {
+
+  key mandt          : mandt not null;
+  key traveluuid     : sysuuid_x16 not null;
+  travelid           : /dmo/travel_id;
+  agencyid           : /dmo/agency_id;
+  customerid         : /dmo/customer_id;
+  begindate          : /dmo/begin_date;
+  enddate            : /dmo/end_date;
+  @Semantics.amount.currencyCode : 'zrap_atrav_1234d.currencycode'
+  bookingfee         : /dmo/booking_fee;
+  @Semantics.amount.currencyCode : 'zrap_atrav_1234d.currencycode'
+  totalprice         : /dmo/total_price;
+  currencycode       : /dmo/currency_code;
+  description        : /dmo/description;
+  travelstatus       : /dmo/overall_status;
+  createdby          : syuname;
+  createdat          : timestampl;
+  lastchangedby      : syuname;
+  lastchangedat      : timestampl;
+  locallastchangedat : timestampl;
+  "%admin"           : include sych_bdl_draft_admin_inc;
+}
+
+```
+
+## Tabla Draft zrap_abook_1234d
+
+```ABAP
+@EndUserText.label : ''
+@AbapCatalog.enhancement.category : #EXTENSIBLE_ANY
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table zrap_abook_1234d {
+
+  key mandt          : mandt not null;
+  key bookinguuid    : sysuuid_x16 not null;
+  traveluuid         : sysuuid_x16;
+  bookingid          : /dmo/booking_id;
+  bookingdate        : /dmo/booking_date;
+  customerid         : /dmo/customer_id;
+  carrierid          : /dmo/carrier_id;
+  connectionid       : /dmo/connection_id;
+  flightdate         : /dmo/flight_date;
+  @Semantics.amount.currencyCode : 'zrap_abook_1234d.currencycode'
+  flightprice        : /dmo/flight_price;
+  currencycode       : /dmo/currency_code;
+  createdby          : syuname;
+  lastchangedby      : syuname;
+  locallastchangedat : timestampl;
+  "%admin"           : include sych_bdl_draft_admin_inc;
+}
+```
+
+## Behavior Interfaz Travel
+```ABAP
+//&---------------------------------------------------------------------*
+//& ID_PROGRAMA: ZI_RAP_TRAVEL_1234                                     *
+//&                                                                     *
+//& TIPO DE PROGRAMA: BEHAVIOR DEFINITION EN ROOT                       *
+//&                                                                     *
+//& DESCRIPCION: DEFINE las operaciones en ROOT BDEF                    *
+//&              Escenario gestionado define todo el ciclo de vida      *
+//&              de los registros.                                      *
+//&                                                                     *
+//& AUTOR: CB9980000068 - Roberto Puma                                  *
+//&                                                                     *
+//& FECHA DE CREACIÓN: 07.10.2025                                       *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+//&                                                                     *
+//& HISTORIAL DE CAMBIOS                                                *
+//&                                                                     *
+//&  FECHA      AUTOR        DESC.                                      *
+//&  ------     ----------   -------------                              *
+//& DD.MM.AAAA  XXXXXXX      001                                        *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+
+managed;
+with draft;
+define behavior for zi_rap_travel_1234 alias Travel
+implementation in class zcl_rap_travel_1234 unique
+persistent table zrap_atrav_1234
+draft table zrap_atrav_1234d
+lock master total etag LastChangedAt
+authorization master ( instance )
+etag master LocalLastChangedAt
+
+{
+
+  field ( readonly )
+  TravelUUID,
+  TravelID,
+  LastChangedAt,
+  LocalLastChangedAt;
+
+  // CAMPOS Y PROPIEDADES
+  field ( numbering : managed )
+  TravelUUID;
+  field ( mandatory )
+  AgencyID,
+  CustomerID;
+
+  // OPERACIONES CRUD
+  create;
+  update;
+  delete;
+  association _Booking { create; with draft; }
+
+  // ACCIONES
+  action ( features : instance ) acceptTravel result [1] $self;
+  action ( features : instance ) rejectTravel result [1] $self;
+
+  // Ambas devuelven $self con cardinalidad 1 como resultado.
+  // $self significa que se devuelve la instancia del mismo tipo en la que se realizó la operación.
+
+  internal action recalcTotalPrice;
+
+  //DETERMINACIONES
+
+  //Se utiliza para predecir el estado a N cada vez que se crea/modifica una nueva instancia.
+  determination setInitialStatus on modify { create; }
+  
+  //se utiliza para actualizar el precio total cada vez que se cambia el código de reserva o el código de moneda. determination calculateTotalPrice on modify { field BookingFee, CurrencyCode; }
+  
+  //se usa para determinar el TravelID cuando se crea una nueva instancia.
+  determination calculateTravelID on save { create; }
+
+  //VALIDACIONES
+  validation validateAgency on save { field AgencyID; create; }
+  validation validateCustomer on save { field CustomerID; create; }
+  validation validateDates on save { field BeginDate, EndDate; create; }
+
+draft determine action Prepare  {
+    validation validateAgency;
+    validation validateCustomer;
+    validation validateDates;
+  }
+
+  mapping for zrap_atrav_1234
+    {
+      TravelUUID         = travel_uuid;
+      TravelID           = travel_id;
+      AgencyID           = agency_id;
+      CustomerID         = customer_id;
+      BeginDate          = begin_date;
+      EndDate            = end_date;
+      BookingFee         = booking_fee;
+      TotalPrice         = total_price;
+      CurrencyCode       = currency_code;
+      Description        = description;
+      TravelStatus       = overall_status;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+}
+```
+
+## Behavior Interfaz Booking
+```ABAP
+//&---------------------------------------------------------------------*
+//& ID_PROGRAMA: ZI_RAP_BOOKING_1234                                    *
+//&                                                                     *
+//& TIPO DE PROGRAMA: BEHAVIOR DEFINITION RESERVAS                      *
+//&                                                                     *
+//& DESCRIPCION: DEFINE las operaciones en CHILD                        *
+//&                                                                     *
+//& AUTOR: CB9980000068 - Roberto Puma                                  *
+//&                                                                     *
+//& FECHA DE CREACIÓN: 07.10.2025                                       *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+//&                                                                     *
+//& HISTORIAL DE CAMBIOS                                                *
+//&                                                                     *
+//&  FECHA      AUTOR        DESC.                                      *
+//&  ------     ----------   -------------                              *
+//& DD.MM.AAAA  XXXXXXX      001                                        *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+
+define behavior for zi_rap_booking_1234 alias Booking
+implementation in class zcl_rap_booking_1234 unique
+persistent table zrap_abook_1234
+draft table zrap_abook_1234d
+lock dependent by _Travel
+authorization dependent by _Travel
+
+etag master LocalLastChangedAt
+{
+
+  update;
+  delete;
+
+  association _Travel { with draft; }
+
+  field ( numbering : managed, readonly ) BookingUUID;
+
+  field ( readonly )
+  TravelUUID,
+  BookingID,
+  CreatedBy,
+  LastChangedBy,
+  LocalLastChangedAt;
+
+  determination calculateBookingID on modify { create; }
+  determination calculateTotalPrice on modify { field FlightPrice, CurrencyCode; }
+
+  mapping for zrap_abook_1234
+
+    {
+      BookingUUID        = booking_uuid;
+      TravelUUID         = travel_uuid;
+      BookingID          = booking_id;
+      BookingDate        = booking_date;
+      CustomerID         = customer_id;
+      CarrierID          = carrier_id;
+      ConnectionID       = connection_id;
+      FlightDate         = flight_date;
+      FlightPrice        = flight_price;
+      CurrencyCode       = currency_code;
+      CreatedBy          = created_by;
+      LastChangedBy      = last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+}
+```
+
+## Behavior projection Travel
+```ABAP
+//&---------------------------------------------------------------------*
+//& ID_OBJETO: ZC_RAP_TRAVEL_1234                                       *
+//&                                                                     *
+//& TIPO DE PROGRAMA: BEHAVIOR PROJECTION                               *
+//&                                                                     *
+//& DESCRIPCION: Se expone que comportamiento se ofrece al cliente      *
+//&                                                                     *
+//& AUTOR: 0021038 - Roberto Puma                                       *
+//&                                                                     *
+//& FECHA DE CREACIÓN: 08.10.2025                                       *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+//&                                                                     *
+//& HISTORIAL DE CAMBIOS                                                *
+//&                                                                     *
+//&  FECHA      AUTOR        DESC.                                      *
+//&  ------     ----------   -------------                              *
+//& DD.MM.AAAA  XXXXXXX      001                                        *
+//&                                                                     *
+//&---------------------------------------------------------------------*
+
+projection;
+use draft;
+define behavior for ZC_RAP_TRAVEL_1234 alias Travel
+use etag
+{
+  use create;
+  use update;
+  use delete;
+  use action acceptTravel;
+  use action rejectTravel;
+ 
+  use association _Booking { create; with draft;}
+}
+
+define behavior for ZC_RAP_BOOKING_1234 alias Booking
+use etag
+{
+
+  use update;
+  use delete;
+
+  use association _Travel { with draft; }
+}
+```
+
+## Clase que implementa el behavior
+```ABAP
 CLASS zcl_rap_travel_1234 DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zi_rap_travel_1234.
 ENDCLASS.
 
@@ -615,3 +909,4 @@ class lhc_Travel implementation.
 *  endmethod.
 
 endclass.
+```
