@@ -1,6 +1,14 @@
 # Aplicación de Liquidación de Gastos · RAP Managed · OData V2
 
-Aplicación transaccional de **informes de gastos** desarrollada en **ABAP Environment (SAP BTP)** con el modelo de programación **RAP** y **Fiori Elements**. Un empleado crea un informe, le añade gastos con sus justificantes y lo envía; un responsable lo aprueba o lo rechaza.
+Aplicación transaccional de **informes de gastos** desarrollada en **ABAP Environment (SAP BTP)** con el modelo de programación **RAP** y **Fiori Elements**. 
+
+```
+Informe (Header, root)
+ └── Gasto (Item)
+      └── Adjunto (Attachment)
+```
+
+Un empleado crea un informe, le añade gastos con sus justificantes y lo envía; un responsable lo aprueba o lo rechaza.
 
 El objetivo es práctico y didáctico: recorrer un ciclo de vida completo con reglas de negocio reales, desde el modelo de datos hasta la interfaz.
 
@@ -27,54 +35,30 @@ Para la Expense App se eligió **RAP `Managed` sin Draft** frente a `Unmanaged` 
 
 2. **Numeración automática sin inventar claves.** La clave `report_id` (CHAR 10) no es UUID. Con `Managed` se implementa `early numbering` con lógica `MAX + 1`, de forma que el sistema asigna `0000000001`, `0000000002`... sin que el usuario tenga que inventar la clave. No se usa `Number Range Object`: es ideal para un entorno BTP didáctico.
 
-## 1. Caso de uso
+## Caso de uso
 
 **Actor:** empleado viajero y responsable.
 
 **Flujo:** crea el informe (HEADER) → añade gastos (ITEM) → adjunta el justificante (ATTACHMENT) → envía → el responsable aprueba o rechaza.
 
-**Tipo:** aplicación transaccional Fiori Elements, sin draft.
+**Arquitectura:** Fiori Elements sobre OData V2 y RAP Managed (no es una Web API manual), sin draft.
 
-**Arquitectura:** Fiori Elements sobre OData V2 y RAP Managed (no es una Web API manual).
+## Plan didáctico: 10 funcionalidades RAP
 
-```
-Tablas Z → 
-CDS de interfaz (ZI_) → 
-CDS de consumo (ZC_) → 
-Behavior → 
-Service Definition → 
-Service Binding
-```
+| # | Funcionalidad | Estado | Detalle |
+|---|---|---|---|
+| 1 | Value Help | ✅ | Tipo de gasto, cliente (`/DMO/CUSTOMER`), estados |
+| 2 | Validation | ✅ | Importe y límite de hotel hechas. Tipo de fichero (mime) pendiente |
+| 3 | Determination | ✅ | Total del informe = suma de los gastos |
+| 4 | Side Effect y bloqueo | ✅ | Al pasar a `SENT` se bloquea la edición |
+| 5 | Action | ✅ | Enviar, aprobar y rechazar (con motivo) |
+| 6 | Composition | ✅ | Borrado en cascada de gastos y adjuntos |
+| 7 | Criticality | ✅ | Semáforos de estado |
+| 8 | Association | ✅ | Asociación a `/DMO/CUSTOMER` |
+| 9 | Upload / Display | ✅ | Ficheros con `@Semantics.largeObject` |
+| 10 | Mensajes | ⏳ | Pendiente: clase de mensajes con texto largo |
 
-### Ciclo de vida del informe
-
-```mermaid
-stateDiagram-v2
-    [*] --> OPEN : crear
-    OPEN --> SENT : enviar
-    SENT --> APPROVED : aprobar
-    SENT --> REJECTED : rechazar
-    APPROVED --> [*]
-    REJECTED --> [*]
-```
-
-Solo en estado `OPEN` se puede editar. `APPROVED` y `REJECTED` son estados finales.
-
-## 2. Esquema de tablas
-
-```mermaid
-classDiagram
-    ZEXPENSE_HEADER *-- ZEXPENSE_ITEM
-    ZEXPENSE_ITEM *-- ZITEM_ATTACHMENT
-
-    ZEXPENSE_HEADER ..> DMO_Customer
-    ZEXPENSE_HEADER ..> ZHEADER_STATUS
-    ZEXPENSE_ITEM ..> ZEXPENSE_TYPE
-    ZEXPENSE_ITEM ..> ZITEM_STATUS
-    ZITEM_ATTACHMENT ..> ZMIME_TYPE
-```
-
-## 3. Documentación
+## Documentación
 
 | Documento | Contenido |
 |---|---|
@@ -93,22 +77,7 @@ El código de las clases de implementación (
 
 está en la carpeta [`src/`](./src/).
 
-## 4. Plan didáctico: 10 funcionalidades RAP
-
-| # | Funcionalidad | Estado | Detalle |
-|---|---|---|---|
-| 1 | Value Help | ✅ | Tipo de gasto, cliente (`/DMO/CUSTOMER`), estados |
-| 2 | Validation | ✅ | Importe y límite de hotel hechas. Tipo de fichero (mime) pendiente |
-| 3 | Determination | ✅ | Total del informe = suma de los gastos |
-| 4 | Side Effect y bloqueo | ✅ | Al pasar a `SENT` se bloquea la edición |
-| 5 | Action | ✅ | Enviar, aprobar y rechazar (con motivo) |
-| 6 | Composition | ✅ | Borrado en cascada de gastos y adjuntos |
-| 7 | Criticality | ✅ | Semáforos de estado |
-| 8 | Association | ✅ | Asociación a `/DMO/CUSTOMER` |
-| 9 | Upload / Display | ✅ | Ficheros con `@Semantics.largeObject` |
-| 10 | Mensajes | ⏳ | Pendiente: clase de mensajes con texto largo |
-
-## 5. Limitaciones y próximos pasos
+## Limitaciones y próximos pasos
 
 **Limitaciones conocidas**
 - Sin `draft`: los datos se guardan al instante. Por eso el cargador de ficheros aparece después de crear el registro del adjunto: Fiori Elements primero crea el registro (que da la clave) y después sube el contenido. Con draft, el botón estaría disponible desde el principio.
@@ -123,7 +92,7 @@ está en la carpeta [`src/`](./src/).
 4. Autorizaciones por instancia y por rol.
 5. Pruebas unitarias con ABAP Unit.
 
-## 6. Despliegue en ABAP
+## Despliegue en ABAP
 
 Se realiza un trabajo adicional para desplegar la app en el entorno `ABAP Environment`, en una cuenta `Trial`. Los pasos están en [Desplegando la App](./OTHERS/despliegue_app_rap_abap_trial.md).
 
