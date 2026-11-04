@@ -1,18 +1,26 @@
 # Guion de pruebas: App de informes de gastos (RAP + Fiori elements)
 
-**Autor:** _tu nombre_
-**Fecha:** _dd/mm/aaaa_
+**Autor:** Roberto Puma
+
+**Fecha:** 04.11.2026
+
 **Entorno:** SAP BTP ABAP Environment (Steampunk), RAP managed, Fiori elements (List Report + Object Page)
 
 ---
 
 ## 1. Resumen
 
-Aplicación para gestionar **informes de gastos** con sus **posiciones** y **adjuntos**, desarrollada con el modelo de programación RAP. El objetivo es demostrar un ciclo de vida completo con reglas de negocio reales: validaciones, cálculos automáticos, acciones de flujo, bloqueo por estado y semáforos visuales.
+Aplicación para gestionar **informes de gastos** con sus **posiciones** y **adjuntos**, desarrollada con el modelo de programación RAP. El objetivo es demostrar un ciclo de vida completo con reglas de negocio reales: 
+- Valores por defecto
+- Validaciones
+- Cálculos automáticos
+- Acciones de flujo
+- Bloqueo por estado 
+- Semáforos visuales.
 
 ## 2. Modelo de datos
 
-```
+```JS
 Informe (Header, root)
  └── Gasto (Item)
       └── Adjunto (Attachment)

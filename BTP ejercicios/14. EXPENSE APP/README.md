@@ -850,6 +850,8 @@ define service ZSD_EXPENSES {
 
 `Managed sin draft + OData V2` = `UI` botón **`Crear`** en `List Report`.
 
+[Las pruebas...](./others/guion_pruebas_app_gastos.md)
+
 ¿porque el uploader aparece luego de crear un registro de fichero sin el contenido del mismo?
 
 Fiori Elements funciona así: primero crea el registro (te da la clave), y después sube el contenido apuntando a esa clave.
