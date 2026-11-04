@@ -829,7 +829,8 @@ authorization dependent by _Header
 
   association _Header { }
   association _Item { }
-}}
+}
+
 ```
 ## 14. Service Definition - CDS Consumption Header (root) based
 
@@ -844,13 +845,13 @@ define service ZSD_EXPENSES {
 
 ## 15. Service Binding: ZUI_EXPENSES_O2 - Service Definition based
 
-![este es un texto](./others/Service_binding_Odata_v2.png)
+![este es un texto](./docs_md/Service_binding_Odata_v2.png)
 
 ## 16. Prueba
 
 `Managed sin draft + OData V2` = `UI` botón **`Crear`** en `List Report`.
 
-[Las pruebas...](./others/guion_pruebas_app_gastos.md)
+[Las pruebas...](./docs_md/guion_pruebas_app_gastos.md)
 
 ¿porque el uploader aparece luego de crear un registro de fichero sin el contenido del mismo?
 
@@ -862,4 +863,4 @@ Con draft sería como si el sistema te diera un número de seguimiento provision
 
 Se realiza un trabajo adicional para realizar un deploy de la app en el entorno `ABAP Environment` y para una cuenta `Trial`
 
-* [Desplegando la App...](../OTHERS/despliegue_app_rap_abap_trial.md)
+* [Desplegando la App...](../docs_md/despliegue_app_rap_abap_trial.md)
