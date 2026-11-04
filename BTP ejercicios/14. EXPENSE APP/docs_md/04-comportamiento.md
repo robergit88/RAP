@@ -1,6 +1,6 @@
 # Comportamiento: App de informes de gastos
 
-Este documento describe el **comportamiento** del business object: qué operaciones permite cada entidad, qué reglas se aplican y cómo cambia el informe de estado. Complementa a [`modelo_datos_app_gastos.md`](./modelo_datos_app_gastos.md), que describe la estructura de datos.
+Este documento describe el **comportamiento** del business object: qué operaciones permite cada entidad, qué reglas se aplican y cómo cambia el informe de estado. Complementa a [`modelo_datos_app_gastos.md`](./02-modelo-datos.md), que describe la estructura de datos.
 
 ---
 
@@ -349,11 +349,9 @@ define behavior for ZC_EXP_ATTACH alias attach
 
 | Clase | Entidad | Métodos |
 |---|---|---|
-| `zbp_zi_exp_header` | Header | `earlynumbering_create`, `setStatusDefault`, `get_instance_features`, `get_global_authorizations`, `send`, `approve`, `reject` |
-| `zbp_zi_exp_itemm` | Item | `earlynumbering_create`, `setCurrency`, `updateHeaderTotal`, `validateAmount`, `validateHotelLimit`, `get_instance_features` |
-| `zbp_zi_exp_attach` | Attach | `earlynumbering_create`, `get_instance_features` |
-
-El código de las clases está en [`src/`](../src/).
+| [zbp_zi_exp_header](../src/zbp_zi_exp_header.md) | Header | `earlynumbering_create`, `setStatusDefault`, `get_instance_features`, `get_global_authorizations`, `send`, `approve`, `reject` |
+| [zbp_zi_exp_itemm](../src/zbp_zi_exp_itemm.md) | Item | `earlynumbering_create`, `setCurrency`, `updateHeaderTotal`, `validateAmount`, `validateHotelLimit`, `get_instance_features` |
+| [zbp_zi_exp_attach](../src/zbp_zi_exp_attach.md) | Attach | `earlynumbering_create`, `get_instance_features` |
 
 ## 13. Limitaciones y pendientes
 

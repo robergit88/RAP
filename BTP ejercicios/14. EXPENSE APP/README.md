@@ -68,8 +68,6 @@ Para la Expense App se eligió **RAP `Managed` sin Draft** frente a `Unmanaged` 
 | [05 · Guion de pruebas](./docs_md/05-guion-pruebas.md) | Escenarios de prueba con capturas y explicación de cómo se logra cada uno |
 | [Despliegue en ABAP Environment](./OTHERS/despliegue_app_rap_abap_trial.md) | Despliegue de la app en una cuenta Trial |
 
-El código de las clases de implementación ( `zbp_zi_exp_header`, `zbp_zi_exp_itemm`, `zbp_zi_exp_attach`)está en la carpeta [`src/`](./src/).
-
 ## Limitaciones y próximos pasos
 
 **Limitaciones conocidas**
