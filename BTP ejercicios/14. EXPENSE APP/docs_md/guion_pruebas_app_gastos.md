@@ -114,7 +114,11 @@ Preparar tres informes antes de empezar a capturar pantallas:
 
 ![Creación del informe](img/01-creacion.png)
 
-**Cómo se logra:** *early numbering* para el ID y una *determination* `on modify { create; }` que informa estado y moneda. Los campos se declaran `readonly` en el BDEF para que el usuario no pueda modificarlos.
+**Cómo se logra:** 
+
+*early numbering* para el ID y una *determination* `on modify { create; }` que informa estado y moneda. 
+
+Los campos se declaran `readonly` en el BDEF para que el usuario no pueda modificarlos.
 
 ---
 
@@ -130,7 +134,11 @@ Preparar tres informes antes de empezar a capturar pantallas:
 
 ![Error de importe](img/02-importe.png)
 
-**Cómo se logra:** *validation* `on save` en el item. Marca la instancia en `failed` (impide el guardado) y publica el mensaje en `reported` con `%element-amount` para resaltar el campo.
+**Cómo se logra:** 
+
+*validation* `on save` en el item. 
+
+Marca la instancia en `failed` (impide el guardado) y publica el mensaje en `reported` con `%element-amount` para resaltar el campo.
 
 ---
 
@@ -146,7 +154,13 @@ Preparar tres informes antes de empezar a capturar pantallas:
 
 ![Límite de hotel](img/03-hotel.png)
 
-**Cómo se logra:** validación que lee `expense_type` y `amount`. Un *error* usa `failed` + `reported`; un *warning* usaría solo `reported`.
+**Cómo se logra:** 
+
+validación que lee `expense_type` y `amount`. 
+
+Un *error* usa `failed` + `reported`; 
+
+un *warning* usaría solo `reported`.
 
 ---
 
@@ -162,7 +176,11 @@ Preparar tres informes antes de empezar a capturar pantallas:
 
 ![Total calculado](img/04-total.png)
 
-**Cómo se logra:** *determination* en el item que recalcula el total del header y *side effect* `field amount affects field _Header.total_amount` para refrescar la interfaz.
+**Cómo se logra:** 
+
+*determination* en el item que recalcula el total del header y 
+
+*side effect* `field amount affects field _Header.total_amount` para refrescar la interfaz.
 
 ---
 
@@ -185,7 +203,11 @@ Preparar tres informes antes de empezar a capturar pantallas:
 ![Enviar sin recibo](img/05b-enviar-sin-recibo.png)
 ![Enviar correcto](img/05c-enviar-ok.png)
 
-**Cómo se logra:** acción `send` con `features : instance`. Lee los gastos con `READ ENTITIES ... BY \_Items` y sus adjuntos con `BY \_Attachments ... LINK`. Si alguna precondición falla, devuelve `failed` + `reported` y no modifica el estado.
+**Cómo se logra:** 
+
+acción `send` con `features : instance`. Lee los gastos con `READ ENTITIES ... BY \_Items` y sus adjuntos con `BY \_Attachments ... LINK`. 
+
+Si alguna precondición falla, devuelve `failed` + `reported` y no modifica el estado.
 
 > **Decisión de diseño:** el recibo se valida en el momento del envío, no al guardar el gasto, porque depende de dos entidades y es una precondición de la transición de estado.
 
@@ -204,7 +226,12 @@ Preparar tres informes antes de empezar a capturar pantallas:
 ![Informe bloqueado](img/06a-bloqueo-header.png)
 ![Gasto bloqueado](img/06b-bloqueo-item.png)
 
-**Cómo se logra:** `update ( features : instance )`, `delete ( features : instance )` y `create ( features : instance )` en la asociación. En `get_instance_features`, el item y el adjunto consultan el estado **del header** navegando con `BY \_Header`. Es un control de backend, no solo visual: una llamada por API también se rechaza.
+**Cómo se logra:** 
+`update ( features : instance )`, `delete ( features : instance )` y `create ( features : instance )` en la asociación. 
+
+En `get_instance_features`, el item y el adjunto consultan el estado **del header** navegando con `BY \_Header`. 
+
+Es un control de backend, no solo visual: una llamada por API también se rechaza.
 
 ---
 
@@ -227,7 +254,10 @@ Preparar tres informes antes de empezar a capturar pantallas:
 ![Informe rechazado](img/07b-rechazado.png)
 ![Informe aprobado](img/07c-aprobado.png)
 
-**Cómo se logra:** acciones `approve` y `reject` habilitadas solo en SENT mediante feature control. `reject` recibe su parámetro a través de una *abstract entity* (`ZA_EXP_REJECT_PARAM`) y persiste el motivo en un campo propio de solo lectura.
+**Cómo se logra:** 
+acciones `approve` y `reject` habilitadas solo en SENT mediante feature control. 
+
+`reject` recibe su parámetro a través de una *abstract entity* (`ZA_EXP_REJECT_PARAM`) y persiste el motivo en un campo propio de solo lectura.
 
 ---
 
@@ -243,7 +273,9 @@ Preparar tres informes antes de empezar a capturar pantallas:
 
 ![Semáforos en la lista](img/08-semaforos.png)
 
-**Cómo se logra:** campo calculado `StatusCriticality` en la vista CDS (`case` sobre el estado) y la anotación `criticality` en `@UI.lineItem` y `@UI.fieldGroup`.
+**Cómo se logra:** 
+
+campo calculado `StatusCriticality` en la vista CDS (`case` sobre el estado) y la anotación `criticality` en `@UI.lineItem` y `@UI.fieldGroup`.
 
 ---
 
