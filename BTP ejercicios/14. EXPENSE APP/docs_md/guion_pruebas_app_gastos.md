@@ -42,6 +42,7 @@ Informe (Header, root)
 ```
 
 - Composición de tres niveles, con borrado en cascada.
+
 - Estados del informe: `OPEN → SENT → APPROVED / REJECTED` (REJECTED es estado final).
 
 | Estado | Editar / Borrar | Enviar | Aprobar | Rechazar |
@@ -74,14 +75,11 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | **4** | REJECTED | Muestra el motivo de rechazo en la Object Page |
 | **Nuevo (5)** | OPEN → SENT | Escenarios 1 a 5, y después aprobación en el 7 |
 
-> Las capturas se guardan en la carpeta `img/` con el nombre indicado en cada escenario.
 
 ---|---|---|
 | **A** | Escenarios 1 a 5 | OPEN |
 | **B** | Escenarios 6 y 7 (aprobación) | APPROVED |
 | **C** | Escenario 7 (rechazo) | REJECTED |
-
-> Las capturas se guardan en la carpeta `img/` con el nombre indicado en cada escenario.
 
 ---
 
@@ -114,7 +112,13 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | **Resultado esperado** | Informe creado con ID asignado, estado `OPEN` y moneda `EUR` |
 | **Resultado obtenido** | ☐ OK  ☐ KO |
 
-![Creación del informe](img/01-creacion.png)
+Valores a Rellenar
+
+![Creación del informe](../img/01-creacion.png)
+
+Informe creado
+
+![Creación del informe](../img/01-creacion_DISPLAY.png)
 
 **Cómo se logra:** *early numbering* para el ID y una *determination* `on modify { create; }` que informa estado y moneda. Los campos se declaran `readonly` en el BDEF para que el usuario no pueda modificarlos.
 
@@ -130,7 +134,7 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | **Resultado esperado** | Mensaje de error, campo *Importe* resaltado en rojo, no se guarda |
 | **Resultado obtenido** | ☐ OK  ☐ KO |
 
-![Error de importe](img/02-importe.png)
+![Error de importe](../img/02-importe.png)
 
 **Cómo se logra:** *validation* `on save` en el item. Marca la instancia en `failed` (impide el guardado) y publica el mensaje en `reported` con `%element-amount` para resaltar el campo.
 
@@ -146,7 +150,7 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | **Resultado esperado** | Error indicando que se supera el límite de 150 € |
 | **Resultado obtenido** | ☐ OK  ☐ KO |
 
-![Límite de hotel](img/03-hotel.png)
+![Límite de hotel](../img/03-hotel.png)
 
 **Cómo se logra:** validación que lee `expense_type` y `amount`. Un *error* usa `failed` + `reported`; un *warning* usaría solo `reported`.
 
@@ -162,7 +166,7 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | **Resultado esperado** | El total coincide con la suma y se actualiza sin recargar |
 | **Resultado obtenido** | ☐ OK  ☐ KO |
 
-![Total calculado](img/04-total.png)
+![Total calculado](../img/04-total.png)
 
 **Cómo se logra:** *determination* en el item que recalcula el total del header y *side effect* `field amount affects field _Header.total_amount` para refrescar la interfaz.
 
@@ -173,19 +177,21 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | | |
 |---|---|
 | **Objetivo** | Comprobar que la acción valida varias entidades antes de cambiar de estado |
-| **Precondición** | Informe nuevo (nº 5) en estado OPEN |
+| **Precondición** | Informe (nº 3) en estado OPEN |
 
 | Caso | Situación | Resultado esperado |
 |---|---|---|
 | 5a | Informe sin gastos | Error: el informe no tiene gastos |
-| 5b | Gasto de 80 € sin adjunto | Error: 1 gasto de más de 50 € sin recibo |
-| 5c | Gasto de 80 € con adjunto | El informe pasa a `SENT` |
+| 5b | Gasto de 140 € sin adjunto | Error: 1 gasto de más de 50 € sin recibo |
+| 5c | Gasto de 140 € con adjunto | El informe pasa a `SENT` |
 
 **Resultado obtenido:** ☐ 5a OK  ☐ 5b OK  ☐ 5c OK
 
-![Enviar sin gastos](img/05a-enviar-sin-gastos.png)
-![Enviar sin recibo](img/05b-enviar-sin-recibo.png)
-![Enviar correcto](img/05c-enviar-ok.png)
+![Enviar sin gastos](../img/05a-enviar-sin-gastos.png)
+
+![Enviar sin recibo](../img/05b-enviar-sin-recibo.png)
+
+![Enviar correcto](../img/05c-enviar-ok.png)
 
 **Cómo se logra:** acción `send` con `features : instance`. Lee los gastos con `READ ENTITIES ... BY \_Items` y sus adjuntos con `BY \_Attachments ... LINK`. Si alguna precondición falla, devuelve `failed` + `reported` y no modifica el estado.
 
@@ -203,8 +209,9 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | **Resultado esperado** | Botones *Editar*, *Eliminar* y *Crear* deshabilitados en los tres niveles; la navegación sigue disponible |
 | **Resultado obtenido** | ☐ OK  ☐ KO |
 
-![Informe bloqueado](img/06a-bloqueo-header.png)
-![Gasto bloqueado](img/06b-bloqueo-item.png)
+![Informe bloqueado](../img/06a-bloqueo-header.png)
+
+![Gasto bloqueado](../img/06b-bloqueo-item.png)
 
 **Cómo se logra:** `update ( features : instance )`, `delete ( features : instance )` y `create ( features : instance )` en la asociación. En `get_instance_features`, el item y el adjunto consultan el estado **del header** navegando con `BY \_Header`. Es un control de backend, no solo visual: una llamada por API también se rechaza.
 
@@ -219,15 +226,16 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 
 | Caso | Pasos | Resultado esperado |
 |---|---|---|
-| 7a | Rechazar el informe 2 con motivo corto (`mal`) | Error: motivo demasiado corto, sigue en SENT |
-| 7b | Rechazar el informe 2 con motivo válido | Pasa a `REJECTED`, el motivo se muestra en la Object Page |
-| 7c | Aprobar el informe nuevo | Pasa a `APPROVED` |
+| 7a | Rechazar el informe 2 con motivo válido | Pasa a `REJECTED`, el motivo se muestra en la Object Page |
+| 7b | Aprobar el informe nuevo | Pasa a `APPROVED` |
 
 **Resultado obtenido:** ☐ 7a OK  ☐ 7b OK  ☐ 7c OK
 
-![Diálogo de rechazo](img/07a-dialogo-rechazo.png)
-![Informe rechazado](img/07b-rechazado.png)
-![Informe aprobado](img/07c-aprobado.png)
+![Diálogo de rechazo](../img/07b-rechazado.png)
+
+![Diálogo de rechazo](../img/07b-rechazado_DISPLAY.png)
+
+![Informe aprobado](../img/07c-aprobado.png)
 
 **Cómo se logra:** acciones `approve` y `reject` habilitadas solo en SENT mediante feature control. `reject` recibe su parámetro a través de una *abstract entity* (`ZA_EXP_REJECT_PARAM`) y persiste el motivo en un campo propio de solo lectura.
 
@@ -243,7 +251,7 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | **Resultado esperado** | OPEN neutro, SENT amarillo, APPROVED verde, REJECTED rojo |
 | **Resultado obtenido** | ☐ OK  ☐ KO |
 
-![Semáforos en la lista](img/08-semaforos.png)
+![Semáforos en la lista](../img/08-semaforos.png)
 
 **Cómo se logra:** campo calculado `StatusCriticality` en la vista CDS (`case` sobre el estado) y la anotación `criticality` en `@UI.lineItem` y `@UI.fieldGroup`.
 
