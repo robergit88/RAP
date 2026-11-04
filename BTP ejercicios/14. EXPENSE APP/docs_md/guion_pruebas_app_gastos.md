@@ -75,12 +75,6 @@ Se reutilizan los cuatro informes que ya existían y se crea uno nuevo para los 
 | **4** | REJECTED | Muestra el motivo de rechazo en la Object Page |
 | **Nuevo (5)** | OPEN → SENT | Escenarios 1 a 5, y después aprobación en el 7 |
 
-
-|---|---|---|
-| **A** | Escenarios 1 a 5 | OPEN |
-| **B** | Escenarios 6 y 7 (aprobación) | APPROVED |
-| **C** | Escenario 7 (rechazo) | REJECTED |
-
 ---
 
 ## 5. Escenarios de prueba
