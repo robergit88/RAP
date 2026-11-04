@@ -596,9 +596,8 @@ define root view entity ZVH_ITEM_STATUS
 ### 6.5 `ZA_EXP_REJECT_PARAM`
 
 <details>
-<summary>
-Define Abstract Entity. Un tipo estructurado de CDS que solo describe datos, sin tabla ni selección
-</summary>
+<summary>Define Abstract Entity. Un tipo estructurado de CDS que solo describe datos, sin tabla ni selección</summary>
+
 ```abap
 @EndUserText.label: 'Reject Parameter CDS'
 define abstract entity ZA_EXP_REJECT_PARAM
@@ -607,6 +606,7 @@ define abstract entity ZA_EXP_REJECT_PARAM
   reason : abap.char(255);
 }
 ```
+
 </details>
 
 ## 7. Capa de consumo CDS
