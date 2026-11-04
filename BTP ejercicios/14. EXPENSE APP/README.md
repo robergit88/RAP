@@ -1,28 +1,66 @@
-# Aplicación de Liquidación de Gastos - RAP Managed OData V2 - ZEXPENSE
+# Aplicación de Liquidación de Gastos · RAP Managed · OData V2
 
-### ¿Por qué Managed?
+Aplicación transaccional de **informes de gastos** desarrollada en **ABAP Environment (SAP BTP)** con el modelo de programación **RAP** y **Fiori Elements**. Un empleado crea un informe, le añade gastos con sus justificantes y lo envía; un responsable lo aprueba o lo rechaza.
 
-Para la Expense App elegimos **RAP `Managed` sin Draft** frente a `Unmanaged` por 2 motivos:
+El objetivo es práctico y didáctico: recorrer un ciclo de vida completo con reglas de negocio reales, desde el modelo de datos hasta la interfaz.
 
-1.  **Menos código, más framework:** 
+![Lista de informes con semáforos de estado](img/08-semaforos.png)
 
-En `Unmanaged` tendríamos que programar a mano todos los `INSERT/UPDATE/DELETE` de `ZEXPENSE_HEADER`, `ZEXPENSE_ITEM` y `ZITEM_ATTACHMENT`. Con `Managed` RAP gestiona la persistencia, el bloqueo.
+## Qué demuestra
 
-2.  **Numeración automática sin inventar claves:**
+- Business object **managed** con composición de tres niveles: Informe → Gasto → Adjunto.
+- **Numeración temprana** de claves sin objeto de rango de números.
+- **Determinations** para valores por defecto y cálculo automático del total.
+- **Validaciones** de negocio: importe positivo y límite de gasto de hotel.
+- **Acciones de flujo** (enviar, aprobar, rechazar), una de ellas con parámetro.
+- **Feature control por instancia**: un informe enviado se puede consultar, pero no modificar.
+- **Side effects** para refrescar la interfaz sin recargar.
+- **Criticality**: semáforos de estado en la lista.
+- **Value helps** y asociaciones a objetos estándar (`/DMO/CUSTOMER`).
+- Subida y visualización de ficheros con `@Semantics.largeObject`.
 
-Nuestra clave `report_id` (CHAR 10) no es UUID. Con `Managed` implementamos `early_numbering` con lógica `MAX + 1`, de forma que el sistema propone `0000000001`, `0000000002`... sin que el desarrollador tenga que inventar la clave en el UI. Sin `Number Range Object`, ideal para entorno BTP didáctico.
+## ¿Por qué Managed?
 
-## 1. Resumen Caso de Uso
+Para la Expense App se eligió **RAP `Managed` sin Draft** frente a `Unmanaged` por dos motivos:
 
-**Actor:** Empleado viajero.
+1. **Menos código, más framework.** En `Unmanaged` habría que programar a mano todos los `INSERT/UPDATE/DELETE` de `ZEXPENSE_HEADER`, `ZEXPENSE_ITEM` y `ZITEM_ATTACHMENT`. Con `Managed`, RAP gestiona la persistencia y el bloqueo, y el código propio se limita a las reglas de negocio.
 
-**Flujo:** Crea carpeta (HEADER) -> carga tickets (ITEM) -> adjunta foto (ATTACHMENT) -> Envía -> Manager Aprueba/Rechaza.
+2. **Numeración automática sin inventar claves.** La clave `report_id` (CHAR 10) no es UUID. Con `Managed` se implementa `early numbering` con lógica `MAX + 1`, de forma que el sistema asigna `0000000001`, `0000000002`... sin que el usuario tenga que inventar la clave. No se usa `Number Range Object`: es ideal para un entorno BTP didáctico.
 
-**Tipo:** Aplicación transaccional Fiori Elements sin draft, Validaciones y Upload.
+## 1. Caso de uso
 
-**Arquitectura:** Fiori Elements sobre OData V2 RAP Managed (NO Web API manual). Stack: Tablas Z -> CDS Interface ZI_ -> CDS Projection ZC_ -> Behavior -> Service Definition -> Service Binding.
+**Actor:** empleado viajero y responsable.
 
-## 2. Esquema Gráfico de Tablas
+**Flujo:** crea el informe (HEADER) → añade gastos (ITEM) → adjunta el justificante (ATTACHMENT) → envía → el responsable aprueba o rechaza.
+
+**Tipo:** aplicación transaccional Fiori Elements, sin draft.
+
+**Arquitectura:** Fiori Elements sobre OData V2 y RAP Managed (no es una Web API manual).
+
+```
+Tablas Z → 
+CDS de interfaz (ZI_) → 
+CDS de consumo (ZC_) → 
+Behavior → 
+Service Definition → 
+Service Binding
+```
+
+### Ciclo de vida del informe
+
+```mermaid
+stateDiagram-v2
+    [*] --> OPEN : crear
+    OPEN --> SENT : enviar
+    SENT --> APPROVED : aprobar
+    SENT --> REJECTED : rechazar
+    APPROVED --> [*]
+    REJECTED --> [*]
+```
+
+Solo en estado `OPEN` se puede editar. `APPROVED` y `REJECTED` son estados finales.
+
+## 2. Esquema de tablas
 
 ```mermaid
 classDiagram
@@ -36,831 +74,73 @@ classDiagram
     ZITEM_ATTACHMENT ..> ZMIME_TYPE
 ```
 
-## 3. Diccionario de Objetos - Nombres Auto-explicativos
+## 3. Documentación
 
-### Tablas Auxiliares (Maestras)
-| Tabla | Descripción Auto-explicativa |
-| :--- | :--- |
-| **ZEXPENSE_TYPE** | Catálogo de tipos de gasto. Define límites y si requiere factura. |
-| **ZHEADER_STATUS** | Catálogo de estados de la carpeta/cabecera. Controla edición y semáforos. |
-| **ZITEM_STATUS** | Catálogo de estados del ticket individual. |
-| **ZMIME_TYPE** | Catálogo de tipos de archivo permitidos para upload. |
+| Documento | Contenido |
+|---|---|
+| [02 · Modelo de datos](/docs_md/02-modelo-datos.md) | Tablas, catálogos, datos auxiliares, vistas CDS de interfaz y de consumo, asociaciones |
+| [03 · Metadata extensions](/docs_md/03-metadata-extensions.md) | Anotaciones de interfaz: columnas, formularios, botones, semáforos |
+| [04 · Comportamiento](/docs_md/04-comportamiento.md) | Behavior definitions, validaciones, acciones, feature control, side effects |
+| [05 · Guion de pruebas](/docs_md/05-guion-pruebas.md) | Escenarios de prueba con capturas y explicación de cómo se logra cada uno |
+| [Despliegue en ABAP Environment](./OTHERS/despliegue_app_rap_abap_trial.md) | Despliegue de la app en una cuenta Trial |
 
-### Tablas Transaccionales
-| Tabla | Descripción Auto-explicativa |
-| :--- | :--- |
-| **ZEXPENSE_HEADER** | Cabecera del reporte de gastos. ROOT. Reusa /DMO/CUSTOMER como solicitante. |
-| **ZEXPENSE_ITEM** | Item / línea del reporte. CHILD de HEADER. |
-| **ZITEM_ATTACHMENT** | Adjunto binario del ticket. CHILD de ITEM. |
+El código de las clases de implementación (
+`zbp_zi_exp_header`, 
 
-## 4. Plan Didáctico - 10 Funcionalidades RAP
+`zbp_zi_exp_itemm`, 
 
-1. Value Help (F4 de TYPE y de /DMO/CUSTOMER)
-2. Validation (Límite hotel, mime no permitido)
-3. Determination (Total header = suma items)
-4. Side Effect (Pasar a SENT bloquea edición)
-5. Action (Enviar, Aprobar, Rechazar)
-6. Composition / Borrado en cascada
-7. Criticality (Semáforos verde/rojo)
-8. Association a DMO
-9. Upload / Display de fichero con @Semantics.largeObject
-10. Mensajes Error/Warning/Info con longtext
+`zbp_zi_exp_attach`) 
 
-## 5. Valores Didácticos
+está en la carpeta [`src/`](./src/).
 
-**ZEXPENSE_TYPE:** HOTEL (300,X), TAXI (100,''), MEAL (60,X), KM (0,'')
+## 4. Plan didáctico: 10 funcionalidades RAP
 
-**ZHEADER_STATUS:** OPEN (X), SENT (''), APPROVED (''), REJECTED (X)
+| # | Funcionalidad | Estado | Detalle |
+|---|---|---|---|
+| 1 | Value Help | ✅ | Tipo de gasto, cliente (`/DMO/CUSTOMER`), estados |
+| 2 | Validation | ✅ | Importe y límite de hotel hechas. Tipo de fichero (mime) pendiente |
+| 3 | Determination | ✅ | Total del informe = suma de los gastos |
+| 4 | Side Effect y bloqueo | ✅ | Al pasar a `SENT` se bloquea la edición |
+| 5 | Action | ✅ | Enviar, aprobar y rechazar (con motivo) |
+| 6 | Composition | ✅ | Borrado en cascada de gastos y adjuntos |
+| 7 | Criticality | ✅ | Semáforos de estado |
+| 8 | Association | ✅ | Asociación a `/DMO/CUSTOMER` |
+| 9 | Upload / Display | ✅ | Ficheros con `@Semantics.largeObject` |
+| 10 | Mensajes | ⏳ | Pendiente: clase de mensajes con texto largo |
 
-**ZITEM_STATUS:** VALID, PENDING, OBSERVED
+## 5. Limitaciones y próximos pasos
 
-**ZMIME_TYPE:** application/pdf, image/jpeg
+**Limitaciones conocidas**
+- Sin `draft`: los datos se guardan al instante. Por eso el cargador de ficheros aparece después de crear el registro del adjunto: Fiori Elements primero crea el registro (que da la clave) y después sube el contenido. Con draft, el botón estaría disponible desde el principio.
+- Autorización global: cualquier usuario con el rol puede crear, enviar y aprobar.
+- Límite de hotel fijo en el código, en lugar de leído del catálogo de tipos de gasto.
+- Mensajes con texto directo, sin clase de mensajes.
 
-## 6. I18N - Internacionalización
-- CDS Labels: Data Elements ZEXPENSE_DE_* traducidos con SE63
-- Mensajes: Message Class ZEXPENSE_MSG traducida EN/ES
-- Frontend: webapp/i18n/i18n.properties y i18n_es.properties
+**Próximos pasos**
+1. Tablas de customizing para los límites de gasto.
+2. Web API OData sobre el mismo business object.
+3. Draft.
+4. Autorizaciones por instancia y por rol.
+5. Pruebas unitarias con ABAP Unit.
 
-## 7. DDL - Código de Creación
+## 6. Despliegue en ABAP
 
-### ZEXPENSE_TYPE
-Tipos de gasto. Define límites y si requiere factura
-```abap
-@EndUserText.label : 'Tipos de gasto. Define límites y si requiere factura'
-@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
-@AbapCatalog.tableCategory : #TRANSPARENT
-@AbapCatalog.deliveryClass : #A
-@AbapCatalog.dataMaintenance : #RESTRICTED
-define table zexpense_type {
+Se realiza un trabajo adicional para desplegar la app en el entorno `ABAP Environment`, en una cuenta `Trial`. Los pasos están en [Desplegando la App](./OTHERS/despliegue_app_rap_abap_trial.md).
 
-  key client       : abap.clnt not null;
-  key type_id      : abap.char(10) not null;
-  description      : abap.char(40);
-  @Semantics.amount.currencyCode : 'zexpense_type.currency_code'
-  limit_amount     : abap.curr(10,2);
-  requires_invoice : abap.char(1);
-  currency_code    : abap.cuky;
-
-}
-```
-
-### ZHEADER_STATUS
-```abap
-@EndUserText.label : 'Catálogo de estados de cabecera'
-@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
-@AbapCatalog.tableCategory : #TRANSPARENT
-@AbapCatalog.deliveryClass : #A
-@AbapCatalog.dataMaintenance : #RESTRICTED
-define table zheader_status {
-
-  key client    : abap.clnt not null;
-  key status_id : abap.char(10) not null;
-  description   : abap.char(40);
-  allow_edit    : abap.char(1);
-  criticality   : abap.int1;
-
-}
-```
-
-### ZITEM_STATUS
-```abap
-@EndUserText.label : 'Catálogo de estados del ticket individual'
-@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
-@AbapCatalog.tableCategory : #TRANSPARENT
-@AbapCatalog.deliveryClass : #A
-@AbapCatalog.dataMaintenance : #RESTRICTED
-define table zitem_status {
-
-  key client    : abap.clnt not null;
-  key status_id : abap.char(10) not null;
-  description   : abap.char(40);
-
-}
-```
-
-### ZMIME_TYPE
-```abap
-@EndUserText.label : 'Catálogo de tipos de archivo permitidos para upload'
-@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
-@AbapCatalog.tableCategory : #TRANSPARENT
-@AbapCatalog.deliveryClass : #A
-@AbapCatalog.dataMaintenance : #RESTRICTED
-define table zmime_type {
-
-  key client    : abap.clnt not null;
-  key mime_type : abap.char(30) not null;
-  extension     : abap.char(10);
-  description   : abap.char(40);
-
-}
-```
-
-### ZEXPENSE_HEADER
-```abap
-@EndUserText.label : 'Cabecera del reporte de gastos'
-@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
-@AbapCatalog.tableCategory : #TRANSPARENT
-@AbapCatalog.deliveryClass : #A
-@AbapCatalog.dataMaintenance : #RESTRICTED
-define table zexpense_header {
-
-  key client      : abap.clnt not null;
-  key report_id   : abap.char(10) not null;
-  customer_id     : abap.char(10) not null;
-  report_date     : abap.dats;
-  reason          : abap.char(100);
-  @Semantics.amount.currencyCode : 'zexpense_header.currency_code'
-  total_amount    : abap.curr(15,2);
-  currency_code   : abap.cuky;
-  header_status   : abap.char(10) not null;
-  created_by      : abp_creation_user;
-  created_at      : abp_creation_tstmpl;
-  last_changed_by : abp_locinst_lastchange_user;
-  last_changed_at : abp_locinst_lastchange_tstmpl;
-
-}
-```
-
-### ZEXPENSE_ITEM
-```abap
-@EndUserText.label : 'Item de gastos por reporte. Child'
-@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
-@AbapCatalog.tableCategory : #TRANSPARENT
-@AbapCatalog.deliveryClass : #A
-@AbapCatalog.dataMaintenance : #RESTRICTED
-define table zexpense_item {
-
-  key client      : abap.clnt not null;
-  key report_id   : abap.char(10) not null;
-  key item_id     : abap.char(6) not null;
-  expense_type    : abap.char(10) not null;
-  item_status     : abap.char(10) not null;
-  expense_date    : abap.dats;
-  @Semantics.amount.currencyCode : 'zexpense_item.currency_code'
-  amount          : abap.curr(10,2);
-  currency_code   : abap.cuky;
-  vendor          : abap.char(40);
-  last_changed_at : abp_locinst_lastchange_tstmpl;
-
-}
-```
-
-### ZITEM_ATTACHMENT
-```abap
-@EndUserText.label : 'Adjunto binario del ticket. CHILD de ITEM'
-@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
-@AbapCatalog.tableCategory : #TRANSPARENT
-@AbapCatalog.deliveryClass : #A
-@AbapCatalog.dataMaintenance : #RESTRICTED
-define table zitem_attachment {
-
-  key client      : abap.clnt not null;
-  key report_id   : abap.char(10) not null;
-  key item_id     : abap.char(6) not null;
-  key attach_id   : abap.char(6) not null;
-  file_name       : abap.char(100);
-  mime_type       : abap.char(30);
-  description     : abap.char(128);
-  file_content    : abap.rawstring(0);
-  last_changed_at : abp_locinst_lastchange_tstmpl;
-
-}
-```
-
-## 8. Clase Z de Carga
-
-```abap
-CLASS zcl_expense_aux_data_load DEFINITION PUBLIC FINAL CREATE PUBLIC.
-  PUBLIC SECTION. INTERFACES if_oo_adt_classrun.
-ENDCLASS.
-CLASS zcl_expense_aux_data_load IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-    DELETE FROM ZEXPENSE_TYPE.
-    INSERT ZEXPENSE_TYPE FROM TABLE @( VALUE #(
-      ( client = '100' type_id = 'HOTEL' description = 'Hotel' limit_amount = '300' requires_invoice = 'X' currency_code = 'EUR' )
-      ( client = '100' type_id = 'TAXI' description = 'Taxi / Uber' limit_amount = '100' requires_invoice = '' currency_code = 'EUR' )
-      ( client = '100' type_id = 'MEAL' description = 'Comida' limit_amount = '60' requires_invoice = 'X' currency_code = 'EUR' )
-      ( client = '100' type_id = 'KM' description = 'Kilometraje' limit_amount = '0' requires_invoice = '' currency_code = 'EUR' )
-    ) ).
-    DELETE FROM ZHEADER_STATUS.
-    INSERT ZHEADER_STATUS FROM TABLE @( VALUE #(
-      ( client = '100' status_id = 'OPEN' description = 'Abierta' allow_edit = 'X' criticality = 0 )
-      ( client = '100' status_id = 'SENT' description = 'Enviada' allow_edit = '' criticality = 2 )
-      ( client = '100' status_id = 'APPROVED' description = 'Aprobada' allow_edit = '' criticality = 3 )
-      ( client = '100' status_id = 'REJECTED' description = 'Rechazada' allow_edit = 'X' criticality = 1 )
-    ) ).
-    DELETE FROM ZITEM_STATUS.
-    INSERT ZITEM_STATUS FROM TABLE @( VALUE #(
-      ( client = '100' status_id = 'VALID' description = 'Valido' )
-      ( client = '100' status_id = 'PENDING' description = 'Pendiente Factura' )
-      ( client = '100' status_id = 'OBSERVED' description = 'Observado' )
-    ) ).
-    DELETE FROM ZMIME_TYPE.
-    INSERT ZMIME_TYPE FROM TABLE @( VALUE #(
-      ( client = '100' mime_type = 'application/pdf' extension = 'PDF' description = 'PDF Document' )
-      ( client = '100' mime_type = 'image/jpeg' extension = 'JPG' description = 'JPEG Image' )
-    ) ).
-    out->write( 'Datos auxiliares cargados correctamente' ).
-  ENDMETHOD.
-ENDCLASS.
-```
-
-## 9. CDS Interfaces - Modelo de Datos
-
-| Nombre CDS | Origen | Descripción |
-| :--- | :--- | :--- |
-| [`ZI_EXP_HEADER`](#zi_exp_header) | `ZEXPENSE_HEADER` | Root - Cabecera de la liquidación de gastos |
-| [`ZI_EXP_ITEM`](#zi_exp_item)| `ZEXPENSE_ITEM` | Child - Líneas de gasto (hotel, taxi, etc.) |
-| [`ZI_EXP_ATTACH`](#zi_exp_attach) | `ZITEM_ATTACHMENT` | Grandchild - Adjuntos y justificantes del gasto |
-| [`ZVH_EXPENSE_TYPE`](#zvh_expense_type) | `ZEXPENSE_TYPE` | Value Help - Tipos de gasto |
-| [`ZVH_HEADER_STATUS`](#zvh_header_status) | `ZHEADER_STATUS` | Value Help - Estados de carpeta de gastos |
-| [`ZVH_MIME_TYPE`](#zvh_mime_type) | `ZMIME_TYPE` | Value Help - Tipos MIME para upload |
-| [`ZVH_ITEM_STATUS`](#zvh_item_status) | `ZITEM_STATUS` | Value Help - Estados de ticket individual |
-
-# ZI_EXP_HEADER
-```ABAP
-@AbapCatalog.viewEnhancementCategory: [ #NONE ]
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'Interface - Expense Header'
-@Metadata.ignorePropagatedAnnotations: true
-
-define root view entity ZI_EXP_HEADER
-  as select from zexpense_header as Header
-
-  composition [0..*] of ZI_EXP_ITEMM    as _Items
-  association [0..1] to /DMO/I_Customer as _Customer on $projection.customer_id = _Customer.CustomerID
-  association [0..1] to I_Currency      as _Currency on $projection.currency_code = _Currency.Currency
-
-{
-  key Header.report_id,
-      Header.customer_id,
-
-      Header.report_date,
-      Header.reason,
-      Header.header_status,
-      @Semantics.amount.currencyCode: 'currency_code'
-      Header.total_amount,
-      Header.currency_code,
-
-      @Semantics.user.createdBy: true
-      Header.created_by,
-
-      @Semantics.systemDateTime.createdAt: true
-      Header.created_at,
-      
-      @Semantics.user.lastChangedBy: true
-      Header.last_changed_by,
-
-      @Semantics.systemDateTime.lastChangedAt: true
-      Header.last_changed_at,
-
-      /* Associations */
-      _Items,
-      _Customer,
-      _Currency
-
-}
+## Estructura del repositorio
 
 ```
-
-# ZI_EXP_ITEM
-```ABAP
-//@AbapCatalog.viewEnhancementCategory: [#NONE]
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-
-@EndUserText.label: 'Interface - Expense Item'
-
-@Metadata.ignorePropagatedAnnotations: true
-
-define view entity ZI_EXP_ITEMM
-  as select from zexpense_item as Item
-
-  association to parent ZI_EXP_HEADER as _Header on $projection.report_id = _Header.report_id
-  association [0..1]    to        ZVH_ITEM_STATUS  as _ItemStatus  on $projection.item_status = _ItemStatus.ItemStatus
-  association [0..1]    to        ZVH_EXPENSE_TYPE as _ExpenseType on $projection.expense_type = _ExpenseType.type_id
-  composition [0..*] of ZI_EXP_ATTACH as _Attachments
-
-{
-  key Item.report_id,
-  key Item.item_id,
-
-      Item.expense_type,
-      Item.item_status,
-      Item.vendor,
-      Item.expense_date,
-
-      @Semantics.amount.currencyCode: 'currency_code'
-      Item.amount,
-      Item.currency_code,
-
-      @Semantics.systemDateTime.localInstanceLastChangedAt: true
-      Item.last_changed_at,
-
-      /* Associations */
-      _Header,
-      _ItemStatus,
-      _ExpenseType,
-      _Attachments
-}
-
+README.md
+docs/
+  02-modelo-datos.md
+  03-metadata-extensions.md
+  04-comportamiento.md
+  05-guion-pruebas.md
+  img/
+src/
+  zbp_zi_exp_header.abap
+  zbp_zi_exp_itemm.abap
+  zbp_zi_exp_attach.abap
+OTHERS/
+  despliegue_app_rap_abap_trial.md
 ```
-
-# ZI_EXP_ATTACH
-```ABAP
-//@AbapCatalog.viewEnhancementCategory: [#NONE]
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'Interface - Expense Attachment'
-@Metadata.ignorePropagatedAnnotations: true
-
-define view entity ZI_EXP_ATTACH
-  as select from zitem_attachment as Attach
-
-  association        to parent ZI_EXP_ITEMM  as _Item
-    on  $projection.report_id = _Item.report_id
-    and $projection.item_id   = _Item.item_id
-
-  association [1..1] to        ZI_EXP_HEADER as _Header
-    on $projection.report_id = _Header.report_id
-
-{
-  key Attach.report_id,
-  key Attach.item_id,
-  key Attach.attach_id,
-
-      Attach.file_name,
-     @Semantics.mimeType: true      
-      Attach.mime_type,
-      Attach.description,
-      Attach.file_content,
-
-      @Semantics.systemDateTime.localInstanceLastChangedAt: true
-      Attach.last_changed_at,
-
-      /* Associations */
-      _Header,
-      _Item
-}
-
-```
-
-# ZVH_EXPENSE_TYPE
-```ABAP
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'Value Help - Tipos de gasto'
-@Metadata.ignorePropagatedAnnotations: true
-
-define root view entity ZVH_EXPENSE_TYPE
-  as select from zexpense_type
-{
-  key type_id,
-      description
-}
-
-```
-# ZVH_HEADER_STATUS
-```ABAP
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'Value Help - Estados de carpeta de gastos'
-@Metadata.ignorePropagatedAnnotations: true
-define root view entity ZVH_HEADER_STATUS
- as select from zheader_status
-{
-    key status_id as HeaderStatus,
-    description as Description
-}
-
-```
-
-# ZVH_MIME_TYPE
-```ABAP
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'Value Help - Tipos MIME para upload'
-@Metadata.ignorePropagatedAnnotations: true
-define root view entity ZVH_MIME_TYPE
- as select from zmime_type
-{
-    key mime_type as MimeType,
-    description as Description
-}
-```
-
-# ZVH_ITEM_STATUS
-```ABAP
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'Value Help - Estados del ticket de individual'
-@Metadata.ignorePropagatedAnnotations: true
-define root view entity ZVH_ITEM_STATUS 
-as select from zitem_status
-{
-    key status_id as ItemStatus,
-    description as Description
-}
-```
-## 10. CDS Consumo - Modelo de Datos
-
-| Nombre CDS | Origen | Descripción |
-| :--- | :--- | :--- |
-| [`ZC_EXP_HEADER`](#zc_exp_header) | `ZI_EXP_HEADER` | Root - Cabecera de la liquidación de gastos |
-| [`ZC_EXP_ITEMM`](#zc_exp_itemm)| `ZI_EXP_ITEMM` | Child - Líneas de gasto (hotel, taxi, etc.) |
-| [`ZC_EXP_ATTACH`](#zc_exp_attach) | `ZI_EXP_ATTACH` | Grandchild - Adjuntos y justificantes del gasto |
-
-
-# ZC_EXP_HEADER
-```ABAP
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'Consumption - Expense Header'
-@Metadata.allowExtensions: true
-@Metadata.ignorePropagatedAnnotations: true
-
-define root view entity ZC_EXP_HEADER
-provider contract transactional_query
-  as projection on ZI_EXP_HEADER
-
-{
-  key report_id       as ReportId,
-
-      @Consumption.valueHelpDefinition: [ { 
-      entity: { name: '/DMO/I_Customer_StdVH', element: 'CustomerID' } } ]
-      customer_id     as CustomerID,
-      report_date     as ReportDate,
-      reason          as Reason,
-
-      @Consumption.valueHelpDefinition: [ { 
-      entity: { name: 'ZVH_HEADER_STATUS', element: 'HeaderStatus' } } ]      
-      header_status   as HeaderStatus,
-
-      @Semantics.amount.currencyCode: 'CurrencyCode'
-      total_amount    as TotalAmount,
-
-      currency_code   as CurrencyCode,
-      created_by      as CreatedBy,
-      created_at      as CreatedAt,
-      last_changed_by as LastChangedBy,
-      last_changed_at as LastChangedAt,
-
-      /* Associations */
-      _Items : redirected to composition child ZC_EXP_ITEMM,
-
-      _Customer,
-      _Currency
-}
-```
-
-# ZC_EXP_ITEMM
-```ABAP
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-@EndUserText.label: 'Consumption - Expense Item'
-@Metadata.ignorePropagatedAnnotations: true
-@Metadata.allowExtensions: true
-define view entity ZC_EXP_ITEMM
-  as projection on ZI_EXP_ITEMM
-
-{
-  key report_id       as ReportId,
-  key item_id         as ItemId,
-
-      @Consumption.valueHelpDefinition: [{
-      entity: { name: 'ZVH_EXPENSE_TYPE', element: 'type_id' } } ]
-      expense_type    as ExpenseType,
-
-      @Consumption.valueHelpDefinition: [ {
-      entity: { name: 'ZVH_ITEM_STATUS', element: 'ItemStatus' } } ]
-      item_status     as ItemStatus,
-      vendor          as Vendor,
-      expense_date    as ExpenseDate,
-
-      @Semantics.amount.currencyCode: 'CurrencyCode'
-      amount          as Amount,
-
-      currency_code   as CurrencyCode,
-      last_changed_at as LastChangedAt,
-
-      /* Associations */
-      _Header      : redirected to parent ZC_EXP_HEADER,
-      _ItemStatus,
-      _ExpenseType,
-      _Attachments : redirected to composition child ZC_EXP_ATTACH
-}
-
-```
-
-# ZC_EXP_ATTACH
-```ABAP
-@AccessControl.authorizationCheck: #NOT_REQUIRED
-
-@EndUserText.label: 'Consumption - Expense Attachment'
-
-@Metadata.allowExtensions: true
-//@Metadata.ignorePropagatedAnnotations: true
-
-define view entity ZC_EXP_ATTACH
-  as projection on ZI_EXP_ATTACH
-
-{
-  key report_id       as ReportId,
-  key item_id         as ItemId,
-  key attach_id       as AttachId,
-      file_name       as FileName,
-      mime_type       as MimeType,
-      description     as Description,
-      @Semantics.largeObject: { 
-      mimeType: 'MimeType', 
-      fileName: 'FileName', 
-      contentDispositionPreference: #INLINE }      
-      file_content    as AttachmentContent,
-      last_changed_at as LastChangedAt,
-
-      /* Associations */
-      _Header : redirected to ZC_EXP_HEADER,
-      _Item   : redirected to parent ZC_EXP_ITEMM
-}
-
-```
-
-## 11. Metadata Extensions - Consumptions CDS Based
-
-* **`@UI.lineItem`** -> **List Report** (la tabla de entrada de la app)
-  Es lo que define las columnas que ves en la tabla principal. Su label es el header de la columna.
-
-* **`@UI.fieldGroup`** -> **Object Page** (cuando entras a un registro)
-  Aplica para creación, edición y visualización a nivel de registro. Su label es el label que sale encima del campo en el formulario.
-
-| Nombre CDS | Origen | Descripción |
-| :--- | :--- | :--- |
-| [`ZC_EXP_HEADER`](#zc_exp_header) | `ZC_EXP_HEADER` | Root - Cabecera de la liquidación de gastos |
-| [`ZC_EXP_ITEMM`](#zc_exp_itemm)| `ZC_EXP_ITEMM` | Child - Líneas de gasto (hotel, taxi, etc.) |
-| [`ZC_EXP_ATTACH`](#zc_exp_attach) | `ZC_EXP_ATTACH` | Grandchild - Adjuntos y justificantes del gasto |
-
-# ZC_EXP_HEADER
-```ABAP
-@Metadata.layer: #CUSTOMER
-
-@UI.headerInfo: { typeName: 'Expense Report', 
-                  typeNamePlural: 'Expense Reports', 
-                  title.value: 'ReportId' }
-
-annotate view ZC_EXP_HEADER with
-
-{
-  @UI.facet: [ 
-               { id: 'Header', 
-                 label: 'General Info', 
-                 type: #COLLECTION, 
-                 position: 10 },
-                 
-               { id: 'General',
-                 parentId: 'Header',
-                 label: 'General',
-                 type: #FIELDGROUP_REFERENCE,
-                 targetQualifier: 'General',
-                 position: 10 },
-               
-               { id: 'Items',
-                 label: 'Expense Items',
-                 type: #LINEITEM_REFERENCE,
-                 targetElement: '_Items',
-                 position: 20 } ]
-                 
-  @UI.lineItem: [ { position: 10, importance: #HIGH, label: 'Id' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 10, label: 'Id', importance: #HIGH } ]
-  ReportId;
-
-  @UI.lineItem: [ { position: 20, label: 'Reason' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 20, label: 'Reason' } ]
-  Reason;
-  
-  @UI.lineItem: [ { position: 30, label: 'Customer'  } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 30, label: 'Customer' } ]
-  CustomerID;
-  
-  @UI.lineItem: [ { position: 40, label: 'Open Date' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 40, label: 'Open Date' } ]
-  ReportDate;
-  
-  @UI.lineItem: [ { position: 50, label: 'Status' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 50, label: 'Status' } ]
-  HeaderStatus;
-
-  @UI.lineItem: [ { position: 60, label: 'Total Amount' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 60, label: 'Total Amount' } ]
-  TotalAmount;
-
-  @UI.fieldGroup: [ { qualifier: 'General', position: 70, label: 'Currency' } ]
-  CurrencyCode; 
-}
-```
-
-# ZC_EXP_ITEMM
-```ABAP
-@Metadata.layer: #CUSTOMER
-
-@UI.headerInfo: { typeName: 'Item', typeNamePlural: 'Items', title.value: 'ItemId' }
-
-annotate view ZC_EXP_ITEMM with
-
-{
-  @UI.facet: [ 
-               { id: 'General',
-                 label: 'Item Details',
-                 type: #FIELDGROUP_REFERENCE,
-                 targetQualifier: 'General',
-                 position: 10 },
-               
-               { id: 'Attachments',
-                 label: 'Attachments',
-                 type: #LINEITEM_REFERENCE,
-                 targetElement: '_Attachments',
-                 position: 20 } ]
-                 
-  @UI.lineItem: [ { position: 10, label: 'Expense type' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 10, label: 'Expense type' } ]
-  ExpenseType;
-
-  @UI.lineItem: [ { position: 20, label: 'Status' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 20, label: 'Status' } ]
-  ItemStatus;
-
-  @UI.lineItem: [ { position: 30, label: 'Vendor' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 30, label: 'Vendor' } ]
-  Vendor;
-
-  @UI.lineItem: [ { position: 40, label: 'Amount' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 40, label: 'Amount' } ]
-  Amount;
-
-  @UI.lineItem: [ { position: 50, label: 'Date' } ]
-  @UI.fieldGroup: [ { qualifier: 'General', position: 50, label: 'Date' } ]
-  ExpenseDate;
-}
-```
-
-# ZC_EXP_ATTACH
-```ABAP
-@Metadata.layer: #CUSTOMER
-annotate view ZC_EXP_ATTACH with
-{
-  @UI.facet: [ { id: 'General',
-                 label: 'Attachment Details',
-                 type: #FIELDGROUP_REFERENCE,
-                 targetQualifier: 'General',
-                 position: 10 } ]
-                 
-  @UI.fieldGroup: [ { qualifier: 'General', position: 10, label: 'File' } ]
-  @UI.lineItem: [ { position: 10, label: 'File'  } ]
-  AttachmentContent;
-
-  @UI.fieldGroup: [ { qualifier: 'General', position: 20, label: 'Description' } ]
-  @UI.lineItem: [ { position: 20, label: 'Description' } ]
-  Description;
-  
-  @UI.hidden: true
-  FileName;
-
-  @UI.hidden: true
-  MimeType;
-}
-```
-
-## 12. Behavior Definitions Interface - CDS Interfaz based
-
-```ABAP
-managed implementation in class zbp_zi_exp_header unique;
-strict ( 2 );
-
-define behavior for ZI_EXP_HEADER alias Header
-persistent table zexpense_header
-lock master
-authorization master ( global )
-etag master last_changed_at
-early numbering
-{
-
-  // administrative fields: read only
-  field ( readonly ) last_changed_at, last_changed_by, created_at, created_by;
-
-  // mandatory fields that are required to create a Expense folder
-  field ( mandatory ) customer_id, report_date, reason, header_status;
-
-  // Semantic Key field, which is readonly for the consumer, value is assigned in early numbering
-  field ( readonly ) report_id;
-  field ( readonly ) total_amount;
-  field ( readonly ) currency_code;
-
-  // mapping entity's field types with table field types
-  mapping for zexpense_header corresponding;
-
-  // standard operations for entity
-  create;
-  update;
-  delete;
-
-//  determination setCurrency on modify { create; }
-
-  // create expense items by association
-  association _Items { create ( features : instance ); }
-
-}
-
-define behavior for ZI_EXP_ITEMM alias item
-implementation in class zbp_zi_exp_itemm unique
-persistent table zexpense_item
-etag master last_changed_at
-lock dependent by _Header
-early numbering
-authorization dependent by _Header
-
-{
-  // administrative fields: read only
-  field ( readonly ) last_changed_at;
-
-  // static field control
-  field ( readonly ) report_id, item_id, currency_code;
-
-  field ( mandatory ) expense_type, expense_date, amount;
-
-  // mapping entity's field types with table field types
-  mapping for zexpense_item corresponding;
-
-  // standard operations for expense item entity
-  update;
-  delete;
-
-  determination setCurrency on modify { create; }
-
-  determination updateHeaderTotal on save { create; update; delete; }
-
-  side effects
-  {
-    //Con esto, al cambiar amount, la UI relee total_amount del Header
-    field amount affects field _Header.total_amount;
-  }
-
-  association _Header { }
-
-  // create attachment by association
-  association _Attachments { create ( features : instance ); }
-
-}
-
-define behavior for ZI_EXP_ATTACH alias attach
-implementation in class zbp_zi_exp_attach unique
-persistent table zitem_attachment
-etag master last_changed_at
-lock dependent by _Header
-early numbering
-authorization dependent by _Header
-
-{
-  // administrative fields: read only
-  field ( readonly ) last_changed_at;
-
-  // static field control
-  field ( readonly ) report_id, item_id, attach_id;
-
-  // mandatory fields that are required to create a attachment
-  field ( mandatory ) description;
-
-  // mapping entity's field types with table field types
-  mapping for zitem_attachment corresponding;
-
-  // standard operations for attachment entity
-  update;
-  delete;
-
-  association _Header { }
-  association _Item { }
-}
-
-```
-## 14. Service Definition - CDS Consumption Header (root) based
-
-```ABAP
-@EndUserText.label: 'Service Definition on Expenses App'
-define service ZSD_EXPENSES {
-  expose ZC_EXP_HEADER as ExpenseReport;
-  expose ZC_EXP_ITEMM  as ExpenseItem;
-  expose ZC_EXP_ATTACH as ExpenseAttachment;
-}
-```
-
-## 15. Service Binding: ZUI_EXPENSES_O2 - Service Definition based
-
-![este es un texto](./docs_md/Service_binding_Odata_v2.png)
-
-## 16. Prueba
-
-`Managed sin draft + OData V2` = `UI` botón **`Crear`** en `List Report`.
-
-[Las pruebas...](./docs_md/guion_pruebas_app_gastos.md)
-
-¿porque el uploader aparece luego de crear un registro de fichero sin el contenido del mismo?
-
-Fiori Elements funciona así: primero crea el registro (te da la clave), y después sube el contenido apuntando a esa clave.
-
-Con draft sería como si el sistema te diera un número de seguimiento provisional nada más acercarte al mostrador. Con ese número ya puedes entregar la caja mientras terminas de rellenar la etiqueta. Por eso con draft el botón aparece desde el principio.
-
-## 17. Deployment en ABAP
-
-Se realiza un trabajo adicional para realizar un deploy de la app en el entorno `ABAP Environment` y para una cuenta `Trial`
-
-* [Desplegando la App...](../docs_md/despliegue_app_rap_abap_trial.md)
