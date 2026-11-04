@@ -8,10 +8,31 @@
 
 ---
 
+## Índice
+
+1. [Resumen](#1-resumen)
+2. [Modelo de datos](#2-modelo-de-datos)
+3. [Reglas de negocio](#3-reglas-de-negocio)
+4. [Datos de prueba](#4-datos-de-prueba)
+5. [Escenarios de prueba](#5-escenarios-de-prueba)
+   - [Escenario 1: Creación con valores por defecto](#escenario-1-creación-con-valores-por-defecto)
+   - [Escenario 2: Validación de importe positivo](#escenario-2-validación-de-importe-positivo)
+   - [Escenario 3: Límite de gasto de hotel](#escenario-3-límite-de-gasto-de-hotel)
+   - [Escenario 4: Total calculado automáticamente](#escenario-4-total-calculado-automáticamente)
+   - [Escenario 5: Enviar con precondiciones](#escenario-5-enviar-con-precondiciones)
+   - [Escenario 6: Bloqueo por estado](#escenario-6-bloqueo-por-estado)
+   - [Escenario 7: Aprobar y rechazar](#escenario-7-aprobar-y-rechazar)
+   - [Escenario 8: Semáforos de estado](#escenario-8-semáforos-de-estado)
+6. [Fragmento clave del BDEF](#6-fragmento-clave-del-bdef)
+7. [Conceptos RAP cubiertos](#7-conceptos-rap-cubiertos)
+8. [Limitaciones conocidas y próximos pasos](#8-limitaciones-conocidas-y-próximos-pasos)
+9. [Cómo convertir este documento a PDF](#9-cómo-convertir-este-documento-a-pdf)
+
+---
+
 ## 1. Resumen
 
 Aplicación para gestionar **informes de gastos** con sus **posiciones** y **adjuntos**, desarrollada con el modelo de programación RAP. El objetivo es demostrar un ciclo de vida completo con reglas de negocio reales: 
-- Valores por defecto
 - Validaciones
 - Cálculos automáticos
 - Acciones de flujo
@@ -27,6 +48,7 @@ Informe (Header, root)
 ```
 
 - Composición de tres niveles, con borrado en cascada.
+
 - Estados del informe: `OPEN → SENT → APPROVED / REJECTED` (REJECTED es estado final).
 
 | Estado | Editar / Borrar | Enviar | Aprobar | Rechazar |
@@ -62,6 +84,23 @@ Preparar tres informes antes de empezar a capturar pantallas:
 ---
 
 ## 5. Escenarios de prueba
+
+### Resumen de escenarios
+
+| # | Escenario | Qué se comprueba | Mecanismo RAP | Informe | Estado |
+|---|---|---|---|---|---|
+| 1 | Creación con valores por defecto | ID, estado `OPEN` y moneda `EUR` asignados por el sistema | Determination + early numbering | A | ☐ |
+| 2 | Validación de importe | Importe 0 o negativo no se guarda | Validation `on save` | A | ☐ |
+| 3 | Límite de hotel | Hotel de más de 150 € devuelve error | Validation con regla de negocio | A | ☐ |
+| 4 | Total automático | El total del informe es la suma de los gastos | Determination + side effect | A | ☐ |
+| 5 | Enviar con precondiciones | Sin gastos y sin recibo falla; correcto pasa a `SENT` | Action `send` con lectura de varias entidades | A | ☐ |
+| 6 | Bloqueo por estado | En `SENT` no se edita, borra ni crea; sí se navega | Feature control por instancia | B | ☐ |
+| 7 | Aprobar y rechazar | Rechazo con motivo, aprobación, estados finales | Actions con parámetro (abstract entity) | B y C | ☐ |
+| 8 | Semáforos de estado | Colores según estado en la lista | Criticality en CDS + anotación UI | A, B y C | ☐ |
+
+**Orden de ejecución recomendado para sacar las capturas:** 1 → 4 → 2 → 3 → 5 → 6 → 7 → 8.
+
+---
 
 ### Escenario 1: Creación con valores por defecto
 
@@ -254,23 +293,4 @@ early numbering
 - Mensajes con texto directo, sin clase de mensajes.
 - Validación de tipo de fichero (mime) pendiente.
 
-**Próximos pasos**
-1. Tablas de customizing para los límites de gasto
-2. Web API OData sobre el mismo BO
-3. Draft
-4. Autorizaciones por instancia
-5. Pruebas unitarias con ABAP Unit
-
 ---
-
-## 9. Cómo convertir este documento a PDF
-
-**Opción A: VS Code** (la más rápida)
-Instalar la extensión *Markdown PDF*, abrir este fichero, clic derecho → *Markdown PDF: Export (pdf)*.
-
-**Opción B: Pandoc**
-```bash
-pandoc guion_pruebas_rap_gastos.md -o guion_pruebas.pdf --pdf-engine=xelatex
-```
-
-Comprobar antes que la carpeta `img/` está junto al `.md`, porque las rutas de las imágenes son relativas.
