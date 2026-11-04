@@ -2,13 +2,13 @@
 
 Aplicación transaccional de **informes de gastos** desarrollada en **ABAP Environment (SAP BTP)** con el modelo de programación **RAP** y **Fiori Elements**. 
 
+Un empleado crea un informe, le añade gastos con sus justificantes y lo envía; un responsable lo aprueba o lo rechaza.
+
 ```
 Informe (Header, root)
  └── Gasto (Item)
       └── Adjunto (Attachment)
 ```
-
-Un empleado crea un informe, le añade gastos con sus justificantes y lo envía; un responsable lo aprueba o lo rechaza.
 
 El objetivo es práctico y didáctico: recorrer un ciclo de vida completo con reglas de negocio reales, desde el modelo de datos hasta la interfaz.
 
@@ -68,14 +68,7 @@ Para la Expense App se eligió **RAP `Managed` sin Draft** frente a `Unmanaged` 
 | [05 · Guion de pruebas](./docs_md/05-guion-pruebas.md) | Escenarios de prueba con capturas y explicación de cómo se logra cada uno |
 | [Despliegue en ABAP Environment](./OTHERS/despliegue_app_rap_abap_trial.md) | Despliegue de la app en una cuenta Trial |
 
-El código de las clases de implementación (
-`zbp_zi_exp_header`, 
-
-`zbp_zi_exp_itemm`, 
-
-`zbp_zi_exp_attach`) 
-
-está en la carpeta [`src/`](./src/).
+El código de las clases de implementación ( `zbp_zi_exp_header`, `zbp_zi_exp_itemm`, `zbp_zi_exp_attach`)está en la carpeta [`src/`](./src/).
 
 ## Limitaciones y próximos pasos
 
@@ -86,30 +79,14 @@ está en la carpeta [`src/`](./src/).
 - Mensajes con texto directo, sin clase de mensajes.
 
 **Próximos pasos**
-1. Tablas de customizing para los límites de gasto.
-2. Web API OData sobre el mismo business object.
+1. Web API OData sobre el mismo business object.
+2. Tablas de customizing para los límites de gasto.
 3. Draft.
 4. Autorizaciones por instancia y por rol.
 5. Pruebas unitarias con ABAP Unit.
 
 ## Despliegue en ABAP
 
-Se realiza un trabajo adicional para desplegar la app en el entorno `ABAP Environment`, en una cuenta `Trial`. Los pasos están en [Desplegando la App](./OTHERS/despliegue_app_rap_abap_trial.md).
+Se realiza un trabajo adicional para desplegar la app en el entorno `ABAP Environment`, en una cuenta `Trial`. 
 
-## Estructura del repositorio
-
-```
-README.md
-docs/
-  02-modelo-datos.md
-  03-metadata-extensions.md
-  04-comportamiento.md
-  05-guion-pruebas.md
-  img/
-src/
-  zbp_zi_exp_header.abap
-  zbp_zi_exp_itemm.abap
-  zbp_zi_exp_attach.abap
-OTHERS/
-  despliegue_app_rap_abap_trial.md
-```
+Los pasos están en [Desplegando la App](./OTHERS/despliegue_app_rap_abap_trial.md).

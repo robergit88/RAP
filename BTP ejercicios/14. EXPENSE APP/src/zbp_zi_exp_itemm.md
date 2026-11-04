@@ -19,6 +19,10 @@ CLASS lhc_item DEFINITION INHERITING FROM cl_abap_behavior_handler.
       keys FOR item~updateheadertotal.
     METHODS setcurrency FOR DETERMINE ON MODIFY
       keys FOR item~setcurrency.
+    METHODS validateamount FOR VALIDATE ON SAVE
+      keys FOR item~validateamount.
+    METHODS validatehotellimit FOR VALIDATE ON SAVE
+      keys FOR item~validatehotellimit.
 
     METHODS earlynumbering_cba_Attachments FOR NUMBERING
        entities FOR CREATE item\_Attachments.
@@ -26,8 +30,27 @@ CLASS lhc_item DEFINITION INHERITING FROM cl_abap_behavior_handler.
 ENDCLASS.
 
 CLASS lhc_item IMPLEMENTATION.
-
   METHOD get_instance_features.
+    CONSTANTS gc_open TYPE zexpense_header-header_status VALUE 'OPEN'.
+
+    READ ENTITIES OF zi_exp_header IN LOCAL MODE
+         ENTITY item BY \_Header
+         FIELDS ( header_status )
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(headers)
+         LINK DATA(links).
+
+    result = VALUE #( FOR k IN keys
+                      LET h  = VALUE #( headers[ KEY id
+                                                 %tky = links[ source-%tky = k-%tky ]-target-%tky ] OPTIONAL )
+                          st = COND #( WHEN h-header_status = gc_open
+                                       THEN if_abap_behv=>fc-o-enabled
+                                       ELSE if_abap_behv=>fc-o-disabled )
+                      IN
+                          ( %tky                = k-%tky
+                            %update             = st
+                            %delete             = st
+                            %assoc-_Attachments = st ) ).
   ENDMETHOD.
 
   METHOD earlynumbering_cba_Attachments.
@@ -115,6 +138,75 @@ CLASS lhc_item IMPLEMENTATION.
            WITH VALUE #( FOR i IN items
                          ( %tky          = i-%tky
                            currency_code = 'EUR' ) ).
+  ENDMETHOD.
+
+  METHOD validateAmount.
+
+    " %tky identifica la instancia (y funciona igual con o sin draft).
+    " %element-amount es lo que pinta el campo en rojo.
+    " %path vincula el mensaje al informe padre, y la UI lo agrupa correctamente en una composición
+
+    " Paso 1: Lectura de instancias que RAP pasa en keys
+    READ ENTITIES OF zi_exp_header IN LOCAL MODE
+         ENTITY item
+         FIELDS ( amount report_id )
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(items).
+
+    " Paso 2: Aplicas la regla de negocio
+    LOOP AT items INTO DATA(item) WHERE amount <= 0.
+
+      " Paso 3: la instancia es inválida, no se guardará
+      APPEND VALUE #( %tky = item-%tky ) TO failed-item.
+
+      " Paso 4: mensaje + campo en rojo + contexto del padre
+      APPEND VALUE #( %tky            = item-%tky
+                      %path           = VALUE #( header-report_id = item-report_id )
+                      %element-amount = if_abap_behv=>mk-on
+                      %msg            = new_message_with_text(
+                                            severity = if_abap_behv_message=>severity-error
+                                            text     = |El importe debe ser mayor que 0 (recibido: { item-amount })| ) )
+             TO reported-item.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validateHotelLimit.
+
+    CONSTANTS gc_hotel_type  TYPE zexpense_type            VALUE 'HOTEL'. " ajusta al tipo de dato real
+    CONSTANTS gc_hotel_limit TYPE p LENGTH 8    DECIMALS 2 VALUE '150.00'.
+    CONSTANTS gc_warn_ratio  TYPE p LENGTH 3    DECIMALS 2 VALUE '0.80'.
+
+    READ ENTITIES OF zi_exp_header IN LOCAL MODE
+         ENTITY item
+         FIELDS ( expense_type amount report_id )
+         WITH CORRESPONDING #( keys )
+         RESULT DATA(items).
+
+    LOOP AT items INTO DATA(item) WHERE expense_type = gc_hotel_type.
+
+      IF item-amount > gc_hotel_limit.
+
+        " ERROR: bloquea el guardado
+        APPEND VALUE #( %tky = item-%tky ) TO failed-item.
+
+        APPEND VALUE #( %tky            = item-%tky
+                        %element-amount = if_abap_behv=>mk-on
+                        %msg            = new_message_with_text(
+                                              severity = if_abap_behv_message=>severity-error
+                                              text     = |El hotel supera el límite de { gc_hotel_limit } EUR| ) )
+               TO reported-item.
+
+      ELSEIF item-amount > gc_hotel_limit * gc_warn_ratio.
+        " WARNING: avisa, pero NO se añade a failed, así que guarda
+        APPEND VALUE #( %tky            = item-%tky
+                        %element-amount = if_abap_behv=>mk-on
+                        %msg            = new_message_with_text(
+                                              severity = if_abap_behv_message=>severity-warning
+                                              text     = |Cerca del límite de hotel ({ gc_hotel_limit } EUR)| ) )
+               TO reported-item.
+      ENDIF.
+
+    ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.
