@@ -386,6 +386,7 @@ ENDCLASS.
 | `ZVH_HEADER_STATUS` | `ZHEADER_STATUS` | Value help | Estados del informe |
 | `ZVH_ITEM_STATUS` | `ZITEM_STATUS` | Value help | Estados del ticket |
 | `ZVH_MIME_TYPE` | `ZMIME_TYPE` | Value help | Tipos de fichero |
+| `ZA_EXP_REJECT_PARAM` | action `reject` | Define Abstract Entity | Definición de parámetro |
 
 ### 6.1 `ZI_EXP_HEADER`
 
@@ -407,23 +408,31 @@ define root view entity ZI_EXP_HEADER
 
 {
   key Header.report_id,
+
       Header.customer_id,
 
       Header.report_date,
       Header.reason,
       Header.header_status,
-      Header.reject_reason,
 
       @Semantics.amount.currencyCode: 'currency_code'
       Header.total_amount,
+
       Header.currency_code,
 
-      cast( case Header.header_status
-              when 'SENT'     then 2
-              when 'APPROVED' then 3
-              when 'REJECTED' then 1
-              else 0
-            end as abap.int1 ) as StatusCriticality,
+      Header.reject_reason,
+      
+      // Se añade campo calculado para colorear:
+      // 0 Neutral (OPEN)
+      // 1 Rojo (REJECTED)
+      // 2 Amarillo (SENT)
+      // 3 Verde (APPROVED)
+      cast(case Header.header_status
+             when 'SENT'     then 2
+             when 'APPROVED' then 3
+             when 'REJECTED' then 1
+             else 0
+           end as abap.int1)  as status_criticality,
 
       @Semantics.user.createdBy: true
       Header.created_by,
@@ -442,6 +451,7 @@ define root view entity ZI_EXP_HEADER
       _Customer,
       _Currency
 }
+
 ```
 </details>
 
@@ -579,6 +589,22 @@ define root view entity ZVH_ITEM_STATUS
 {
   key status_id as ItemStatus,
       description as Description
+}
+```
+</details>
+
+### 6.5 `ZA_EXP_REJECT_PARAM`
+
+<details>
+<summary>
+Define Abstract Entity. Un tipo estructurado de CDS que solo describe datos, sin tabla ni selección
+</summary>
+```abap
+@EndUserText.label: 'Reject Parameter CDS'
+define abstract entity ZA_EXP_REJECT_PARAM
+{
+  @EndUserText.label: 'Motivo del rechazo'
+  reason : abap.char(255);
 }
 ```
 </details>
