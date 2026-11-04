@@ -302,3 +302,10 @@ early numbering
 - Límites de importe fijos en el código.
 - Mensajes con texto directo, sin clase de mensajes.
 - Validación de tipo de fichero (mime) pendiente.
+
+**Próximos pasos**
+1. Web API OData sobre el mismo BO
+2. Tablas de customizing para los límites de gasto
+3. Draft
+4. Autorizaciones por instancia
+5. Pruebas unitarias con ABAP Unit
