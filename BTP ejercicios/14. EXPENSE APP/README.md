@@ -78,10 +78,10 @@ classDiagram
 
 | Documento | Contenido |
 |---|---|
-| [02 · Modelo de datos](/docs_md/02-modelo-datos.md) | Tablas, catálogos, datos auxiliares, vistas CDS de interfaz y de consumo, asociaciones |
-| [03 · Metadata extensions](/docs_md/03-metadata-extensions.md) | Anotaciones de interfaz: columnas, formularios, botones, semáforos |
-| [04 · Comportamiento](/docs_md/04-comportamiento.md) | Behavior definitions, validaciones, acciones, feature control, side effects |
-| [05 · Guion de pruebas](/docs_md/05-guion-pruebas.md) | Escenarios de prueba con capturas y explicación de cómo se logra cada uno |
+| [02 · Modelo de datos](./docs_md/02-modelo-datos.md) | Tablas, catálogos, datos auxiliares, vistas CDS de interfaz y de consumo, asociaciones |
+| [03 · Metadata extensions](./docs_md/03-metadata-extensions.md) | Anotaciones de interfaz: columnas, formularios, botones, semáforos |
+| [04 · Comportamiento](./docs_md/04-comportamiento.md) | Behavior definitions, validaciones, acciones, feature control, side effects |
+| [05 · Guion de pruebas](./docs_md/05-guion-pruebas.md) | Escenarios de prueba con capturas y explicación de cómo se logra cada uno |
 | [Despliegue en ABAP Environment](./OTHERS/despliegue_app_rap_abap_trial.md) | Despliegue de la app en una cuenta Trial |
 
 El código de las clases de implementación (
