@@ -117,7 +117,7 @@ Las escrituras (`POST`, `PATCH`, `PUT`, `DELETE`) llevan además `X-CSRF-Token`.
 
 ### 3.1 Binario (PUT)
 
-`PUT {BASE_V4}/ExpenseAttachment(ReportId='%20%20%20%20%20%20%20%208',ItemId='%20%20%20%202',AttachId='%20%20%20%201')/AttachmentContent` ✅
+`PUT {BASE_V4}/ExpenseAttachment(ReportId='%20%20%20%20%20%20%20%207',ItemId='%20%20%20%201',AttachId='%20%20%20%201')/AttachmentContent` ✅
 
 - Headers: `Content-Type: application/pdf`
 - Body: *binary* (el PDF). No es JSON.
