@@ -34,14 +34,17 @@ Informe (Header, root)
 BASE_V4 = https://6449ad14-b137-4a27-8017-6421c2c4f0b0.abap.us10.hana.ondemand.com/sap/opu/odata4/sap/zapi_expenses_o4/srvd_a2x/sap/zsd_expenses_api/0001
 ```
 
-- **Todas las llamadas** llevan el token OAuth ([apéndice A](#apéndice-a-conectar-postman-con-abap-environment-trial)). Las escrituras (`POST`, `PATCH`, `PUT`, `DELETE`) llevan además `X-CSRF-Token`.
+- **Todas las llamadas** llevan el token OAuth ([apéndice A](#apéndice-a-conectar-postman-con-abap-environment-trial)). 
+
+Las escrituras (`POST`, `PATCH`, `PUT`, `DELETE`) llevan además `X-CSRF-Token`.
+
 - **Claves:** los IDs llevan espacios a la izquierda y van en la URL como `%20`, tal cual los devuelve el servicio.
 
 | Entidad | Clave de ejemplo (informe 8, posición 2, adjunto 1) |
 |---|---|
-| `ExpenseReport` | `ExpenseReport(ReportId='%20%20%20%20%20%20%20%208')` |
-| `ExpenseItem` | `ExpenseItem(ReportId='%20%20%20%20%20%20%20%208',ItemId='%20%20%20%202')` |
-| `ExpenseAttachment` | `ExpenseAttachment(ReportId='%20%20%20%20%20%20%20%208',ItemId='%20%20%20%202',AttachId='%20%20%20%201')` |
+| `ExpenseReport` | `ExpenseReport(ReportId='%20%20%20%20%20%20%20%207')` |
+| `ExpenseItem` | `ExpenseItem(ReportId='%20%20%20%20%20%20%20%207',ItemId='%20%20%20%201')` |
+| `ExpenseAttachment` | `ExpenseAttachment(ReportId='%20%20%20%20%20%20%20%207',ItemId='%20%20%20%201',AttachId='%20%20%20%201')` |
 
 ✅ probado · ⏳ pendiente de probar
 
@@ -96,7 +99,7 @@ BASE_V4 = https://6449ad14-b137-4a27-8017-6421c2c4f0b0.abap.us10.hana.ondemand.c
 
 ## 3. Registro del fichero
 
-`POST {BASE_V4}/ExpenseItem(ReportId='%20%20%20%20%20%20%20%208',ItemId='%20%20%20%202')/_Attachments` ✅
+`POST {BASE_V4}/ExpenseItem(ReportId='%20%20%20%20%20%20%20%207',ItemId='%20%20%20%201')/_Attachments` ✅
 
 ```json
 {
