@@ -146,6 +146,7 @@ Tras el PUT: hay contenido y MimeType, pero FileName vacío
 }
 ```
 
+
 ![PATCH nombre](img/03-2-patch-nombre.png)
 
 **STAR**
