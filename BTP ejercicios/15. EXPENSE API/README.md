@@ -71,7 +71,7 @@ BASE_V4 = https://6449ad14-b137-4a27-8017-6421c2c4f0b0.abap.us10.hana.ondemand.c
 
 ## 2. Posición
 
-`POST {BASE_V4}/ExpenseReport(ReportId='%20%20%20%20%20%20%20%208')/_Items` ✅
+`POST {BASE_V4}/ExpenseReport(ReportId='%20%20%20%20%20%20%20%207')/_Items` ✅
 
 ```json
 {
