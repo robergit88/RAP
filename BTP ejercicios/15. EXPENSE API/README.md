@@ -124,6 +124,8 @@ Las escrituras (`POST`, `PATCH`, `PUT`, `DELETE`) llevan además `X-CSRF-Token`.
 
 ![PUT binario](img/03-1-put-binario.png)
 
+Tras el PUT: hay contenido y MimeType, pero FileName vacío
+
 ![Tras el PUT: hay contenido y MimeType, pero FileName vacío](img/03-1-put-borra-filename-adt.png)
 
 **STAR**
@@ -134,13 +136,13 @@ Las escrituras (`POST`, `PATCH`, `PUT`, `DELETE`) llevan además `X-CSRF-Token`.
 
 ### 3.2 Nombre (PATCH)
 
-`PATCH {BASE_V4}/ExpenseAttachment(ReportId='%20%20%20%20%20%20%20%208',ItemId='%20%20%20%202',AttachId='%20%20%20%201')` ✅
+`PATCH {BASE_V4}/ExpenseAttachment(ReportId='%20%20%20%20%20%20%20%207',ItemId='%20%20%20%201',AttachId='%20%20%20%201')` ✅
 
 - Headers: `Content-Type: application/json` (sin `/AttachmentContent` en la URL)
 
 ```json
 {
-  "FileName": "factura_hotel_cleopatra.pdf"
+  "FileName": "Factura del hotel.pdf"
 }
 ```
 
