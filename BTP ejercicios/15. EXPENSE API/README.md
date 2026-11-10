@@ -2,11 +2,15 @@
 
 Una app Fiori de informes de gastos (RAP, ABAP Environment) expuesta también como **API Web Cloud**, reutilizando el mismo business object y probada paso a paso desde **Postman**.
 
-- **Escenario de pruebas:** SAP BTP **ABAP Environment (Trial)** + Postman.
-- **Paquetes:** `ZEXPENSE2` (app) y `ZEXPENSE2_API` (API).
-- **Modelo:** Informe (cabecera) → Posición → Adjunto.
+![ExpenseReport](img/00-ExpenseReport.png)
 
-![Adjunto creado por la API, visto en ADT y en la app Fiori](img/03-2-adjunto-completo-adt-y-app.png)
+ **Modelo de datos:** 
+ 
+ ```
+Informe (Header, root)
+ └── Gasto (Item)
+      └── Adjunto (Attachment)
+```
 
 *Lo que crea la API lo ve la app: es el mismo business object.*
 
