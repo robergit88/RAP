@@ -14,12 +14,6 @@ Informe (Header, root)
 
 *Lo que crea la API lo ve la app: es el mismo business object.*
 
-```mermaid
-flowchart LR
-  T[(Tablas Z)] --> I["CDS de interfaz ZI_*<br/>BDEF managed + clases ZBP_*"]
-  I --> UI["ZC_EXP_*<br/>App Fiori (V2)"]
-  I --> API["ZC_EXPAPI_*<br/>API Web (V4)"]
-```
 
 ## Índice
 
@@ -65,7 +59,7 @@ BASE_V4 = https://6449ad14-b137-4a27-8017-6421c2c4f0b0.abap.us10.hana.ondemand.c
 }
 ```
 
-![POST cabecera](img/01-cabecera.png)
+![POST cabecera](img/01-Cabecera-Post.png)
 
 **STAR**
 - **S:** la app de gastos existe y hay que comprobar que la API crea informes igual que ella.
