@@ -202,10 +202,11 @@ Tras el PUT: hay contenido y MimeType, pero FileName vacío
 
 ## 5. send
 
-`POST {BASE_V4}/ExpenseReport(ReportId='%20%20%20%20%20%20%20%208')/com.sap.gateway.srvd_a2x.zsd_expenses_api.v0001.send`
+`POST {BASE_V4}/ExpenseReport(ReportId='%20%20%20%20%20%20%20%206')/com.sap.gateway.srvd_a2x.zsd_expenses_api.v0001.send`
 
-- Body vacío. Si da `428`, añadir `If-Match: *`.
 - Estado necesario: `OPEN`.
+
+Informe en OPEN antes del send
 
 ![Informe en OPEN antes del send](img/05-informe-open-antes-del-send.png)
 
