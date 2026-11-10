@@ -26,6 +26,7 @@ Informe (Header, root)
 5. [send](#5-send)
 6. [approve](#6-approve)
 7. [reject](#7-reject)
+8. [expenseReport](#8-expense-report)
 - [Apéndice A: conectar Postman con ABAP Environment](#apéndice-a-conectar-postman-con-abap-environment-trial)
 
 ## Convenciones
@@ -40,7 +41,7 @@ Las escrituras (`POST`, `PATCH`, `PUT`, `DELETE`) llevan además `X-CSRF-Token`.
 
 - **Claves:** los IDs llevan espacios a la izquierda y van en la URL como `%20`, tal cual los devuelve el servicio.
 
-| Entidad | Clave de ejemplo (informe 8, posición 2, adjunto 1) |
+| Entidad | Clave de ejemplo (informe 7, posición 1, adjunto 1) |
 |---|---|
 | `ExpenseReport` | `ExpenseReport(ReportId='%20%20%20%20%20%20%20%207')` |
 | `ExpenseItem` | `ExpenseItem(ReportId='%20%20%20%20%20%20%20%207',ItemId='%20%20%20%201')` |
@@ -242,7 +243,7 @@ Informe en OPEN antes del send
 
 ## 6. approve ⏳
 
-`POST {BASE_V4}/ExpenseReport(ReportId='…')/com.sap.gateway.srvd_a2x.zsd_expenses_api.v0001.approve`
+`POST {BASE_V4}/ExpenseReport(ReportId='%20%20%20%20%20%20%20%206')/com.sap.gateway.srvd_a2x.zsd_expenses_api.v0001.approve`
 
 - Body vacío. Estado necesario: `SENT`.
 
@@ -258,13 +259,13 @@ Informe en OPEN antes del send
 
 ## 7. reject ⏳
 
-`POST {BASE_V4}/ExpenseReport(ReportId='…')/com.sap.gateway.srvd_a2x.zsd_expenses_api.v0001.reject`
+`POST {BASE_V4}/ExpenseReport(ReportId='%20%20%20%20%20%20%20%203')/com.sap.gateway.srvd_a2x.zsd_expenses_api.v0001.reject`
 
 - Estado necesario: `SENT`.
 
 ```json
 {
-  "reason": "Falta el justificante del hotel"
+  "reason": "justificante entregado tardíamente"
 }
 ```
 
@@ -275,6 +276,12 @@ Informe en OPEN antes del send
 - **T:** rechazarlo por la API con motivo.
 - **A:** `POST` a la acción ligada `reject` con el parámetro `reason` (mínimo 10 caracteres).
 - **R (esperado):** `200`, `HeaderStatus: REJECTED` y `RejectReason` informado. Con un motivo más corto, error.
+
+---
+
+## 8 expense report
+
+![expense report](img/08-expense-report.png)
 
 ---
 
