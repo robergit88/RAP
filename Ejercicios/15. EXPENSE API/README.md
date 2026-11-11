@@ -308,26 +308,28 @@ Informe en OPEN antes del send
 
 **Entorno de Postman:** 
 
-Se crean dos variables que se van a reutilizar a lo largo de todos los casos de pruebas.
+Se crean dos variables que se van a reutilizar a lo largo de todos los casos de pruebas:
 
-dos variables, `sap_client_id` y `sap_client_secret`, usadas con llaves dobles (`{{sap_client_id}}`).
+ `sap_client_id` y `sap_client_secret`.
 
 ![Creación de Environment](img/Postman_00_environment.png)
 
-Creación de un token de acceso.
+**Creación de un token de acceso.**
 
 ![Creación de Environment](img/Postman_01_authorization.png)
+
+Las variables de entorno usadas van entre con llaves dobles (`{{ }}`).
 
 ![Creación de Environment](img/Postman_02_authorization.png)
 
 
-Configuración OAuth en Postman en cada prueba
+**Configuración OAuth en Postman en cada prueba**
 
 **Pasos:** 
 
 *Get New Access Token* → login con el usuario BTP → *Use Token* (`TokenForAllAbapADT`) → elegirlo en el desplegable *Token* de cada request.
 
-[OAuth2.0](img/Postman_03_OAuth2.0)
+[OAuth2.0](img/Postman_03_OAuth2.0.png)
 
 
 > Al **duplicar** un request, el token no se hereda: hay que seleccionarlo de nuevo.
