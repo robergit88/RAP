@@ -298,7 +298,7 @@ Informe en OPEN antes del send
 - **Role collections del cockpit:** no tienen relación con esto.
 - **Grant type `Client Credentials`:** da un token sin usuario de negocio y el ABAP responde `401` con HTML de login.
 
-### Lo que sí funciona: OAuth 2.0 Authorization Code con la Service Key
+### Lo que sí funciona: OAuth 2.0 Authorization Code con la Service Key de la Instancia de Servicio ABAP Trial en BTP
 
 **Host:** `6449ad14-b137-4a27-8017-6421c2c4f0b0.abap.us10.hana.ondemand.com` (no el `abap-web`, que es el del navegador).
 
@@ -306,28 +306,29 @@ Informe en OPEN antes del send
 
 > El `clientsecret` es un secreto: no se publica. Cuando termine el desarrollo, conviene borrar la key y crear otra.
 
-**Entorno de Postman:** dos variables, `sap_client_id` y `sap_client_secret`, usadas con llaves dobles (`{{sap_client_id}}`).
+**Entorno de Postman:** 
+
+Se crean dos variables que se van a reutilizar a lo largo de todos los casos de pruebas.
+
+dos variables, `sap_client_id` y `sap_client_secret`, usadas con llaves dobles (`{{sap_client_id}}`).
 
 ![Creación de Environment](img/Postman_00_environment.png)
 
-| Campo | Valor |
-|---|---|
-| Grant type | **Authorization Code** |
-| Callback URL | `http://localhost:8080` |
-| Auth URL | `<uaa.url>/oauth/authorize` |
-| Access Token URL | `<uaa.url>/oauth/token` |
-| Client ID / Secret | `{{sap_client_id}}` / `{{sap_client_secret}}` |
-| Client Authentication | Send as Basic Auth header |
-
-Creación de un token de acceso en funcion del fichero *Service Key* de la *Instancia de Servicio* ABAP **Trial** en BTP
+Creación de un token de acceso.
 
 ![Creación de Environment](img/Postman_01_authorization.png)
+
 ![Creación de Environment](img/Postman_02_authorization.png)
 
 
-![Configuración OAuth en Postman (sin mostrar el secreto)](img/00-oauth.png)
+Configuración OAuth en Postman en cada prueba
 
-**Pasos:** *Get New Access Token* → login con el usuario BTP → *Use Token* (`TokenForAllAbapADT`) → elegirlo en el desplegable *Token* de cada request.
+**Pasos:** 
+
+*Get New Access Token* → login con el usuario BTP → *Use Token* (`TokenForAllAbapADT`) → elegirlo en el desplegable *Token* de cada request.
+
+[OAuth2.0](img/Postman_03_OAuth2.0)
+
 
 > Al **duplicar** un request, el token no se hereda: hay que seleccionarlo de nuevo.
 
