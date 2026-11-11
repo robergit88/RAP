@@ -66,7 +66,8 @@ Para la Expense App se eligió **RAP `Managed` sin Draft** frente a `Unmanaged` 
 | [03 · Metadata extensions](./docs_md/03-metadata-extensions.md) | Anotaciones de interfaz: columnas, formularios, botones, semáforos |
 | [04 · Comportamiento](./docs_md/04-comportamiento.md) | Behavior definitions, validaciones, acciones, feature control, side effects |
 | [05 · Guion de pruebas](./docs_md/05-guion-pruebas.md) | Escenarios de prueba con capturas y explicación de cómo se logra cada uno |
-| [Despliegue en ABAP Environment](./OTHERS/despliegue_app_rap_abap_trial.md) | Despliegue de la app en una cuenta Trial |
+| [Despliegue en ABAP Environment](../OTHERS/despliegue_app_rap_abap_trial.md) | Despliegue de la app en una cuenta Trial |
+
 
 ## Limitaciones y próximos pasos
 
@@ -87,4 +88,4 @@ Para la Expense App se eligió **RAP `Managed` sin Draft** frente a `Unmanaged` 
 
 Se realiza un trabajo adicional para desplegar la app en el entorno `ABAP Environment`, en una cuenta `Trial`. 
 
-Los pasos están en [Desplegando la App](./OTHERS/despliegue_app_rap_abap_trial.md).
+Los pasos están en [Desplegando la App](../OTHERS/despliegue_app_rap_abap_trial.md).
