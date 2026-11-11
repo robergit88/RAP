@@ -1,6 +1,9 @@
 # ZEXPENSE2_API: la app de gastos RAP, ahora como API Web OData V4
 
-Una app Fiori de informes de gastos (RAP, ABAP Environment) expuesta también como **API Web Cloud**, reutilizando el mismo business object y probada paso a paso desde **Postman**.
+Una app Fiori de [informes de gastos](../14.%20EXPENSE%20APP/README.md) (RAP, ABAP Environment) expuesta también como **API Web Cloud**, reutilizando el mismo business object y probada paso a paso desde **Postman**.
+
+*Lo que crea la API lo ve la app: es el mismo business object.*
+
 
 ![ExpenseReport](img/00-ExpenseReport.png)
 
@@ -11,8 +14,6 @@ Informe (Header, root)
  └── Gasto (Item)
       └── Adjunto (Attachment)
 ```
-
-*Lo que crea la API lo ve la app: es el mismo business object.*
 
 
 ## Índice
