@@ -329,7 +329,7 @@ Las variables de entorno usadas van entre con llaves dobles (`{{ }}`).
 
 *Get New Access Token* → login con el usuario BTP → *Use Token* (`TokenForAllAbapADT`) → elegirlo en el desplegable *Token* de cada request.
 
-[OAuth2.0](img/Postman_03_OAuth2.png)
+![OAuth2.0](img/Postman_03_OAuth2.png)
  
 
 > Al **duplicar** un request, el token no se hereda: hay que seleccionarlo de nuevo.
@@ -340,4 +340,8 @@ Las variables de entorno usadas van entre con llaves dobles (`{{ }}`).
 2. Copiar el valor del header `x-csrf-token` de la respuesta.
 3. Usarlo en `X-CSRF-Token` de la escritura. Si da `403`, repetir.
 
-![Fetch del token CSRF](img/00-csrf.png)
+![Fetch del token CSRF](img/Postman_04_CSRF_TOKEN.png)
+
+Se utiliza este valor de token para realizar una operación de escritura POST.
+
+![Fetch del token CSRF](img/Postman_04_CSRF_TOKEN_2.png)
