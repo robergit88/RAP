@@ -1,6 +1,6 @@
 # ZEXPENSE2_API: la app de gastos RAP, ahora como API Web OData V4
 
-**API Web Cloud que expone**, como OData V4, el business object de la app Fiori de [informes de gastos](../14.%20EXPENSE%20APP/README.md). 
+**API Web Cloud** que expone, como OData V4, el business object de la app Fiori de [informes de gastos](../14.%20EXPENSE%20APP/README.md). 
 
 Probada paso a paso desde **Postman**.
 
@@ -329,7 +329,7 @@ Las variables de entorno usadas van entre con llaves dobles (`{{ }}`).
 
 *Get New Access Token* → login con el usuario BTP → *Use Token* (`TokenForAllAbapADT`) → elegirlo en el desplegable *Token* de cada request.
 
-[OAuth2.0](img/Postman_03_OAuth2.0.png)
+[OAuth2.0](img/Postman_03_OAuth2.png)
  
 
 > Al **duplicar** un request, el token no se hereda: hay que seleccionarlo de nuevo.
