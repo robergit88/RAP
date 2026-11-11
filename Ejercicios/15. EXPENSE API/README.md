@@ -1,6 +1,8 @@
 # ZEXPENSE2_API: la app de gastos RAP, ahora como API Web OData V4
 
-**API Web Cloud que expone**, como OData V4, el business object de la app Fiori de [informes de gastos](../14.%20EXPENSE%20APP/README.md). Probada paso a paso desde **Postman**.
+**API Web Cloud que expone**, como OData V4, el business object de la app Fiori de [informes de gastos](../14.%20EXPENSE%20APP/README.md). 
+
+Probada paso a paso desde **Postman**.
 
 *Lo que crea la API lo ve la app: es el mismo business object.*
 
@@ -306,6 +308,8 @@ Informe en OPEN antes del send
 
 **Entorno de Postman:** dos variables, `sap_client_id` y `sap_client_secret`, usadas con llaves dobles (`{{sap_client_id}}`).
 
+![Creación de Environment](img/Postman_00_environment.png)
+
 | Campo | Valor |
 |---|---|
 | Grant type | **Authorization Code** |
@@ -314,6 +318,12 @@ Informe en OPEN antes del send
 | Access Token URL | `<uaa.url>/oauth/token` |
 | Client ID / Secret | `{{sap_client_id}}` / `{{sap_client_secret}}` |
 | Client Authentication | Send as Basic Auth header |
+
+Creación de un token de acceso en funcion del fichero *Service Key* de la *Instancia de Servicio* ABAP **Trial** en BTP
+
+![Creación de Environment](img/Postman_01_authorization.png)
+![Creación de Environment](img/Postman_02_authorization.png)
+
 
 ![Configuración OAuth en Postman (sin mostrar el secreto)](img/00-oauth.png)
 
