@@ -330,7 +330,7 @@ Las variables de entorno usadas van entre con llaves dobles (`{{ }}`).
 *Get New Access Token* → login con el usuario BTP → *Use Token* (`TokenForAllAbapADT`) → elegirlo en el desplegable *Token* de cada request.
 
 [OAuth2.0](img/Postman_03_OAuth2.0.png)
-
+ 
 
 > Al **duplicar** un request, el token no se hereda: hay que seleccionarlo de nuevo.
 
