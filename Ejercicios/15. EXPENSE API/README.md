@@ -327,7 +327,7 @@ Las variables de entorno usadas van entre con llaves dobles (`{{ }}`).
 
 **Pasos:** 
 
-*Get New Access Token* → login con el usuario BTP → *Use Token* (`TokenForAllAbapADT`) → elegirlo en el desplegable *Token* de cada request.
+En cada request elegir en el desplegable *Token* a `TokenForAllAbapADT`.
 
 ![OAuth2.0](img/Postman_03_OAuth2.png)
  
